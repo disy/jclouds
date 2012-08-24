@@ -14,13 +14,13 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 /**
  * The Class OctalLayeredByteToPixelPainter.
  */
-public class OctalLayeredByteToPixelPainter implements BytesToImagePainter {
+public class OctalLayeredColorAlternatingBytesToImagePainter implements BytesToImagePainter {
 
     /** The number system. */
     private final int numberSystem = 8;
 
     /** The colors. */
-    private final Color[][] colors = ColorGenerator.generateUniformlyDistributedColors(numberSystem);
+    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(numberSystem);
 
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
@@ -171,7 +171,7 @@ public class OctalLayeredByteToPixelPainter implements BytesToImagePainter {
                 }
             }
         }
-        return ColorGenerator.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

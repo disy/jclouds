@@ -14,10 +14,10 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 /**
  * The Class TetralLayeredByteToPixelPainter.
  */
-public class TetralLayeredByteToPixelPainter implements BytesToImagePainter {
+public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter {
 
     /** The colors. */
-    private final Color[][] colors = ColorGenerator.generateUniformlyDistributedColors(4);
+    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(4);
 
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
@@ -127,7 +127,7 @@ public class TetralLayeredByteToPixelPainter implements BytesToImagePainter {
             }
         }
 
-        return ColorGenerator.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

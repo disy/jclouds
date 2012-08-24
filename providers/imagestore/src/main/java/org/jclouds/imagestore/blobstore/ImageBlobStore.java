@@ -1,4 +1,30 @@
-        package org.jclouds.imagestore.blobstore;
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.jclouds.imagestore.blobstore;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -7,55 +33,83 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Set;
 
-import org.jclouds.crypto.Crypto;
-import org.jclouds.domain.Location;
-import org.jclouds.encryption.internal.JCECrypto;
-import org.jclouds.imagestore.blobstore.flickr.FlickrOAuth;
-import org.jclouds.imagestore.blobstore.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HeptalLayeredBytesToImagePainter;
-import org.jclouds.io.Payload;
-import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
-import org.jclouds.blobstore.domain.Blob.Factory;
-import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.blobstore.domain.BlobMetadata;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
-import org.jclouds.blobstore.internal.BaseBlobStore;
+import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
 import org.jclouds.blobstore.options.CreateContainerOptions;
 import org.jclouds.blobstore.options.GetOptions;
 import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
-import org.jclouds.blobstore.util.BlobUtils;
+import org.jclouds.domain.Location;
+import org.jclouds.encryption.internal.JCECrypto;
+import org.jclouds.imagestore.blobstore.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.io.Payload;
+import org.jclouds.javax.annotation.Nullable;
 
-import com.google.common.base.Supplier;
+/**
+ * This class implements the jClouds BlobStore interface and acts as adapter between jClouds and the image store.
+ * 
+ * @author Wolfgang Miller
+ */
+public class ImageBlobStore implements BlobStore {
 
-public class ImageBlobStore implements BlobStore{
-    
-    /** ih the image host. */
+    /** The image host instance. */
     private final ImageHost ih;
-    /** ig the image generator. */
+    /** The image generator instance. */
     private final ImageGenerator ig;
-    
-    private BlobBuilder bb = null;
+    /** The blob builder. */
+    private BlobBuilder bb;
 
-    public ImageBlobStore(){
-        // TODO Auto-generated constructor stub
-        ih = new ImageHostFlickr(new FlickrOAuth());
-        ig = new ImageGenerator(new HeptalLayeredBytesToImagePainter());
+    /**
+     * ImageBlobStore constructor.
+     * 
+     * @param imageHost The image host to be used.
+     * @param imageGenerator The image generator to be used.
+     */
+    public ImageBlobStore(final ImageHost imageHost, final ImageGenerator imageGenerator) {
+        ih = imageHost;
+        ig = imageGenerator;
         try {
-            bb =  new BlobBuilderImpl(new JCECrypto());
+            bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (CertificateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public long countBlobs(final String container) {
+        return ih.countImagesInSet(container);
+    }
+
+    @Override
+    public long countBlobs(final String container, final ListContainerOptions options) {
+        return countBlobs(container);
+    }
+
+    @Override
+    public BlobStoreContext getContext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BlobBuilder blobBuilder(final String name) {
+        return bb;
+    }
+
+    @Override
+    public Set<? extends Location> listAssignableLocations() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
@@ -76,15 +130,52 @@ public class ImageBlobStore implements BlobStore{
 
     @Override
     public boolean createContainerInLocation(@Nullable final Location location, final String container,
-        CreateContainerOptions options) {
-        // TODO Options?
+        final CreateContainerOptions options) {
         return createContainerInLocation(null, container);
     }
 
     @Override
-    public PageSet<? extends StorageMetadata> list(String container, ListContainerOptions options) {
+    public PageSet<? extends StorageMetadata> list(final String container) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public PageSet<? extends StorageMetadata> list(final String container, final ListContainerOptions options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void clearContainer(final String container) {
+        ih.clearImageSet(container);
+    }
+
+    @Override
+    public void clearContainer(final String container, final ListContainerOptions options) {
+        clearContainer(container);
+    }
+
+    @Override
+    public void deleteContainer(final String container) {
+        ih.deleteImageSet(container);
+    }
+
+    @Override
+    public boolean directoryExists(final String container, final String directory) {
+        // TODO Directory??
+        return false;
+    }
+
+    @Override
+    public void createDirectory(final String container, final String directory) {
+        // TODO Directory??
+    }
+
+    @Override
+    public void deleteDirectory(final String containerName, final String name) {
+        // TODO Directory??
+
     }
 
     @Override
@@ -95,40 +186,36 @@ public class ImageBlobStore implements BlobStore{
     @Override
     public String putBlob(final String container, final Blob blob) {
         final Payload pl = blob.getPayload();
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] bs = null;
         try {
             pl.writeTo(baos);
+            bs = baos.toByteArray();
+            baos.flush();
+            baos.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-        };
+        }
         
-        byte [] bs = baos.toByteArray();
         BufferedImage bi = ig.createImageFromBytes(bs);
-                
+
         return ih.uploadImage(container, blob.getMetadata().getName(), bi);
     }
 
     @Override
     public String putBlob(final String container, final Blob blob, final PutOptions options) {
-        // TODO Options?
         return putBlob(container, blob);
     }
 
     @Override
     public BlobMetadata blobMetadata(final String container, final String name) {
-        // TODO Auto-generated method stub
+        // TODO Metadata??
         return null;
     }
 
     @Override
-    public Blob getBlob(final String container, final String name, final GetOptions options) {
-        return getBlob(container, name);
-    }
-    
-    @Override
-    public Blob getBlob(String container, String name) {
+    public Blob getBlob(final String container, final String name) {
         BufferedImage bi = ih.downloadImage(container, name);
         final byte[] bs = ig.getBytesFromImage(bi);
         bb.payload(bs);
@@ -136,82 +223,13 @@ public class ImageBlobStore implements BlobStore{
     }
 
     @Override
+    public Blob getBlob(final String container, final String name, final GetOptions options) {
+        return getBlob(container, name);
+    }
+
+    @Override
     public void removeBlob(final String container, final String name) {
         ih.deleteImage(container, name);
     }
-
-    @Override
-    public BlobStoreContext getContext() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public BlobBuilder blobBuilder(String name) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<? extends Location> listAssignableLocations() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public PageSet<? extends StorageMetadata> list(String container) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void clearContainer(String container) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void clearContainer(String container, ListContainerOptions options) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void deleteContainer(String container) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean directoryExists(String container, String directory) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void createDirectory(String container, String directory) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void deleteDirectory(String containerName, String name) {
-        // TODO Auto-generated method stub
-        
-    }
-
-
-    @Override
-    public long countBlobs(String container) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public long countBlobs(String container, ListContainerOptions options) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
 
 }

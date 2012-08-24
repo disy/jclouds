@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.flickr;
 
@@ -9,51 +32,58 @@ import java.util.Collection;
 
 import org.jclouds.imagestore.blobstore.ImageHost;
 import org.json.JSONException;
+import org.xml.sax.SAXException;
 
 import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.photos.Photo;
 import com.googlecode.flickrjandroid.photos.PhotoList;
+import com.googlecode.flickrjandroid.photos.PhotosInterface;
 import com.googlecode.flickrjandroid.photosets.Photoset;
 import com.googlecode.flickrjandroid.photosets.PhotosetsInterface;
 import com.googlecode.flickrjandroid.uploader.UploadMetaData;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ImageHoster_Flickr.
+ * This class offers an implementation of the ImageHost interface for the image provider Flickr.
+ * 
+ * @author Wolfgang Miller
  */
 public class ImageHostFlickr implements ImageHost {
 
-    /** The fl. */
-    private final Flickr fl;
-
-    /** The flickr-user ID. */
-    private final String userId;
-
-    /** The fup. */
+    /** The Flickr instance. */
+    private Flickr fl;
+    /** The flickr user ID. */
+    private String userId;
+    /** The Flickr uploader. */
     private final FlickrUploader fup;
-
-    /** The fdown. */
+    /** The Flickr downloader. */
     private final FlickrDownloader fdown;
-
-    /** The meta. */
+    /** The Flickr meta data. */
     private final UploadMetaData meta;
-
-    private final PhotosetsInterface fsi;
+    /** The photo set interface. */
+    private final PhotosetsInterface psi;
+    /** The photos interface. */
+    private final PhotosInterface poi;
 
     /**
-     * Instantiates a new image hoster_ flickr.
+     * Instantiates a new Flickr ImageHost instance.
      * 
-     * @param foa
-     *            the Flickr OAuth instance
      */
-    public ImageHostFlickr(final FlickrOAuth foa) {
-        fl = foa.getFlickr();
-        userId = foa.getUser().getId();
+    public ImageHostFlickr() {
+        try {
+            FlickrOAuth foa = new FlickrOAuth();
+            fl = foa.getAuthenticatedFlickrInstance();
+            userId = foa.getUser().getId();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        }
         fup = new FlickrUploader(fl);
         fdown = new FlickrDownloader(fl, userId);
         meta = new UploadMetaData();
-        fsi = fl.getPhotosetsInterface();
+        psi = fl.getPhotosetsInterface();
+        poi = fl.getPhotosInterface();
     }
 
     /**
@@ -67,23 +97,20 @@ public class ImageHostFlickr implements ImageHost {
      */
     private String getFlickrImageId(final String imageSetId, final String imageTitle) {
         try {
-            PhotoList pl = fsi.getPhotos(imageSetId, -1, -1);
+            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
             for (Photo ph : pl) {
                 if (ph.getTitle().equals(imageTitle)) {
                     return ph.getId();
                 }
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (FlickrException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return "";
+        return null;
     }
 
     /**
@@ -95,51 +122,44 @@ public class ImageHostFlickr implements ImageHost {
      */
     private String getFlickrImageSetId(final String imageSetTitle) {
         try {
-            Collection<Photoset> pc = fsi.getList(userId).getPhotosets();
+            Collection<Photoset> pc = psi.getList(userId).getPhotosets();
             for (Photoset ps : pc) {
                 if (ps.getTitle().equals(imageSetTitle)) {
                     return ps.getId();
                 }
             }
-
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (FlickrException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return "";
     }
 
     @Override
-    public boolean createImageSet(String imageSetTitle) {
+    public boolean createImageSet(final String imageSetTitle) {
         if (imageSetExists(imageSetTitle))
             return false;
-        
+
         final BufferedImage dummyImage = new BufferedImage(10, 10, BufferedImage.TYPE_BYTE_BINARY);
-        
+
         final String dummyID = uploadImage("Dummy_" + Long.toString(System.currentTimeMillis()), dummyImage);
         try {
-            fsi.create(imageSetTitle, "", dummyID);
+            psi.create(imageSetTitle, "", dummyID);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (FlickrException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return true;
     }
 
     @Override
-    public boolean imageExists(String imageSetTitle, String imageTitle) {
+    public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         String imageSetId = getFlickrImageSetId(imageSetTitle);
         if (imageSetId.isEmpty())
             return false;
@@ -147,43 +167,56 @@ public class ImageHostFlickr implements ImageHost {
     }
 
     @Override
-    public boolean imageSetExists(String imageSetTitle) {
+    public boolean imageSetExists(final String imageSetTitle) {
         return !getFlickrImageSetId(imageSetTitle).isEmpty();
     }
 
     @Override
-    public void deleteImage(String imageSetTitle, String imageTitle) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean deleteAndVerifyImageSetGone(String imageSetTitle) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage img) {
-        final String imageId = uploadImage(imageTitle, img);
-        
-        if(!imageSetExists(imageSetTitle)){
-            createImageSet(imageSetTitle);
-        }
-        
-        String imageSetId = getFlickrImageSetId(imageSetTitle);
-        
-
+    public void deleteImage(final String imageSetTitle, final String imageTitle) {
+        final String imageSetId = getFlickrImageSetId(imageSetTitle);
+        final String imageId = getFlickrImageId(imageSetId, imageTitle);
         try {
-            fsi.addPhoto(imageSetId, imageId);
+            poi.delete(imageId);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (FlickrException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteImageSet(final String imageSetTitle) {
+        String imageSetId = getFlickrImageSetId(imageSetTitle);
+        try {
+            psi.delete(imageSetId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
+        final String imageId = uploadImage(imageTitle, img);
+
+        if (!imageSetExists(imageSetTitle)) {
+            createImageSet(imageSetTitle);
+        }
+
+        String imageSetId = getFlickrImageSetId(imageSetTitle);
+
+        try {
+            psi.addPhoto(imageSetId, imageId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -191,27 +224,64 @@ public class ImageHostFlickr implements ImageHost {
     }
 
     @Override
-    public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
+    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
         final String imageId = getFlickrImageId(imageSetId, imageTitle);
         try {
             return fdown.getImageAsBufferedImage(imageId);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (FlickrException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public String uploadImage(String imageTitle, BufferedImage img) {
-        return fup.uploadImage(imageTitle, img, meta);
+    public String uploadImage(final String imageTitle, final BufferedImage image) {
+        try {
+            return fup.uploadImage(imageTitle, image, meta);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    
+
+    @Override
+    public int countImagesInSet(final String imageSetTitle) {
+        try {
+            return psi.getList(userId).getPhotosets().size();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
+    public void clearImageSet(final String imageSetTitle) {
+        final String imageSetId = getFlickrImageSetId(imageSetTitle);
+
+        try {
+            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+            for (Photo ph : pl) {
+                psi.removePhoto(imageSetId, ph.getId());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FlickrException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,84 +1,93 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
 import java.awt.Color;
 import java.util.ArrayList;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ColorGenerator.
+ * This Class offers helper methods for the byte painters.
+ * 
+ * @author Wolfgang Miller
  */
-public class ColorGenerator {
-	
-	/**
-	 * returns 3-dimensional array. Each dimension stands for one RGB color.
-	 *
-	 * @param numColors the num colors
-	 * @return the color[][]
-	 */
+public class BytesToImagePainterHelper {
+    
+    /**
+     * Protected constructor. Protects helper class from being instantiated.
+     */
+    protected BytesToImagePainterHelper() { };
 
-	public static Color[][] generateUniformlyDistributedColors(int numColors) {
-		Color[][] caa = new Color[3][numColors];
+    /**
+     * Returns a 2-dimensional array. The first dimension stands .
+     * 
+     * @param numColors
+     *            the number of different colors
+     * @return the calculated colors
+     */
 
-		for (int i = 0; i < caa.length; i++) {
-			Color[] ca = caa[i];
-			int sum = 0;
-			final int len = ca.length;
-			final float ratio = 255f / (len - 1);
+    public static Color[][] generateUniformlyDistributedColors(final int numColors) {
+        Color[][] caa = new Color[3][numColors];
 
-			for (int y = 0; y < len; y++) {
+        for (int i = 0; i < caa.length; i++) {
+            Color[] ca = caa[i];
+            int sum = 0;
+            final int len = ca.length;
+            final float ratio = 255f / (len - 1);
 
-				if (i == 0) {
-					ca[y] = new Color(sum, 0, 0);
-				} else if (i == 1) {
-					ca[y] = new Color(0, sum, 0);
-				} else {
-					ca[y] = new Color(0, 0, sum);
-				}
+            for (int y = 0; y < len; y++) {
 
-				sum += ratio;
-			}
-		}
-		return caa;
-	}
-	
-	/**
-	 * Converts ArrayList<Byte> to byte[].
-	 * 
-	 * @param li the array-list
-	 * @return the byte-array
-	 */
-	
-	public static byte[] arrayListToByteArray(ArrayList<Byte> li){
-            byte[] bs = new byte[li.size()];
-            int i = 0;
-            for(Byte b : li){
-                bs[i++] = b;
+                if (i == 0) {
+                    ca[y] = new Color(sum, 0, 0);
+                } else if (i == 1) {
+                    ca[y] = new Color(0, sum, 0);
+                } else {
+                    ca[y] = new Color(0, 0, sum);
+                }
+
+                sum += ratio;
             }
-            return bs;
         }
-	
-	/**
-	 * Y cb cr2 rgb.
-	 *
-	 * @param y the y
-	 * @param cr the cr
-	 * @param cb the cb
-	 * @return the color
-	 */
-	public static Color YCbCr2RGB(int y, int cr, int cb){
-		
-		int r = (int) (y + 1.402 * (cr - 128));
-		int g = (int) (y - 0.34414 * (cb -128) - 0.71414 * (cr -128));
-		int b = (int) (y + 1.772 * (cb -128));
-		
-		r = Math.min(255, Math.max(0, r));
-		g = Math.min(255, Math.max(0, g));
-		b = Math.min(255, Math.max(0, b));
+        return caa;
+    }
 
-		return new Color(r,g,b);
-	}
+    /**
+     * Converts ArrayList<Byte> to byte[].
+     * 
+     * @param li
+     *            the array list
+     * @return the byte array
+     */
 
+    public static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
+        byte[] bs = new byte[li.size()];
+        int i = 0;
+        for (Byte b : li) {
+            bs[i++] = b;
+        }
+        return bs;
+    }
 }

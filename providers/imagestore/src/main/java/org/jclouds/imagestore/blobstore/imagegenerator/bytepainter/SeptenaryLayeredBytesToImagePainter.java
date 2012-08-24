@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
@@ -10,23 +33,22 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class HeptalLayeredByteToPixelPainter.
+ * This Class offers a byte painter.
+ * 
+ * Numeral System: Septenary
+ * Layers: 3
+ * 1 Byte = 1 Pixel
+ * 
+ * @author Wolfgang Miller
  */
-public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
+public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter {
 
-    /** The colors. */
-    private final Color[][] colors = ColorGenerator.generateUniformlyDistributedColors(7);
+    /** The different pixel colors. */
+    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(7);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.imagegenerator.bytepainter.ByteToPixelPainter#saveBytesToPixels(java.awt.image.BufferedImage,
-     * byte[])
-     */
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage img, byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage img, final byte[] bs) {
 
         final int w = img.getWidth();
         final int h = img.getHeight();
@@ -65,7 +87,7 @@ public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
 
                         byte currB = bs[bsPos];
 
-                        int[] bc = getColorFromByte(currB, layer);
+                        int[] bc = getColorsFromByte(currB, layer);
 
                         if (currByteColor == null) {
                             currByteColor = bc;
@@ -89,15 +111,15 @@ public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
     }
 
     /**
-     * Gets the color from byte.
+     * Calculates the colors for the current byte.
      * 
      * @param b
-     *            the b
+     *            the current byte
      * @param layer
-     *            the layer
-     * @return the color from byte
+     *            the current layer
+     * @return the byte's colors
      */
-    private int[] getColorFromByte(final byte b, final int layer) {
+    private int[] getColorsFromByte(final byte b, final int layer) {
         final int it = b & 0xFF;
         String hept = Integer.toString(it, 7);
         int[] byteColors = new int[3];
@@ -120,19 +142,14 @@ public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
         return byteColors;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.imagegenerator.bytepainter.ByteToPixelPainter#getBytesFromPixels(java.awt.image.BufferedImage,
-     * java.util.ArrayList)
-     */
-    public byte[] getBytesFromImage(BufferedImage img) {
+    @Override
+    public byte[] getBytesFromImage(final BufferedImage img) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
         final int w = img.getWidth();
         final int h = img.getHeight();
 
-        String[] hepts = new String[] {
+        String[] septs = new String[] {
             "", "", ""
         };
 
@@ -144,37 +161,36 @@ public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                getHeptsFromPixel(img.getRGB(x, y), hepts);
+                getNumericalValueFromPixelColor(img.getRGB(x, y), septs);
 
                 if (pix % 3 == 2) {
 
                     for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(hepts[i], 7);
+                        byte b = (byte)Integer.parseInt(septs[i], 7);
                         al.add(b);
                     }
 
-                    hepts = new String[] {
+                    septs = new String[] {
                         "", "", ""
                     };
                 }
             }
         }
-        
-       return ColorGenerator.arrayListToByteArray(al);
+
+        return BytesToImagePainterHelper.arrayListToByteArray(al);
     }
 
     /**
-     * Gets the hepts from pixel.
+     * Extracts the numerical value from current pixel's RGB-value.
      * 
-     * @param pix
-     *            the pix
-     * @param hepts
-     *            the hepts
-     * @return the hepts from pixel
+     * @param rgb
+     *            the RGB-value of the current pixel
+     * @param septs
+     *            array to be filled with the numerical values of the current pixel
      */
-    private void getHeptsFromPixel(final int pix, String[] hepts) {
+    private void getNumericalValueFromPixelColor(final int rgb, final String[] septs) {
 
-        Color c = new Color(pix);
+        Color c = new Color(rgb);
         int red = c.getRed();
         int green = c.getGreen();
         int blue = c.getBlue();
@@ -221,14 +237,16 @@ public class HeptalLayeredBytesToImagePainter implements BytesToImagePainter {
                     }
                 }
             }
-            hepts[l] += Integer.toString(idx, 7);
+            septs[l] += Integer.toString(idx, 7);
         }
     }
-    
-    public int [] getImageWidthAndHeight(int byteArrayLength){
+
+    public int[] getImageWidthAndHeight(final int byteArrayLength) {
         int w = 2048;
-        int h = (int) (byteArrayLength / (float) w) + 1;
-        return new int[]{w, h};
+        int h = (int)(byteArrayLength / (float)w) + 1;
+        return new int[] {
+            w, h
+        };
     }
 
 }

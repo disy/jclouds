@@ -14,7 +14,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 /**
  * The Class BlackAndWhiteByteToPixelPainter.
  */
-public class BlackAndWhiteByteToImagePainter implements BytesToImagePainter {
+public class BinaryBytesToImagePainter implements BytesToImagePainter {
 
     /*
      * (non-Javadoc)
@@ -101,7 +101,7 @@ public class BlackAndWhiteByteToImagePainter implements BytesToImagePainter {
         final int w = img.getWidth();
         final int h = img.getHeight();
 
-        String[] hepts = new String[] {
+        String[] binary = new String[] {
             "", "", ""
         };
 
@@ -113,22 +113,22 @@ public class BlackAndWhiteByteToImagePainter implements BytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                getHeptsFromPixel(img.getRGB(x, y), hepts);
+                getHeptsFromPixel(img.getRGB(x, y), binary);
 
                 if (pix % 3 == 2) {
 
                     for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(hepts[i], 7);
+                        byte b = (byte)Integer.parseInt(binary[i], 2);
                         li.add(b);
                     }
 
-                    hepts = new String[] {
+                    binary = new String[] {
                         "", "", ""
                     };
                 }
             }
         }
-        return ColorGenerator.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

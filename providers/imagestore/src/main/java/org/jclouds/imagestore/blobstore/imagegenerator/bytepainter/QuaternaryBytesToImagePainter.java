@@ -14,7 +14,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 /**
  * The Class TetraGreyByteToPixelPainter.
  */
-public class TetraGreyByteToPixelPainter implements BytesToImagePainter {
+public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
 
     /** The grey colors. */
     Color[] greyColors = new Color[] {
@@ -132,7 +132,7 @@ public class TetraGreyByteToPixelPainter implements BytesToImagePainter {
                 }
             }
         }
-        return ColorGenerator.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

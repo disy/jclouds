@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.flickr;
 
@@ -22,70 +45,56 @@ import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class FlickrOAuth.
+ * This class offers the OAuth authentication for Flickr.
+ * 
+ * @author Wolfgang Miller
  */
 public class FlickrOAuth {
 
-    /** The app key. */
-    private final String appKey;
+    /** The application key. */
+    private final String appKey = "3e6f5174edc3744e57c496db5d780ee8";
     /** The shared secret. */
-    private final String sharedSecret;
-    /** The fl. */
+    private final String sharedSecret = "a23933fe38c54919";
+    /** The Flickr instance. */
     private final Flickr fl;
-    /** The r token. */
+    /** The OAuth token. */
     private OAuthToken rToken;
-    /** The a token. */
+    /** The access token. */
     private OAuth aToken;
     /** The verifier. */
     private String verifier;
-    /* The callback-URL. oob = out-of-band */
-    /** The callback url. */
+    /** The callback-URL. oob = out-of-band. */
     private final String callbackURL = "oob";
     /** The flickr permission. */
     private final Permission FLICKR_PERMISSION = Permission.DELETE;
-    /** The path to flickr properties file */
+    /** The path to Flickr properties file. */
     private final String FLICKR_PROPS_URI = "src/main/resources/flickr.properties";
-    /** The flickr properties */
+    /** The Flickr properties. */
     private final Properties fp = new Properties();
 
-    public FlickrOAuth() {
+    /**
+     * Constructs Flickr OAuth authentication.
+     * 
+     * @throws IOException
+     *             Signals that an I/O exception has occurred
+     */
+    public FlickrOAuth() throws IOException {
         loadFlickrProperties();
-        appKey = fp.getProperty("appKey");
-        sharedSecret = fp.getProperty("sharedSecret");
         fl = new Flickr(appKey, sharedSecret);
     }
 
+   
     /**
-     * Gets the flickr.
+     * Authenticates the application and returns a authenticated Flickr instance.
      * 
-     * @return the flickr
-     */
-    public Flickr getFlickr() {
-
-        try {
-            return authenticateAppAndGetFlickr();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FlickrException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Authenticate app and get flickr.
-     * 
-     * @return the flickr
+     * @return a authenticated Flickr instance
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      * @throws FlickrException
-     *             the flickr exception
+     *             Signals that a Flickr exception has occurred.
      */
-    private Flickr authenticateAppAndGetFlickr() throws IOException, FlickrException {
+    public Flickr getAuthenticatedFlickrInstance() throws IOException, FlickrException {
 
         if (!fp.containsKey("token")) {
             rToken = fl.getOAuthInterface().getRequestToken(callbackURL);
@@ -97,26 +106,28 @@ public class FlickrOAuth {
         } else {
             aToken = loadOAuthFromPropertiesFile();
         }
-
         return fl;
     }
 
-    private void loadFlickrProperties() {
-        try {
-            fp.load(new FileInputStream(new File(FLICKR_PROPS_URI)));
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    /**
+     * Loads Flickr properties from Flickr properties file.
+     * 
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    private void loadFlickrProperties() throws IOException {
+        File propFile = new File(FLICKR_PROPS_URI);
+        if (!propFile.exists()) {
+            propFile.createNewFile();
         }
+
+        fp.load(new FileInputStream(propFile));
     }
 
     /**
-     * Load o auth from file.
+     * Load authentication data from Flickr properties file.
      * 
-     * @return the o auth
+     * @return the OAuth authentication.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
@@ -141,11 +152,11 @@ public class FlickrOAuth {
     }
 
     /**
-     * Saves OAuth information in flickr properties file.
+     * Saves authentication information in Flickr properties file.
      * 
-     * @throws IOException
+     * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void saveOAuthToPropertiesFile() {
+    private void saveOAuthToPropertiesFile() throws IOException {
 
         final String token = aToken.getToken().getOauthToken();
         final String tokenSecret = aToken.getToken().getOauthTokenSecret();
@@ -156,16 +167,7 @@ public class FlickrOAuth {
         fp.setProperty("tokenSecret", tokenSecret);
         fp.setProperty("userId", userId);
         fp.setProperty("username", username);
-
-        try {
-            fp.store(new FileOutputStream(new File(FLICKR_PROPS_URI)), "Flickr Properties");
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        fp.store(new FileOutputStream(new File(FLICKR_PROPS_URI)), "Flickr Properties");
     }
 
     /**
@@ -187,11 +189,11 @@ public class FlickrOAuth {
     }
 
     /**
-     * Generate authentication url.
+     * Generate authentication URL.
      * 
-     * @return the url
+     * @return the authentication URL.
      * @throws MalformedURLException
-     *             the malformed url exception
+     *             Signals that malformed URL exception has occurred.
      */
     private URL generateAuthenticationURL() throws MalformedURLException {
         return fl.getOAuthInterface().buildAuthenticationUrl(FLICKR_PERMISSION, rToken);
@@ -211,7 +213,7 @@ public class FlickrOAuth {
     }
 
     /**
-     * Gets the access token.
+     * Returns the access token.
      * 
      * @return the access token
      * @throws IOException

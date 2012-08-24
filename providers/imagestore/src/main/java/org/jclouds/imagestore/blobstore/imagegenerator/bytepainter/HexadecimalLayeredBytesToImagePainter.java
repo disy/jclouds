@@ -14,7 +14,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 /**
  * The Class HexalLayeredByteToPixelPainter.
  */
-public class HexalLayeredByteToPixelPainter implements BytesToImagePainter {
+public class HexadecimalLayeredBytesToImagePainter implements BytesToImagePainter {
 
     /** The red colors. */
     private final Color[] redColors = new Color[] {
@@ -128,7 +128,7 @@ public class HexalLayeredByteToPixelPainter implements BytesToImagePainter {
 
             }
         }
-        return ColorGenerator.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(li);
 
     }
 

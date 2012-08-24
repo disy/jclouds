@@ -1,12 +1,12 @@
-/*
- * 
- */
+ 
 package org.jclouds.imagestore.blobstore;
 
 import java.awt.image.BufferedImage;
 
 /**
- * The Interface ImageHoster.
+ * The ImageHoster interface.
+ * 
+ * @author Wolfgang Miller
  */
 public interface ImageHost {
     
@@ -44,41 +44,55 @@ public interface ImageHost {
     void deleteImage(final String imageSetTitle, final String imageTitle);
     
     /**
-     * Delete image-set.
+     * Delete image set.
      * 
      * @param imageSetTitle the set-title
-     * @return true if set is deleted
      */
-    boolean deleteAndVerifyImageSetGone(final String imageSetTitle);
+    void deleteImageSet(final String imageSetTitle);
 
     /**
      * Upload image and add it to a specified set.
      *
-     * @param imageSetName the set-title
-     * @param imageName the image-title
-     * @param img the image
-     * @return the image-id
+     * @param imageSetTitle the set title
+     * @param imageTitle the image title
+     * @param image the image
+     * @return the image id
      */
     String uploadImage(final String imageSetTitle, final String imageTitle, 
-        final BufferedImage img);
+        final BufferedImage image);
     
     /**
      * Upload image.
      *
-     * @param imageName the image-title
-     * @param img the image
-     * @return the image-id
+     * @param imageTitle the image title
+     * @param image the image
+     * @return the image id
      */
-    String uploadImage(final String imageTitle, final BufferedImage img);
+    String uploadImage(final String imageTitle, final BufferedImage image);
 
     /**
      * Download image.
      * 
-     * @param imageSetName the set-title
-     * @param imageTitle the image-title
+     * @param imageSetTitle the set title
+     * @param imageTitle the image title
      * @return the buffered image
      */
     BufferedImage downloadImage(final String imageSetTitle, 
         final String imageTitle);
+    
+    /**
+     * Returns number of images in given set.
+     * 
+     * @param imageSetTitle the set title
+     * @return count of images in the set
+     */
+    int countImagesInSet(final String imageSetTitle);
+    
+    /**
+     * Deletes all content of the image set without deleting the set itself.
+     * 
+     * @param imageSetTitle the set title
+     */
+    void clearImageSet(final String imageSetTitle);
 
 }

@@ -1,40 +1,41 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.zip.Deflater;
 
-import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.blobstore.ImageHost;
-import org.jclouds.imagestore.blobstore.flickr.FlickrOAuth;
-import org.jclouds.imagestore.blobstore.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HeptalLayeredBytesToImagePainter;
-import org.json.JSONException;
-import org.xml.sax.SAXException;
-
-import com.googlecode.flickrjandroid.FlickrException;
-import com.googlecode.flickrjandroid.uploader.UploadMetaData;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class ImageGenerator.
+ * This class is used to generate images from byte arrays or vice versa with specified byte painter.
+ * 
+ * @author Wolfgang Miller
  */
 public class ImageGenerator {
 
@@ -52,13 +53,7 @@ public class ImageGenerator {
      * Instantiates a new image generator.
      * 
      * @param bytePainter
-     *            the byte painter
-     * @param host
-     *            the host
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
-     * @throws FlickrException
-     *             the flickr exception
+     *            the byte painter to be used
      */
     public ImageGenerator(final BytesToImagePainter bytePainter) {
         bp = bytePainter;
@@ -73,7 +68,7 @@ public class ImageGenerator {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public byte[] compressData(byte[] bs) throws IOException {
+    public byte[] compressData(final byte[] bs) throws IOException {
         Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
         deflater.setInput(bs);
         deflater.finish();
@@ -111,9 +106,6 @@ public class ImageGenerator {
     BufferedImage createBufferedImage() {
         BufferedImage img =
             new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        Graphics g = img.getGraphics();
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
         return img;
     }
 
