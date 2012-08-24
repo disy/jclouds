@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to jclouds, Inc. (jclouds) under one or more
  * contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,21 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jclouds.carrenza.vcloud.director;
+package org.jclouds.vcloud.director.v1_5.functions.href;
 
-import org.jclouds.vcloud.director.v1_5.HttpClientLiveTest;
-import org.testng.annotations.Test;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * {@inheritDoc}
- * 
- * @author danikov
- * @author grkvlt
- */
-@Test(groups = { "live", "user" }, singleThreaded = true, testName = "CarrenzaVCloudDirectorHttpClientLiveTest")
-public class CarrenzaVCloudDirectorHttpClientLiveTest extends HttpClientLiveTest {
+import org.jclouds.vcloud.director.v1_5.VCloudDirectorMediaType;
+import org.jclouds.vcloud.director.v1_5.domain.Entity;
+import org.jclouds.vcloud.director.v1_5.functions.URNToHref;
 
-   public CarrenzaVCloudDirectorHttpClientLiveTest() {
-      provider = "carrenza-vcloud-director";
+import com.google.common.cache.LoadingCache;
+
+@Singleton
+public class VmURNToHref extends URNToHref {
+
+   @Inject
+   public VmURNToHref(LoadingCache<String, Entity> resolveEntityCache) {
+      super(resolveEntityCache);
    }
+
+   @Override
+   protected String type() {
+      return VCloudDirectorMediaType.VM;
+   }
+
 }
