@@ -40,10 +40,10 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
 import org.jclouds.encryption.internal.JCECrypto;
-import org.jclouds.imagestore.blobstore.flickr.ImageHostFlickr;
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

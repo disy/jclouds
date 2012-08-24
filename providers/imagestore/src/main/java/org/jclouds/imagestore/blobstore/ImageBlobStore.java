@@ -47,9 +47,7 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.encryption.internal.JCECrypto;
-import org.jclouds.imagestore.blobstore.flickr.ImageHostFlickr;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.io.Payload;
 import org.jclouds.javax.annotation.Nullable;
 
