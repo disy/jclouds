@@ -57,7 +57,7 @@ public class ImageHostTest {
             assertTrue(host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, images[0]);
             assertTrue(host.imageExists(SET1, IMAGE1));
-            BufferedImage img = host.downloadImage(SET1, IMAGE1);
+//            BufferedImage img = host.downloadImage(SET1, IMAGE1);
             // assertTrue(img.getGraphics().hashCode() == images[0].getGraphics().hashCode());
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));

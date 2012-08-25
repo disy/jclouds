@@ -43,16 +43,20 @@ import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.google.common.io.Files;
+
 public class ImageHostBlobStoreTest {
 
     /** The path to the test input file. */
-    private final String testFileURI = "src/test/resources/Linie9C.pdf";
+    private final String testFileURI = "src" + File.separator + "test" + File.separator + "resources"
+        + File.separator + "Linie9C.pdf";
     /** The test blob. */
-    private final byte [] bs;
+    private final byte[] bs;
 
     /**
      * 
@@ -61,23 +65,25 @@ public class ImageHostBlobStoreTest {
      */
     public ImageHostBlobStoreTest() throws IOException {
         bs = loadBytesFromFile(new File(testFileURI));
-      
+
     }
 
     /**
      * 
      * @param clazz
      * @param pHandlers
-     * @throws CertificateException 
-     * @throws NoSuchAlgorithmException 
-     * @throws IOException 
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
      */
-    @Test(dataProvider = "instantiateBytePainters")
-    public void testByteRepresentation(final Class<BytesToImagePainter> clazz, BytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException, IOException {
-        
-        for(BytesToImagePainter pa : painters) {
+    @Test(dataProvider = "instantiateBytePainters", enabled=false)
+    public void
+        testByteRepresentation(final Class<BytesToImagePainter> clazz, BytesToImagePainter[] painters)
+            throws NoSuchAlgorithmException, CertificateException, IOException {
+
+        for (BytesToImagePainter pa : painters) {
             final ImageGenerator ig = new ImageGenerator(pa);
-            final ImageBlobStore ib = new ImageBlobStore(new ImageHostFlickr(), ig);
+            final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(Files.createTempDir()), ig);
             final BlobBuilder bb = new BlobBuilderImpl(new JCECrypto());
             final String blobName = ig.getClass().getName() + System.currentTimeMillis();
             bb.payload(bs);
@@ -86,12 +92,13 @@ public class ImageHostBlobStoreTest {
             final String containerName = "TestContainer";
             ib.putBlob(containerName, testBlob);
             final Blob reTestBlob = ib.getBlob(containerName, blobName);
-            
+
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             reTestBlob.getPayload().writeTo(bos);
-            byte [] bss = bos.toByteArray();
-            
-            assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.").toString(), Arrays.equals(bs, bss));            
+            byte[] bss = bos.toByteArray();
+
+            assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
+                .toString(), Arrays.equals(bs, bss));
         }
     }
 
