@@ -52,7 +52,8 @@ import org.jclouds.io.Payload;
 import org.jclouds.javax.annotation.Nullable;
 
 /**
- * This class implements the jClouds BlobStore interface and acts as adapter between jClouds and the image store.
+ * This class implements the jClouds BlobStore interface and acts as adapter between jClouds and the image
+ * store.
  * 
  * @author Wolfgang Miller
  */
@@ -68,8 +69,10 @@ public class ImageBlobStore implements BlobStore {
     /**
      * ImageBlobStore constructor.
      * 
-     * @param imageHost The image host to be used.
-     * @param imageGenerator The image generator to be used.
+     * @param imageHost
+     *            The image host to be used.
+     * @param imageGenerator
+     *            The image generator to be used.
      */
     public ImageBlobStore(final ImageHost imageHost, final ImageGenerator imageGenerator) {
         ih = imageHost;
@@ -139,7 +142,8 @@ public class ImageBlobStore implements BlobStore {
     }
 
     @Override
-    public PageSet<? extends StorageMetadata> list(final String container, final ListContainerOptions options) {
+    public PageSet<? extends StorageMetadata>
+        list(final String container, final ListContainerOptions options) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -195,10 +199,14 @@ public class ImageBlobStore implements BlobStore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         BufferedImage bi = ig.createImageFromBytes(bs);
 
-        return ih.uploadImage(container, blob.getMetadata().getName(), bi);
+        try {
+            return ih.uploadImage(container, blob.getMetadata().getName(), bi);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -214,10 +222,14 @@ public class ImageBlobStore implements BlobStore {
 
     @Override
     public Blob getBlob(final String container, final String name) {
-        BufferedImage bi = ih.downloadImage(container, name);
-        final byte[] bs = ig.getBytesFromImage(bi);
-        bb.payload(bs);
-        return bb.build();
+        try {
+            BufferedImage bi = ih.downloadImage(container, name);
+            final byte[] bs = ig.getBytesFromImage(bi);
+            bb.payload(bs);
+            return bb.build();
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     @Override

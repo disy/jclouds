@@ -201,7 +201,8 @@ public class ImageHostFlickr implements ImageHost {
     }
 
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
+    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img)
+        throws IOException {
         final String imageId = uploadImage(imageTitle, img);
 
         if (!imageSetExists(imageSetTitle)) {
@@ -212,8 +213,6 @@ public class ImageHostFlickr implements ImageHost {
 
         try {
             psi.addPhoto(imageSetId, imageId);
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (FlickrException e) {
             e.printStackTrace();
         } catch (JSONException e) {
