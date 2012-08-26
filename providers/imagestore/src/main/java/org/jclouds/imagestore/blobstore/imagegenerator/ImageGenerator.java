@@ -31,7 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.Deflater;
 
-
 /**
  * This class is used to generate images from byte arrays or vice versa with specified byte painter.
  * 
@@ -47,7 +46,6 @@ public class ImageGenerator {
 
     /** The bp. */
     private final BytesToImagePainter bp;
-
 
     /**
      * Instantiates a new image generator.
@@ -104,26 +102,63 @@ public class ImageGenerator {
      * @return the buffered image
      */
     BufferedImage createBufferedImage() {
-        BufferedImage img =
-            new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
         return img;
     }
 
-    public int [] getImageWidthAndHeight(int byteArrayLength){
+    public int[] getImageWidthAndHeight(int byteArrayLength) {
         int w = 2048;
-        int h = (int) (byteArrayLength / (float) w) + 1;
-        return new int[]{w, h};
+        int h = (int)(byteArrayLength / (float)w) + 1;
+        return new int[] {
+            w, h
+        };
     }
-    
-    public BufferedImage createImageFromBytes(byte [] bs){
-        int [] dim = getImageWidthAndHeight(bs.length);
+
+    public BufferedImage createImageFromBytes(byte[] bs) {
+        int[] dim = getImageWidthAndHeight(bs.length);
         this.IMAGE_WIDTH = dim[0];
         this.IMAGE_HEIGHT = dim[1];
-        return bp.storeBytesInImage(createBufferedImage(), bs);
+        return bp.storeBytesInImage(createBufferedImage(), saveArrayLengthInFirst4Bytes(bs));
     }
-    
-    public byte[] getBytesFromImage(BufferedImage img){
-        return bp.getBytesFromImage(img);
+
+    public byte[] getBytesFromImage(BufferedImage img) {
+        return getOriginalArray(bp.getBytesFromImage(img));
     }
-    
+
+    /**
+     * Saves the array length in the first 4 bytes of the array.
+     * 
+     * @param bs
+     *            the byte array.
+     * @return the byte array with original array length stored in first 4 bytes.
+     */
+    private static byte[] saveArrayLengthInFirst4Bytes(final byte[] bs) {
+        final int length = bs.length;
+        final int newLength = length + 4;
+        final byte[] bss = new byte[newLength];
+        bss[0] = (byte)length;
+        bss[1] = (byte)(length >> 8);
+        bss[2] = (byte)(length >> 16);
+        bss[3] = (byte)(length >> 24);
+        System.arraycopy(bs, 0, bss, 4, length);
+        return bss;
+    }
+
+    /**
+     * Extracts the original array through the original array length stored in the first 4 bytes of the image.
+     * 
+     * @param bs
+     *            the byte array.
+     * @return the original byte array.
+     */
+    private static byte[] getOriginalArray(final byte[] bs) {
+        final int b1 = (int)bs[0] & 0xFF;
+        final int b2 = (int)bs[1] & 0xFF;
+        final int b3 = (int)bs[2] & 0xFF;
+        final int b4 = (int)bs[3] & 0xFF;
+        final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
+        byte[] bss = new byte[oLength];
+        System.arraycopy(bs, 4, bss, 0, oLength);
+        return bss;
+    }
 }

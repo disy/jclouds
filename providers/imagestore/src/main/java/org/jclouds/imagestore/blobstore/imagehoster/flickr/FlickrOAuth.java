@@ -29,7 +29,6 @@ package org.jclouds.imagestore.blobstore.imagehoster.flickr;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -96,7 +95,7 @@ public class FlickrOAuth {
      */
     public Flickr getAuthenticatedFlickrInstance() throws IOException, FlickrException {
 
-        if (!fp.containsKey("token")) {
+        if (fp.getProperty("token").isEmpty()) {
             rToken = fl.getOAuthInterface().getRequestToken(callbackURL);
             System.out.println(generateAuthenticationURL());
             readInVerifier();
