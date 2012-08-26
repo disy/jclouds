@@ -38,13 +38,10 @@ import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
-import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -53,20 +50,19 @@ import com.google.common.io.Files;
 public class ImageHostBlobStoreTest {
 
     /** The path to the test input file. */
-    private final String testFileURI = "src" + File.separator + "test" + File.separator + "resources"
+    private final static String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
         + File.separator + "Linie9C.pdf";
     /** The test blob. */
-    private final byte[] bs;
+    private final static byte[] RAWFILEBYTES;
 
-    /**
-     * 
-     * 
-     * @throws IOException
-     */
-    public ImageHostBlobStoreTest() throws IOException {
-        bs = loadBytesFromFile(new File(testFileURI));
-
+    static {
+        try {
+            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     /**
      * 
@@ -76,17 +72,19 @@ public class ImageHostBlobStoreTest {
      * @throws NoSuchAlgorithmException
      * @throws IOException
      */
-    @Test(dataProvider = "instantiateBytePainters", enabled=false)
+    @Test(dataProvider = "instantiateBytePainters")
     public void
         testByteRepresentation(final Class<BytesToImagePainter> clazz, BytesToImagePainter[] painters)
             throws NoSuchAlgorithmException, CertificateException, IOException {
 
+        File file = Files.createTempDir();
+
         for (BytesToImagePainter pa : painters) {
             final ImageGenerator ig = new ImageGenerator(pa);
-            final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(Files.createTempDir()), ig);
-            final BlobBuilder bb = new BlobBuilderImpl(new JCECrypto());
-            final String blobName = ig.getClass().getName() + System.currentTimeMillis();
-            bb.payload(bs);
+            final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(file), ig);
+            final String blobName = "blob.png";
+            final BlobBuilder bb = ib.blobBuilder(blobName);
+            bb.payload(RAWFILEBYTES);
             bb.name(blobName);
             final Blob testBlob = bb.build();
             final String containerName = "TestContainer";
@@ -98,7 +96,7 @@ public class ImageHostBlobStoreTest {
             byte[] bss = bos.toByteArray();
 
             assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
-                .toString(), Arrays.equals(bs, bss));
+                .toString(), Arrays.equals(RAWFILEBYTES, bss));
         }
     }
 
@@ -128,7 +126,7 @@ public class ImageHostBlobStoreTest {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    byte[] loadBytesFromFile(final File f) throws IOException {
+    private static byte[] loadBytesFromFile(final File f) throws IOException {
         if (!f.isFile())
             return new byte[0];
 
