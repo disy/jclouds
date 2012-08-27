@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
@@ -10,9 +33,14 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class HexalByteToPixelPainter.
+ * This Class offers a byte painter.
+ * 
+ * Numeral System: Hexadecimal
+ * Layers: 1
+ * 1 Byte = 2 Pixel
+ * 
+ * @author Wolfgang Miller
  */
 public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
 
@@ -32,7 +60,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
     public float bytesPerPixel() {
         return BYTES_PER_PIXEL;
     }
-    
+
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
 
@@ -67,7 +95,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
 
-                hex += getHexFromPixel(img.getRGB(x, y));
+                hex += getNumericalValueFromPixelColor(img.getRGB(x, y));
 
                 if (x % 2 == 1) {
 
@@ -82,46 +110,49 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
     }
 
     /**
-     * Gets the hex from pixel.
+     * Extracts the hexadecimal value from current pixel's RGB-value.
      * 
-     * @param pix
-     *            the pix
-     * @return the hex from pixel
+     * @param RGB
+     *            The RGB-value of the current pixel.
+     * @return The hexadecimal value.
      */
-    private String getHexFromPixel(int pix) {
-        int th = 22;
+    private String getNumericalValueFromPixelColor(final int rgb) {
 
-        Color c = new Color(pix);
+        final Color c = new Color(rgb);
+        final int red = c.getRed();
+        final int green = c.getGreen();
+        final int blue = c.getBlue();
 
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
+        int dist = -1;
+        int idx = -1;
 
         for (int i = 0; i < colors.length; i++) {
-            int cred = colors[i].getRed();
-            int cgreen = colors[i].getGreen();
-            int cblue = colors[i].getBlue();
+            final int cred = colors[i].getRed();
+            final int cgreen = colors[i].getGreen();
+            final int cblue = colors[i].getBlue();
 
-            if ((red - th <= cred && cred <= red + th) && (green - th <= cgreen && cgreen <= green + th)
-                && (blue - th <= cblue && cblue <= blue + th)) {
-                return Integer.toHexString(i);
+            int currDist = Math.abs(cred - red) + Math.abs(cgreen - green) + Math.abs(cblue - blue);
+
+            if (dist == -1 || currDist < dist) {
+                dist = currDist;
+                idx = i;
             }
         }
 
-        return "0";
+        return Integer.toHexString(idx);
     }
 
     /**
-     * Draw byte to colored image.
+     * Draws the given byte to the colored image.
      * 
      * @param g
-     *            the g
+     *            The Graphics reference of the image.
      * @param x
-     *            the x
+     *            The x coordinate.
      * @param y
-     *            the y
+     *            The y coordinate.
      * @param b
-     *            the b
+     *            The byte to be drawn.
      */
     private void drawByteToColoredImage(final Graphics g, final int x, final int y, final byte b) {
         final int it = b & 0xFF;
