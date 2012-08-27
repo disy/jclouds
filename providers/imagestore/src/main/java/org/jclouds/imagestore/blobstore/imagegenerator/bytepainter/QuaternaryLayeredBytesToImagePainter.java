@@ -18,9 +18,16 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
 
     /** The colors. */
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(4);
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 4 / 3f;
 
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
+
+    @Override
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -98,7 +105,8 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
         return byteColors;
     }
 
-    public byte[] getBytesFromImage(BufferedImage img) {
+    @Override
+    public byte[] getBytesFromImage(final BufferedImage img) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
@@ -111,7 +119,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
 
-                getTetrasFromPixel(img.getRGB(x, y), tetras);
+                getQuaternarysFromPixel(img.getRGB(x, y), tetras);
 
                 if (x % 4 == 3) {
 
@@ -135,11 +143,11 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
      * 
      * @param pix
      *            the pix
-     * @param tetras
+     * @param quarternarys
      *            the tetras
      * @return the tetras from pixel
      */
-    private void getTetrasFromPixel(final int pix, String[] tetras) {
+    private void getQuaternarysFromPixel(final int pix, final String[] quarternarys) {
 
         Color c = new Color(pix);
         int red = c.getRed();
@@ -189,7 +197,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                 }
             }
 
-            tetras[l] += Integer.toString(idx, 4);
+            quarternarys[l] += Integer.toString(idx, 4);
         }
     }
 }

@@ -34,6 +34,13 @@ import java.awt.image.BufferedImage;
  * @author Wolfgang Miller
  */
 public interface BytesToImagePainter {
+    
+    /**
+     * Returns needed bytes per pixel.
+     * 
+     * @return The bytes needed per pixel.
+     */
+    float bytesPerPixel();
 
     /**
      * Stores bytes in an image.

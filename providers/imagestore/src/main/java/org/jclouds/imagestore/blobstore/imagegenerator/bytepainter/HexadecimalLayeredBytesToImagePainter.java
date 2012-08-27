@@ -38,6 +38,14 @@ public class HexadecimalLayeredBytesToImagePainter implements BytesToImagePainte
 
     /** The threshold. */
     private final int threshold = 15;
+    
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 0.5f;
+
+    @Override
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
 
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {

@@ -46,6 +46,13 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
 
     /** The different pixel colors. */
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(7);
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 1;
+
+    @Override
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
 
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage img, final byte[] bs) {
@@ -190,10 +197,10 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
      */
     private void getNumericalValueFromPixelColor(final int rgb, final String[] septs) {
 
-        Color c = new Color(rgb);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
+        final Color c = new Color(rgb);
+        final int red = c.getRed();
+        final int green = c.getGreen();
+        final int blue = c.getBlue();
 
         for (int l = 0; l < 3; l++) {
             int dist = -1;
@@ -240,13 +247,4 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
             septs[l] += Integer.toString(idx, 7);
         }
     }
-
-    public int[] getImageWidthAndHeight(final int byteArrayLength) {
-        int w = 2048;
-        int h = (int)(byteArrayLength / (float)w) + 1;
-        return new int[] {
-            w, h
-        };
-    }
-
 }

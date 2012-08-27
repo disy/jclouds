@@ -20,9 +20,17 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
     Color[] greyColors = new Color[] {
         Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
     };
+    
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 4;
 
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
+
+    @Override
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -92,14 +100,8 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
         return byteColors;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.imagegenerator.bytepainter.ByteToPixelPainter#getBytesFromPixels(java.awt.image.BufferedImage,
-     * java.util.ArrayList)
-     */
     @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();

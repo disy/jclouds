@@ -40,6 +40,7 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
 import org.testng.annotations.DataProvider;
@@ -50,10 +51,10 @@ import com.google.common.io.Files;
 public class ImageHostBlobStoreTest {
 
     /** The path to the test input file. */
-    private final static String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
+    private static final String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
         + File.separator + "Linie9C.pdf";
     /** The test blob. */
-    private final static byte[] RAWFILEBYTES;
+    private static final byte[] RAWFILEBYTES;
 
     static {
         try {
@@ -78,7 +79,7 @@ public class ImageHostBlobStoreTest {
             throws NoSuchAlgorithmException, CertificateException, IOException {
 
         File file = Files.createTempDir();
-
+        
         for (BytesToImagePainter pa : painters) {
             final ImageGenerator ig = new ImageGenerator(pa);
             final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(file), ig);
@@ -110,7 +111,7 @@ public class ImageHostBlobStoreTest {
         Object[][] returnVal = {
             {
                 BytesToImagePainter.class, new BytesToImagePainter[] {
-                    new SeptenaryLayeredBytesToImagePainter()
+                    new BinaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter()
                 }
             }
         };

@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
@@ -10,23 +33,32 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class BlackAndWhiteByteToPixelPainter.
+ * This Class offers a byte painter.
+ * 
+ * Numeral System: Binary
+ * Layers: 1
+ * 1 Byte = 8 Pixel
+ * 
+ * @author Wolfgang Miller
  */
 public class BinaryBytesToImagePainter implements BytesToImagePainter {
+    
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 8;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.imagegenerator.bytepainter.ByteToPixelPainter#saveBytesToPixels(java.awt.image.BufferedImage,
-     * byte[])
-     */
-    public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
+    @Override
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
+
+    @Override
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
         final Graphics g = bi.getGraphics();
+        g.setColor(Color.WHITE);
 
         int len = bs.length;
         int bsPos = 0;
@@ -44,7 +76,7 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
                 if (pix % 8 == 0) {
 
                     /* if picture is too small for next bytes return */
-                    if ((y == h - 1) && (x + 3 > w))
+                    if ((y == h - 1) && (x + 8 > w))
                         return bi;
 
                     if (bsPos >= len) {
@@ -56,11 +88,8 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
                     bw = getBinaryFromByte(currB);
                 }
 
-                if (bw[pos]) {
-                    g.setColor(Color.BLACK);
-                } else {
+                if (!bw[pos])
                     continue;
-                }
 
                 g.drawLine(x, y, x, y);
             }
@@ -77,12 +106,12 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
      */
     private boolean[] getBinaryFromByte(final byte b) {
         final int it = b & 0xFF;
-        String bin = Integer.toString(it, 2);
+        String bin = Integer.toBinaryString(it);
 
         while (bin.length() < 8) {
             bin = "0" + bin;
         }
-
+        
         final int l = bin.length();
         boolean[] bw = new boolean[l];
 
@@ -95,15 +124,13 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
     }
 
     @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
         final int h = img.getHeight();
 
-        String[] binary = new String[] {
-            "", "", ""
-        };
+        String binary = "";
 
         for (int y = 0; y < h; y++) {
 
@@ -113,18 +140,12 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                getHeptsFromPixel(img.getRGB(x, y), binary);
+                binary += getNumericalValueFromPixelColor(img.getRGB(x, y));
 
-                if (pix % 3 == 2) {
-
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(binary[i], 2);
-                        li.add(b);
-                    }
-
-                    binary = new String[] {
-                        "", "", ""
-                    };
+                if (pix % 8 == 7) {
+                    byte b = (byte)Integer.parseInt(binary, 2);
+                    li.add(b);
+                    binary = "";
                 }
             }
         }
@@ -132,21 +153,22 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
     }
 
     /**
-     * Gets the hepts from pixel.
+     * Extracts the numerical value from current pixel's RGB-value.
      * 
-     * @param pix
-     *            the pix
-     * @param hepts
-     *            the hepts
-     * @return the hepts from pixel
+     * @param rgb
+     *            The RGB-value of the current pixel.
+     * @return The binary-value.
      */
-    private void getHeptsFromPixel(final int pix, String[] hepts) {
+    private char getNumericalValueFromPixelColor(final int rgb) {
+        final Color c = new Color(rgb);
+        final int bl = c.getBlue() > 128 ? 1 : 0;
+        final int gr = c.getGreen() > 128 ? 1 : 0;
+        final int re = c.getRed() > 128 ? 1 : 0;
+        
 
-        Color c = new Color(pix);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
-
+        if (bl + gr + re >= 2) {
+            return '1';
+        }
+        return '0';
     }
-
 }

@@ -21,6 +21,14 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements BytesToI
 
     /** The colors. */
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(numberSystem);
+    
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 3;
+
+    @Override
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
 
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {

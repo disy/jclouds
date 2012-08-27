@@ -25,6 +25,14 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
         new Color(0f, 0f, 0f)
     };
 
+    /** Bytes needed per pixel. */
+    public final float BYTES_PER_PIXEL = 2;
+
+    @Override
+    public float bytesPerPixel() {
+        return BYTES_PER_PIXEL;
+    }
+    
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
 

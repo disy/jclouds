@@ -108,7 +108,7 @@ public class ImageGenerator {
 
     public int[] getImageWidthAndHeight(int byteArrayLength) {
         int w = 2048;
-        int h = (int)(byteArrayLength / (float)w) + 1;
+        int h = (int)(byteArrayLength * bp.bytesPerPixel() / (float)w) + 1;
         return new int[] {
             w, h
         };
