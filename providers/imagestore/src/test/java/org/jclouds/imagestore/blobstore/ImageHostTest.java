@@ -3,6 +3,7 @@
  */
 package org.jclouds.imagestore.blobstore;
 
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -57,8 +58,10 @@ public class ImageHostTest {
             assertTrue(host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, images[0]);
             assertTrue(host.imageExists(SET1, IMAGE1));
-//            BufferedImage img = host.downloadImage(SET1, IMAGE1);
-            // assertTrue(img.getGraphics().hashCode() == images[0].getGraphics().hashCode());
+            BufferedImage img = host.downloadImage(SET1, IMAGE1);
+            assertEquals(img.getHeight(), images[0].getHeight());
+            assertEquals(img.getWidth(), images[0].getWidth());
+            assertEquals(img.getGraphics().getColor(), images[0].getGraphics().getColor());
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             host.uploadImage(SET1, IMAGE1, images[0]);
