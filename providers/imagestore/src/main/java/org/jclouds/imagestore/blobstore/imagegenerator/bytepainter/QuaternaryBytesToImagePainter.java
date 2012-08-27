@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
@@ -10,23 +33,30 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class TetraGreyByteToPixelPainter.
+ * This Class offers a byte painter.
+ * 
+ * Numeral System: Quaternary
+ * Layers: 1
+ * 1 Byte = 4 Pixel
+ * 
+ * @author Wolfgang Miller
  */
 public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
+
+    /** The used numeral system. */
+    private final int NUMERAL_SYSTEM = 4;
+    /** Pixels needed for one Byte. */
+    private final float PIXELS_PER_BYTE = 4;
 
     /** The grey colors. */
     Color[] greyColors = new Color[] {
         Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
     };
-    
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 4;
 
     @Override
     public float bytesPerPixel() {
-        return BYTES_PER_PIXEL;
+        return PIXELS_PER_BYTE;
     }
 
     @Override
@@ -81,19 +111,19 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
      */
     private int[] getGreyFromByte(final byte b) {
         final int it = b & 0xFF;
-        String tetra = Integer.toString(it, 4);
-        int[] byteColors = new int[4];
+        String quaternary = Integer.toString(it, NUMERAL_SYSTEM);
+        int[] byteColors = new int[NUMERAL_SYSTEM];
         final int l = 4;
 
-        while (tetra.length() < l) {
-            tetra = "0" + tetra;
+        while (quaternary.length() < l) {
+            quaternary = "0" + quaternary;
         }
 
         for (int i = 0; i < l; i++) {
 
-            String val = tetra.substring(i, i + 1);
+            String val = quaternary.substring(i, i + 1);
 
-            int dc = Integer.parseInt(val, 4);
+            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
             byteColors[i] = dc;
         }
@@ -106,10 +136,9 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
         final int h = img.getHeight();
+        final int mod = (int)(PIXELS_PER_BYTE - 1);
 
-        String[] hepts = new String[] {
-            "", "", ""
-        };
+        String quaternary = "";
 
         for (int y = 0; y < h; y++) {
 
@@ -119,18 +148,12 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                getHeptsFromPixel(img.getRGB(x, y), hepts);
+                quaternary += getNumericalValueFromPixelColor(img.getRGB(x, y));
 
-                if (pix % 3 == 2) {
-
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(hepts[i], 7);
-                        li.add(b);
-                    }
-
-                    hepts = new String[] {
-                        "", "", ""
-                    };
+                if (pix % PIXELS_PER_BYTE == mod) {
+                    byte b = (byte)Integer.parseInt(quaternary, NUMERAL_SYSTEM);
+                    li.add(b);
+                    quaternary = "";
                 }
             }
         }
@@ -138,20 +161,34 @@ public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
     }
 
     /**
-     * Gets the hepts from pixel.
+     * Extracts the hexadecimal value from current pixel's RGB-value.
      * 
-     * @param pix
-     *            the pix
-     * @param hepts
-     *            the hepts
-     * @return the hepts from pixel
+     * @param rgb
+     *            The RGB-value of the current pixel.
+     * @return The hexadecimal value.
      */
-    private void getHeptsFromPixel(final int pix, String[] hepts) {
+    private String getNumericalValueFromPixelColor(final int rgb) {
+        final Color c = new Color(rgb);
+        final int red = c.getRed();
+        final int green = c.getGreen();
+        final int blue = c.getBlue();
 
-        Color c = new Color(pix);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
+        int dist = -1;
+        int idx = -1;
 
+        for (int i = 0; i < greyColors.length; i++) {
+            final int cred = greyColors[i].getRed();
+            final int cgreen = greyColors[i].getGreen();
+            final int cblue = greyColors[i].getBlue();
+
+            int currDist = Math.abs(cred - red) + Math.abs(cgreen - green) + Math.abs(cblue - blue);
+
+            if (dist == -1 || currDist < dist) {
+                dist = currDist;
+                idx = i;
+            }
+        }
+
+        return Integer.toString(idx, NUMERAL_SYSTEM);
     }
 }

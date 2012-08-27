@@ -39,12 +39,12 @@ public class HexadecimalLayeredBytesToImagePainter implements BytesToImagePainte
     /** The threshold. */
     private final int threshold = 15;
     
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 0.5f;
+    /** Pixels needed for one Byte. */
+    private final float PIXELS_PER_BYTE = 0.5f;
 
     @Override
     public float bytesPerPixel() {
-        return BYTES_PER_PIXEL;
+        return PIXELS_PER_BYTE;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class HexadecimalLayeredBytesToImagePainter implements BytesToImagePainte
     }
 
     @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
 
@@ -147,7 +147,7 @@ public class HexadecimalLayeredBytesToImagePainter implements BytesToImagePainte
      *            the pix
      * @return the hex from pixel
      */
-    private String getHexFromPixel(int pix) {
+    private String getHexFromPixel(final int pix) {
         int th = threshold;
 
         Color c = new Color(pix);

@@ -43,6 +43,11 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  * @author Wolfgang Miller
  */
 public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
+    
+    /** The used numeral system. */
+    private final int NUMERAL_SYSTEM = 16;
+    /** Pixels needed for one Byte. */
+    private final float PIXELS_PER_BYTE = 2;
 
     /** The colors. */
     private final Color[] colors = new Color[] {
@@ -52,17 +57,14 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
         new Color(0.5f, 1f, 0f), new Color(1f, 1f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(1f, 0f, 0f),
         new Color(0f, 0f, 0f)
     };
-
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 2;
-
+    
     @Override
     public float bytesPerPixel() {
-        return BYTES_PER_PIXEL;
+        return PIXELS_PER_BYTE;
     }
 
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -83,7 +85,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
     }
 
     @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
 
@@ -99,7 +101,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
 
                 if (x % 2 == 1) {
 
-                    byte b = (byte)Integer.parseInt(hex, 16);
+                    byte b = (byte)Integer.parseInt(hex, NUMERAL_SYSTEM);
                     li.add(b);
                     hex = "";
                 }
@@ -112,7 +114,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
     /**
      * Extracts the hexadecimal value from current pixel's RGB-value.
      * 
-     * @param RGB
+     * @param rgb
      *            The RGB-value of the current pixel.
      * @return The hexadecimal value.
      */
@@ -139,7 +141,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
             }
         }
 
-        return Integer.toHexString(idx);
+        return Integer.toString(idx, NUMERAL_SYSTEM);
     }
 
     /**
@@ -156,12 +158,12 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
      */
     private void drawByteToColoredImage(final Graphics g, final int x, final int y, final byte b) {
         final int it = b & 0xFF;
-        final String hex = Integer.toString(it, 16);
+        final String hex = Integer.toString(it, NUMERAL_SYSTEM);
         final int l = hex.length();
 
         if (l == 1) {
 
-            int dc = Integer.parseInt(hex, 16);
+            int dc = Integer.parseInt(hex, NUMERAL_SYSTEM);
 
             g.setColor(colors[0]);
             g.drawLine(x, y, x, y);
@@ -175,7 +177,7 @@ public class HexadecimalBytesToImagePainter implements BytesToImagePainter {
 
                 String val = hex.substring(i, i + 1);
 
-                int dc = Integer.parseInt(val, 16);
+                int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
                 g.setColor(colors[dc]);
 

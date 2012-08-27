@@ -42,6 +42,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
 import org.testng.annotations.DataProvider;
@@ -112,7 +113,7 @@ public class ImageHostBlobStoreTest {
         Object[][] returnVal = {
             {
                 BytesToImagePainter.class, new BytesToImagePainter[] {
-                    new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter()
+                    new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter()
                 }
             }
         };

@@ -44,12 +44,14 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  */
 public class BinaryBytesToImagePainter implements BytesToImagePainter {
 
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 8;
+    /** The used numeral system. */
+    private final int NUMERAL_SYSTEM = 2;
+    /** Pixels needed for one Byte. */
+    private final float PIXELS_PER_BYTE = 8;
 
     @Override
     public float bytesPerPixel() {
-        return BYTES_PER_PIXEL;
+        return PIXELS_PER_BYTE;
     }
 
     @Override
@@ -106,7 +108,7 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
      */
     private boolean[] getBinaryFromByte(final byte b) {
         final int it = b & 0xFF;
-        String bin = Integer.toBinaryString(it);
+        String bin = Integer.toString(it, NUMERAL_SYSTEM);
 
         while (bin.length() < 8) {
             bin = "0" + bin;
@@ -143,7 +145,7 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
                 binary += getNumericalValueFromPixelColor(img.getRGB(x, y));
 
                 if (pix % 8 == 7) {
-                    byte b = (byte)Integer.parseInt(binary, 2);
+                    byte b = (byte)Integer.parseInt(binary, NUMERAL_SYSTEM);
                     li.add(b);
                     binary = "";
                 }

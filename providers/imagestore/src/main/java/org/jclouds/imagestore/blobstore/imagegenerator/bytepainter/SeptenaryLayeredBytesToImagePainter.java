@@ -43,11 +43,14 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  * @author Wolfgang Miller
  */
 public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter {
+    
+    /** The used numeral system. */
+    private final int NUMERAL_SYSTEM = 7;
+    /** Bytes needed per pixel. */
+    private final float BYTES_PER_PIXEL = 1;
 
     /** The different pixel colors. */
-    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(7);
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 1;
+    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
     public float bytesPerPixel() {
@@ -128,7 +131,7 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
      */
     private int[] getColorsFromByte(final byte b, final int layer) {
         final int it = b & 0xFF;
-        String hept = Integer.toString(it, 7);
+        String hept = Integer.toString(it, NUMERAL_SYSTEM);
         int[] byteColors = new int[3];
 
         while (hept.length() < 3) {
@@ -141,7 +144,7 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
 
             String val = hept.substring(i, i + 1);
 
-            int dc = Integer.parseInt(val, 7);
+            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
             byteColors[i] = colors[layer][dc].getRGB();
 
@@ -173,7 +176,7 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
                 if (pix % 3 == 2) {
 
                     for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(septs[i], 7);
+                        byte b = (byte)Integer.parseInt(septs[i], NUMERAL_SYSTEM);
                         al.add(b);
                     }
 
@@ -244,7 +247,7 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
                     }
                 }
             }
-            septs[l] += Integer.toString(idx, 7);
+            septs[l] += Integer.toString(idx, NUMERAL_SYSTEM);
         }
     }
 }

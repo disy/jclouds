@@ -16,14 +16,19 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  */
 public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter {
 
+    /** The used numeral system. */
+    private final int NUMERAL_SYSTEM = 4;
+    /** Pixels needed for one Byte. */
+    private final float PIXELS_PER_BYTE = 4/3f;
+
+    
     /** The colors. */
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(4);
-    /** Bytes needed per pixel. */
-    public final float BYTES_PER_PIXEL = 4 / 3f;
+    
 
     @Override
     public float bytesPerPixel() {
-        return BYTES_PER_PIXEL;
+        return PIXELS_PER_BYTE;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
 
             String val = tetra.substring(i, i + 1);
 
-            int dc = Integer.parseInt(val, 4);
+            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
             byteColors[i] = colors[layer][dc].getRGB();
         }
@@ -124,7 +129,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                 if (x % 4 == 3) {
 
                     for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(tetras[i], 4);
+                        byte b = (byte)Integer.parseInt(tetras[i], NUMERAL_SYSTEM);
                         li.add(b);
                     }
 
@@ -197,7 +202,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                 }
             }
 
-            quarternarys[l] += Integer.toString(idx, 4);
+            quarternarys[l] += Integer.toString(idx, NUMERAL_SYSTEM);
         }
     }
 }
