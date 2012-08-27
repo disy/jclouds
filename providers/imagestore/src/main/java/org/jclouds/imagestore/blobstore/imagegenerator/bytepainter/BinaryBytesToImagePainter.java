@@ -43,7 +43,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  * @author Wolfgang Miller
  */
 public class BinaryBytesToImagePainter implements BytesToImagePainter {
-    
+
     /** Bytes needed per pixel. */
     public final float BYTES_PER_PIXEL = 8;
 
@@ -98,11 +98,11 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
     }
 
     /**
-     * Gets the binary from byte.
+     * Returns a boolean array which stands for the binary representation of the given byte.
      * 
      * @param b
-     *            the b
-     * @return the binary from byte
+     *            The byte to be represented in the boolean array.
+     * @return The boolean array which represents the given byte.
      */
     private boolean[] getBinaryFromByte(final byte b) {
         final int it = b & 0xFF;
@@ -111,7 +111,7 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
         while (bin.length() < 8) {
             bin = "0" + bin;
         }
-        
+
         final int l = bin.length();
         boolean[] bw = new boolean[l];
 
@@ -164,7 +164,6 @@ public class BinaryBytesToImagePainter implements BytesToImagePainter {
         final int bl = c.getBlue() > 128 ? 1 : 0;
         final int gr = c.getGreen() > 128 ? 1 : 0;
         final int re = c.getRed() > 128 ? 1 : 0;
-        
 
         if (bl + gr + re >= 2) {
             return '1';
