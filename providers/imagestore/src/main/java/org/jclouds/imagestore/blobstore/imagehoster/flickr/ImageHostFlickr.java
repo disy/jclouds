@@ -110,7 +110,7 @@ public class ImageHostFlickr implements ImageHost {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return "";
     }
 
     /**
