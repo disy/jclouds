@@ -31,7 +31,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements BytesToI
     }
 
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage bi, byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, byte[] bs) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();

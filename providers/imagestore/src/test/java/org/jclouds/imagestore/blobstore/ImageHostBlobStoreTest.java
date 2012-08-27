@@ -43,6 +43,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
 import org.testng.annotations.DataProvider;
@@ -97,12 +98,13 @@ public class ImageHostBlobStoreTest {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             reTestBlob.getPayload().writeTo(bos);
             byte[] bss = bos.toByteArray();
-
+            bos.close();
+            
             assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
                 .toString(), Arrays.equals(RAWFILEBYTES, bss));
         }
     }
-
+    
     /**
      * 
      * @return
@@ -113,7 +115,7 @@ public class ImageHostBlobStoreTest {
         Object[][] returnVal = {
             {
                 BytesToImagePainter.class, new BytesToImagePainter[] {
-                    new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter()
+                    new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter()
                 }
             }
         };

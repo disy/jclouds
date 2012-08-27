@@ -9,6 +9,7 @@ import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
 import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.imagestore.blobstore.ImageBlobStore;
 import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 
@@ -17,7 +18,7 @@ public class BlobTest {
 
     public static void main(String args[]) throws IOException{
        
-        ImageBlobStore ib = new ImageBlobStore(new ImageHostFlickr(), new ImageGenerator(new SeptenaryLayeredBytesToImagePainter()));
+        ImageBlobStore ib = new ImageBlobStore(new ImageHostFlickr(), new ImageGenerator(new QuaternaryLayeredBytesToImagePainter()));
         BlobBuilder bb = null;
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
@@ -29,7 +30,7 @@ public class BlobTest {
             e.printStackTrace();
         }
         String name = Long.toString(System.currentTimeMillis()) + "_image";
-        bb.payload(new byte[]{23,2, 5, 2, 5, 99, 13, -12, 12, 3, 27, -44});
+        bb.payload(new byte[]{23,2, 5, 2, 5, 99, 13, -12, 12, 3, 27, -44, 2, 23, 14, 1, 5, 13, 123, 34, 67, 23, 16, 88, 12, 123, 59,7,9,7});
         bb.name(name);
         ib.putBlob("Test", bb.build());
         Blob bbb = ib.getBlob("Test", name);

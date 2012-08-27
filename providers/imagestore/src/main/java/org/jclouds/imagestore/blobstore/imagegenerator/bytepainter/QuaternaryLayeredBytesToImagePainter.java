@@ -1,5 +1,28 @@
-/*
+/**
+ * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
+ * All rights reserved.
  * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of the University of Konstanz nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
 
@@ -10,21 +33,25 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class TetralLayeredByteToPixelPainter.
+ * This Class offers a byte painter.
+ * 
+ * Numeral System: Quaternary
+ * Layers: 3
+ * 1 Byte = 4/3 Pixel
+ * 
+ * @author Wolfgang Miller
  */
 public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter {
 
     /** The used numeral system. */
     private final int NUMERAL_SYSTEM = 4;
     /** Pixels needed for one Byte. */
-    private final float PIXELS_PER_BYTE = 4/3f;
+    private final float PIXELS_PER_BYTE = 4 / 3f;
 
-    
     /** The colors. */
-    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(4);
-    
+    private final Color[][] colors = BytesToImagePainterHelper
+        .generateUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
     public float bytesPerPixel() {
@@ -32,11 +59,11 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
     }
 
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
 
-        final int w = bi.getWidth();
-        final int h = bi.getHeight();
-        final Graphics g = bi.getGraphics();
+        final int w = image.getWidth();
+        final int h = image.getHeight();
+        final Graphics g = image.getGraphics();
 
         final int len = bs.length;
         int[] currByteColor = null;
@@ -49,20 +76,20 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                     if (bp >= len)
                         break;
 
-                    byte b = bs[bp++];
+                    final byte b = bs[bp++];
 
-                    int[] bc = getColorFromByte(b, layer);
+                    int[] bc = getColorsFromByte(b, layer);
 
                     if (currByteColor == null) {
                         currByteColor = bc;
-                        continue;
+                        
+                    } else {                        
+                        for (int c = 0; c < 4; c++) {
+                            currByteColor[c] = currByteColor[c] + bc[c];
+                        }
                     }
 
-                    for (int c = 0; c < 4; c++) {
-                        currByteColor[c] = currByteColor[c] + bc[c];
-                    }
-
-                    if (layer == 2) {
+                    if (layer == 2 || bp == len) {
                         for (int c = 0; c < 4; c++) {
                             Color nc = new Color(currByteColor[c]);
 
@@ -76,30 +103,28 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                 }
             }
         }
-        return bi;
-
+        return image;
     }
 
     /**
-     * Gets the color from byte.
+     * Calculates the colors for the current byte.
      * 
      * @param b
-     *            the b
+     *            The current byte.
      * @param layer
-     *            the layer
-     * @return the color from byte
+     *            The current layer.
+     * @return The byte's colors.
      */
-    private int[] getColorFromByte(final byte b, final int layer) {
+    private int[] getColorsFromByte(final byte b, final int layer) {
         final int it = b & 0xFF;
-        String tetra = Integer.toString(it, 4);
-        int[] byteColors = new int[4];
-        final int l = 4;
+        String tetra = Integer.toString(it, NUMERAL_SYSTEM);
+        final int[] byteColors = new int[4];
 
-        while (tetra.length() < l) {
+        while (tetra.length() < 4) {
             tetra = "0" + tetra;
         }
 
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < 4; i++) {
 
             String val = tetra.substring(i, i + 1);
 
@@ -113,48 +138,53 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
 
-        final ArrayList<Byte> li = new ArrayList<Byte>();
+        final ArrayList<Byte> al = new ArrayList<Byte>();
+
         final int w = img.getWidth();
         final int h = img.getHeight();
 
-        String[] tetras = new String[] {
+        String[] quaters = new String[] {
             "", "", ""
         };
 
         for (int y = 0; y < h; y++) {
+
+            final int hpix = w * y;
+
             for (int x = 0; x < w; x++) {
 
-                getQuaternarysFromPixel(img.getRGB(x, y), tetras);
+                final int pix = hpix + x;
 
-                if (x % 4 == 3) {
+                getNumericalValueFromPixelColor(img.getRGB(x, y), quaters);
 
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(tetras[i], NUMERAL_SYSTEM);
-                        li.add(b);
+                if (pix % 4 == 3) {
+
+                    for (int layer = 0; layer < 3; layer++) {
+                        byte b = (byte)Integer.parseInt(quaters[layer], NUMERAL_SYSTEM);
+                        al.add(b);
                     }
 
-                    tetras = new String[] {
+                    quaters = new String[] {
                         "", "", ""
                     };
                 }
             }
         }
 
-        return BytesToImagePainterHelper.arrayListToByteArray(li);
+        return BytesToImagePainterHelper.arrayListToByteArray(al);
     }
 
     /**
-     * Gets the tetras from pixel.
+     * Extracts the numerical value from current pixel's RGB-value.
      * 
-     * @param pix
-     *            the pix
-     * @param quarternarys
-     *            the tetras
-     * @return the tetras from pixel
+     * @param rgb
+     *            The RGB-value of the current pixel.
+     * @param quaters
+     *            Array to be filled with the numerical values of the current pixel.
      */
-    private void getQuaternarysFromPixel(final int pix, final String[] quarternarys) {
+    private void getNumericalValueFromPixelColor(final int rgb, final String[] quaters) {
 
-        Color c = new Color(pix);
+        Color c = new Color(rgb);
         int red = c.getRed();
         int green = c.getGreen();
         int blue = c.getBlue();
@@ -202,7 +232,7 @@ public class QuaternaryLayeredBytesToImagePainter implements BytesToImagePainter
                 }
             }
 
-            quarternarys[l] += Integer.toString(idx, NUMERAL_SYSTEM);
+            quaters[l] += Integer.toString(idx, NUMERAL_SYSTEM);
         }
     }
 }

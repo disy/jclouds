@@ -38,12 +38,6 @@ import java.util.zip.Deflater;
  */
 public class ImageGenerator {
 
-    /** The image width. */
-    private int IMAGE_WIDTH = 5;
-
-    /** The image height. */
-    private int IMAGE_HEIGHT = 2;
-
     /** The bp. */
     private final BytesToImagePainter bp;
 
@@ -97,32 +91,57 @@ public class ImageGenerator {
     }
 
     /**
-     * Creates the buffered image.
+     * Creates a new buffered image.
      * 
-     * @return the buffered image
+     * @param width
+     *            The width.
+     * @param height
+     *            The height.
+     * @return The created buffered image
      */
-    BufferedImage createBufferedImage() {
-        BufferedImage img = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
+    BufferedImage createBufferedImage(final int width, final int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         return img;
     }
 
-    public int[] getImageWidthAndHeight(int byteArrayLength) {
+    /**
+     * Calculates the width and height for images.
+     * 
+     * @param byteArrayLength
+     *            The length of the byte array to store in an image.
+     * @return An Array with width and height.
+     */
+    private int[] getImageWidthAndHeight(final int byteArrayLength) {
         int w = 2048;
         int h = (int)(byteArrayLength * bp.bytesPerPixel() / (float)w) + 1;
+
         return new int[] {
             w, h
         };
     }
 
-    public BufferedImage createImageFromBytes(byte[] bs) {
+    /**
+     * Creates an image from given bytes.
+     * 
+     * @param bs
+     *            The bytes.
+     * @return The image created from the given bytes.
+     */
+
+    public BufferedImage createImageFromBytes(final byte[] bs) {
         int[] dim = getImageWidthAndHeight(bs.length);
-        this.IMAGE_WIDTH = dim[0];
-        this.IMAGE_HEIGHT = dim[1];
-        return bp.storeBytesInImage(createBufferedImage(), saveArrayLengthInFirst4Bytes(bs));
+        return bp.storeBytesInImage(createBufferedImage(dim[0], dim[1]), saveArrayLengthInFirst4Bytes(bs));
     }
 
-    public byte[] getBytesFromImage(BufferedImage img) {
-        return getOriginalArray(bp.getBytesFromImage(img));
+    /**
+     * Extracts bytes from given image.
+     * 
+     * @param image
+     *            The image.
+     * @return The bytes extracted from the given image.
+     */
+    public byte[] getBytesFromImage(final BufferedImage image) {
+        return getOriginalArray(bp.getBytesFromImage(image));
     }
 
     /**

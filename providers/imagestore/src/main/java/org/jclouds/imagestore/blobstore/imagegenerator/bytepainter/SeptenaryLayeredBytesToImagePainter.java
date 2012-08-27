@@ -58,11 +58,11 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
     }
 
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage img, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
 
-        final int w = img.getWidth();
-        final int h = img.getHeight();
-        final Graphics g = img.getGraphics();
+        final int w = image.getWidth();
+        final int h = image.getHeight();
+        final Graphics g = image.getGraphics();
 
         int[] currByteColor = null;
         int len = bs.length;
@@ -76,7 +76,7 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
                 final int pix = hpix + x;
                 final int pos = pix % 3;
 
-                if (pix % 3 == 0) {
+                if (pos == 0) {
 
                     currByteColor = null;
 
@@ -86,11 +86,11 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
 
                         /* if picture is too small for next bytes return */
                         if ((y == h - 1) && (x + 3 > w))
-                            return img;
+                            return image;
 
                         if (bsPos >= len) {
                             if (layer == 0)
-                                return img;
+                                return image;
                             else
                                 break;
                         }
@@ -117,32 +117,30 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
 
             }
         }
-        return img;
+        return image;
     }
 
     /**
      * Calculates the colors for the current byte.
      * 
      * @param b
-     *            the current byte
+     *            The current byte.
      * @param layer
-     *            the current layer
-     * @return the byte's colors
+     *            The current layer.
+     * @return The byte's colors.
      */
     private int[] getColorsFromByte(final byte b, final int layer) {
         final int it = b & 0xFF;
-        String hept = Integer.toString(it, NUMERAL_SYSTEM);
+        String sept = Integer.toString(it, NUMERAL_SYSTEM);
         int[] byteColors = new int[3];
 
-        while (hept.length() < 3) {
-            hept = "0" + hept;
+        while (sept.length() < 3) {
+            sept = "0" + sept;
         }
 
-        final int l = hept.length();
+        for (int i = 0; i < 3; i++) {
 
-        for (int i = 0; i < l; i++) {
-
-            String val = hept.substring(i, i + 1);
+            String val = sept.substring(i, i + 1);
 
             int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
@@ -175,8 +173,8 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
 
                 if (pix % 3 == 2) {
 
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(septs[i], NUMERAL_SYSTEM);
+                    for (int layer = 0; layer < 3; layer++) {
+                        byte b = (byte)Integer.parseInt(septs[layer], NUMERAL_SYSTEM);
                         al.add(b);
                     }
 
@@ -194,9 +192,9 @@ public class SeptenaryLayeredBytesToImagePainter implements BytesToImagePainter 
      * Extracts the numerical value from current pixel's RGB-value.
      * 
      * @param rgb
-     *            the RGB-value of the current pixel
+     *            The RGB-value of the current pixel.
      * @param septs
-     *            array to be filled with the numerical values of the current pixel
+     *            Array to be filled with the numerical values of the current pixel.
      */
     private void getNumericalValueFromPixelColor(final int rgb, final String[] septs) {
 
