@@ -45,9 +45,9 @@ import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter {
     
     /** The used numeral system. */
-    private final int NUMERAL_SYSTEM = 7;
+    private static final int NUMERAL_SYSTEM = 7;
     /** Bytes needed per pixel. */
-    private final float BYTES_PER_PIXEL = 1;
+    private static final float BYTES_PER_PIXEL = 1;
 
     /** The different pixel colors. */
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(NUMERAL_SYSTEM);

@@ -45,9 +45,9 @@ import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainter {
 
     /** The used numeral system. */
-    private final int NUMERAL_SYSTEM = 4;
+    private static final int NUMERAL_SYSTEM = 4;
     /** Pixels needed for one Byte. */
-    private final float PIXELS_PER_BYTE = 4 / 3f;
+    private static final float PIXELS_PER_BYTE = 4 / 3f;
 
     /** The colors. */
     private final Color[][] colors = BytesToImagePainterHelper
@@ -82,8 +82,8 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
 
                     if (currByteColor == null) {
                         currByteColor = bc;
-                        
-                    } else {                        
+
+                    } else {
                         for (int c = 0; c < 4; c++) {
                             currByteColor[c] = currByteColor[c] + bc[c];
                         }

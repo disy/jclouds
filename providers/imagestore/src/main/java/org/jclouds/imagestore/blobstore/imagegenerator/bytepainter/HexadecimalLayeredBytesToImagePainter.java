@@ -40,7 +40,7 @@ public class HexadecimalLayeredBytesToImagePainter implements IBytesToImagePaint
     private final int threshold = 15;
     
     /** Pixels needed for one Byte. */
-    private final float PIXELS_PER_BYTE = 0.5f;
+    private static final float PIXELS_PER_BYTE = 0.5f;
 
     @Override
     public float bytesPerPixel() {
