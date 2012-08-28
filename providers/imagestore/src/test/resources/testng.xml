@@ -1,0 +1,6 @@
+<suite name="EntireSuite">
+	<suite-files>
+		<suite-file path="./localonly.xml" />
+		<suite-file path="./remoteonly.xml" />
+	</suite-files>
+</suite>

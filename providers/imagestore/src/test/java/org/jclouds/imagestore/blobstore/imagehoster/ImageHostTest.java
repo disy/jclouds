@@ -50,8 +50,17 @@ public class ImageHostTest {
      *            to be tested with
      * @throws IOException
      */
-    @Test(dataProvider = "instantiateHosts")
-    public void testImage(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+    @Test(dataProvider = "fileHost", groups = "localTests")
+    public void testImageLocal(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+        checkImage(clazz, pHandlers);
+    }
+
+    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
+    public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+        checkImage(clazz, pHandlers);
+    }
+
+    private void checkImage(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
         BufferedImage[] images = createBufferedImage();
 
         for (IImageHost host : pHandlers) {
@@ -78,7 +87,6 @@ public class ImageHostTest {
             host.deleteImageSet(SET1);
             assertFalse(host.imageSetExists(SET1));
         }
-
     }
 
     /**
@@ -91,8 +99,17 @@ public class ImageHostTest {
      * @param pHandlers
      *            to be tested with
      */
-    @Test(dataProvider = "instantiateHosts")
-    public void testImageHostSets(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+    @Test(dataProvider = "fileHost", groups = "localTests")
+    public void testImageHostSetsLocal(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+        check(clazz, pHandlers);
+    }
+    
+    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
+    public void testImageHostSetsRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+        check(clazz, pHandlers);
+    }
+
+    private void check(Class<IImageHost> clazz, IImageHost[] pHandlers) {
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
             assertFalse(host.imageSetExists(SET1));
@@ -103,18 +120,26 @@ public class ImageHostTest {
         }
     }
 
-    /**
-     * Providing different implementations of the {@link IImageHost} as Dataprovider to the test class.
-     * 
-     * @return different classes of the {@link IImageHost}
-     */
-    @DataProvider(name = "instantiateHosts")
-    public Object[][] instantiateHosts() {
+    @DataProvider(name = "fileHost")
+    public Object[][] fileHost() {
 
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
                     new ImageHostFile(Files.createTempDir()), new ImageHostFlickr()
+                }
+            }
+        };
+        return returnVal;
+    }
+
+    @DataProvider(name = "remoteHosts")
+    public Object[][] remoteHosts() {
+
+        Object[][] returnVal = {
+            {
+                IImageHost.class, new IImageHost[] {
+                    new ImageHostFlickr()
                 }
             }
         };

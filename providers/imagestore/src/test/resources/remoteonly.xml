@@ -1,0 +1,15 @@
+<suite name="EntireSuite">
+	<test name="local">
+		<groups>
+			<run>
+				<exclude name="localTests" />
+				<include name="remoteTests" />
+			</run>
+		</groups>
+		<packages>
+			<package name="org.jclouds.imagestore.blobstore.imagegenerator" />
+			<package name="org.jclouds.imagestore.blobstore.imagehoster" />
+		</packages>
+
+	</test>
+</suite>

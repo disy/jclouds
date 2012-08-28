@@ -46,6 +46,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryByt
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -69,18 +70,70 @@ public class ImageGeneratorTest {
         }
     }
 
-    /**
-     * 
-     * @param clazz
-     * @param pHandlers
-     * @throws CertificateException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     */
-    @Test(dataProvider = "instantiateBytePainters")
-    public void testByteRepresentation(Class<IBytesToImagePainter> painterClazz,
+    @Test(dataProvider = "remoteHostsAllPainters", groups="remoteTests")
+    public void testByteRepresentationRemoteHosts(Class<IBytesToImagePainter> painterClazz,
         IBytesToImagePainter[] painters, Class<IImageHost> hostClazz, IImageHost[] hosts)
         throws NoSuchAlgorithmException, CertificateException, IOException {
+        check(painterClazz, painters, hostClazz, hosts);
+    }
+    
+    @Test(dataProvider = "fileHostAllPainters", groups="localTests")
+    public void testByteRepresentationOnFileHost(Class<IBytesToImagePainter> painterClazz,
+        IBytesToImagePainter[] painters, Class<IImageHost> hostClazz, IImageHost[] hosts)
+        throws NoSuchAlgorithmException, CertificateException, IOException {
+        check(painterClazz, painters, hostClazz, hosts);
+    }
+
+    public void clean(IImageHost host) {
+        host.clearImageSet(CONTAINER);
+        host.deleteImageSet(CONTAINER);
+    }
+
+    
+    @DataProvider(name = "fileHostAllPainters")
+    public Object[][] fileHostAllPainters() {
+
+        Object[][] returnVal =
+            {
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new QuaternaryLayeredBytesToImagePainter()
+                    }, IImageHost.class, new IImageHost[] {
+                        new ImageHostFile(Files.createTempDir())
+                    }
+                }
+            };
+        return returnVal;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    @DataProvider(name = "remoteHostsAllPainters")
+    public Object[][] remoteHostsAllPainters() {
+
+        Object[][] returnVal =
+            {
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new QuaternaryLayeredBytesToImagePainter()
+                    }, IImageHost.class, new IImageHost[] {new ImageHostFlickr()
+                    }
+                }
+            };
+        return returnVal;
+    }
+
+    private void check(Class<IBytesToImagePainter> painterClazz, IBytesToImagePainter[] painters,
+        Class<IImageHost> hostClazz, IImageHost[] hosts) throws NoSuchAlgorithmException,
+        CertificateException, IOException {
 
         for (IImageHost host : hosts) {
             clean(host);
@@ -106,34 +159,6 @@ public class ImageGeneratorTest {
             }
             clean(host);
         }
-    }
-
-    public void clean(IImageHost host) {
-        host.clearImageSet(CONTAINER);
-        host.deleteImageSet(CONTAINER);
-    }
-
-    /**
-     * 
-     * @return
-     */
-    @DataProvider(name = "instantiateBytePainters")
-    public Object[][] instantiateBytePainters() {
-
-        Object[][] returnVal =
-            {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
-                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new QuaternaryLayeredBytesToImagePainter()
-                    }, IImageHost.class, new IImageHost[] {
-                        new ImageHostFile(Files.createTempDir())
-                    }
-                }
-            };
-        return returnVal;
     }
 
     /**
