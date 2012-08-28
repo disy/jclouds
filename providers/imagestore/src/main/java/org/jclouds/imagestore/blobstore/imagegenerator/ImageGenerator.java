@@ -39,7 +39,7 @@ import java.util.zip.Deflater;
 public class ImageGenerator {
 
     /** The bp. */
-    private final BytesToImagePainter bp;
+    private final IBytesToImagePainter bp;
 
     /**
      * Instantiates a new image generator.
@@ -47,7 +47,7 @@ public class ImageGenerator {
      * @param bytePainter
      *            the byte painter to be used
      */
-    public ImageGenerator(final BytesToImagePainter bytePainter) {
+    public ImageGenerator(final IBytesToImagePainter bytePainter) {
         bp = bytePainter;
     }
 

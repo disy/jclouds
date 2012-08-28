@@ -76,12 +76,12 @@ public class ImageGeneratorTest {
      */
     @Test(dataProvider = "instantiateBytePainters")
     public void
-        testByteRepresentation(final Class<BytesToImagePainter> clazz, BytesToImagePainter[] painters)
+        testByteRepresentation(final Class<IBytesToImagePainter> clazz, IBytesToImagePainter[] painters)
             throws NoSuchAlgorithmException, CertificateException, IOException {
 
         File file = Files.createTempDir();
 
-        for (BytesToImagePainter pa : painters) {
+        for (IBytesToImagePainter pa : painters) {
             final ImageGenerator ig = new ImageGenerator(pa);
             final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(file), ig);
             final String blobName = "blob.png";
@@ -113,8 +113,8 @@ public class ImageGeneratorTest {
         Object[][] returnVal =
             {
                 {
-                    BytesToImagePainter.class,
-                    new BytesToImagePainter[] {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
                         new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()

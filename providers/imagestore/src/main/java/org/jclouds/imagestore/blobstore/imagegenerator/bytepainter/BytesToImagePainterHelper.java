@@ -32,14 +32,14 @@ import java.util.ArrayList;
 /**
  * This Class offers helper methods for the byte painters.
  * 
- * @author Wolfgang Miller
+ * @author Wolfgang Miller, University of Konstanz
  */
-public class BytesToImagePainterHelper {
+public final class BytesToImagePainterHelper {
     
     /**
      * Protected constructor. Protects helper class from being instantiated.
      */
-    protected BytesToImagePainterHelper() { };
+    private BytesToImagePainterHelper() { };
 
     /**
      * Returns a 2-dimensional array. The first dimension stands .
