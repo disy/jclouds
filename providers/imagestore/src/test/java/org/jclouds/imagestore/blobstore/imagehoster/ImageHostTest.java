@@ -23,14 +23,19 @@ import org.testng.annotations.Test;
 import com.google.common.io.Files;
 
 /**
+ * This class provides tests for the image host functionalities.
+ * 
  * @author Sebastian Graf, University of Konstanz
  * 
  */
 public class ImageHostTest {
 
-    private final static String SET1 = "set1";
-    private final static String IMAGE1 = "image1";
-    private final static String IMAGE2 = "image2";
+    /** The image set name. */
+    private static final String SET1 = "set1";
+    /** The first test image. */
+    private static final String IMAGE1 = "image1";
+    /** The second test image. */
+    private static final String IMAGE2 = "image2";
 
     /**
      * Test method for {@link org.jclouds.imagestore.blobstore.IImageHost#ImageHostFile(java.io.File)} and
@@ -49,18 +54,35 @@ public class ImageHostTest {
      * @param pHandlers
      *            to be tested with
      * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * 
      */
     @Test(dataProvider = "fileHost", groups = "localTests")
-    public void testImageLocal(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+    public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
+        throws IOException {
         checkImage(clazz, pHandlers);
     }
 
+    /**
+     * 
+     * @param clazz
+     * @param pHandlers
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test(dataProvider = "remoteHosts", groups = "remoteTests")
     public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
         checkImage(clazz, pHandlers);
     }
 
-    private void checkImage(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+    /**
+     * The image checks.
+     * 
+     * @param clazz
+     * @param pHandlers
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    private void checkImage(final Class<IImageHost> clazz, final IImageHost[] pHandlers) throws IOException {
         BufferedImage image = createBufferedImage();
 
         for (IImageHost host : pHandlers) {
@@ -90,7 +112,15 @@ public class ImageHostTest {
         }
     }
 
-    private static final void compareImages(BufferedImage img1, BufferedImage img2) {
+    /**
+     * Compares the colors of two images.
+     * 
+     * @param img1
+     *            The first image.
+     * @param img2
+     *            The second image.
+     */
+    private static void compareImages(final BufferedImage img1, final BufferedImage img2) {
         assertEquals(img1.getWidth(), img2.getWidth());
         assertEquals(img1.getHeight(), img2.getHeight());
         int columns = img1.getWidth();
@@ -106,7 +136,7 @@ public class ImageHostTest {
     /**
      * Set method for {@link org.jclouds.imagestore.blobstore.IImageHost#createImageSet(java.lang.String)} and
      * {@link org.jclouds.imagestore.blobstore.IImageHost#imageSetExists(java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#deleteImageSet(java.lang.String)}
+     * {@link org.jclouds.imagestore.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
      * 
      * @param clazz
      *            to be tested with
@@ -114,16 +144,27 @@ public class ImageHostTest {
      *            to be tested with
      */
     @Test(dataProvider = "fileHost", groups = "localTests")
-    public void testImageHostSetsLocal(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+    public void testImageHostSetsLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
         check(clazz, pHandlers);
     }
-
+    
+    /**
+     * 
+     * @param clazz
+     * @param pHandlers
+     */
     @Test(dataProvider = "remoteHosts", groups = "remoteTests")
-    public void testImageHostSetsRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+    public void testImageHostSetsRemote(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
         check(clazz, pHandlers);
     }
 
-    private void check(Class<IImageHost> clazz, IImageHost[] pHandlers) {
+    /**
+     * The host checks.
+     * 
+     * @param clazz
+     * @param pHandlers
+     */
+    private void check(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
             assertFalse(host.imageSetExists(SET1));
@@ -134,6 +175,11 @@ public class ImageHostTest {
         }
     }
 
+    /**
+     * Return an Object with the local host.
+     * 
+     * @return Object with the local host.
+     */
     @DataProvider(name = "fileHost")
     public Object[][] fileHost() {
 
@@ -147,6 +193,11 @@ public class ImageHostTest {
         return returnVal;
     }
 
+    /**
+     * Return an Object with all remote hosts.
+     * 
+     * @return Object with all remote hosts.
+     */
     @DataProvider(name = "remoteHosts")
     public Object[][] remoteHosts() {
 
@@ -160,6 +211,13 @@ public class ImageHostTest {
         return returnVal;
     }
 
+    /**
+     * Returns a new BufferedImage.
+     * 
+     * @return The created BufferedImage.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
     private static BufferedImage createBufferedImage() throws IOException {
         final File imageFile =
             new File("src" + File.separator + "test" + File.separator + "resources" + File.separator
