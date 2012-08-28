@@ -3,7 +3,6 @@
  */
 package org.jclouds.imagestore.blobstore.imagehoster;
 
-import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -126,7 +125,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    new ImageHostFile(Files.createTempDir()), new ImageHostFlickr()
+                    new ImageHostFile(Files.createTempDir())
                 }
             }
         };
