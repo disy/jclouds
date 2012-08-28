@@ -31,9 +31,9 @@ import java.awt.image.BufferedImage;
 /**
  * The interface for BytePainters.
  * 
- * @author Wolfgang Miller
+ * @author Wolfgang Miller, University of Konstanz
  */
-public interface BytesToImagePainter {
+public interface IBytesToImagePainter {
     
     /**
      * Returns needed bytes per pixel.

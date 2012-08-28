@@ -34,7 +34,8 @@ import java.io.IOException;
  * 
  * @author Wolfgang Miller
  */
-public interface ImageHost {
+
+public interface IImageHost {
     
     /**
      * The maximum image with.

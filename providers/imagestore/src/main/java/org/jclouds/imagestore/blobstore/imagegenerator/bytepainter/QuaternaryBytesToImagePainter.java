@@ -31,7 +31,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 
 /**
  * This Class offers a byte painter.
@@ -42,7 +42,7 @@ import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
  * 
  * @author Wolfgang Miller
  */
-public class QuaternaryBytesToImagePainter implements BytesToImagePainter {
+public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The used numeral system. */
     private final int NUMERAL_SYSTEM = 4;

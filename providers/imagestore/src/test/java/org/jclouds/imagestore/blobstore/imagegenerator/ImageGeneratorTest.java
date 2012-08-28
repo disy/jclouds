@@ -38,6 +38,7 @@ import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
+import org.jclouds.imagestore.blobstore.IImageHost;
 import org.jclouds.imagestore.blobstore.ImageBlobStore;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
@@ -51,6 +52,8 @@ import org.testng.annotations.Test;
 import com.google.common.io.Files;
 
 public class ImageGeneratorTest {
+
+    private static final String CONTAINER = "TestContainer";
 
     /** The path to the test input file. */
     private static final String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
@@ -75,32 +78,39 @@ public class ImageGeneratorTest {
      * @throws IOException
      */
     @Test(dataProvider = "instantiateBytePainters")
-    public void
-        testByteRepresentation(final Class<BytesToImagePainter> clazz, BytesToImagePainter[] painters)
-            throws NoSuchAlgorithmException, CertificateException, IOException {
+    public void testByteRepresentation(Class<IBytesToImagePainter> painterClazz,
+        IBytesToImagePainter[] painters, Class<IImageHost> hostClazz, IImageHost[] hosts)
+        throws NoSuchAlgorithmException, CertificateException, IOException {
 
-        File file = Files.createTempDir();
+        for (IImageHost host : hosts) {
+            clean(host);
+            for (IBytesToImagePainter pa : painters) {
+                final ImageGenerator ig = new ImageGenerator(pa);
+                final ImageBlobStore ib = new ImageBlobStore(host, ig);
+                final String blobName = "blob.png";
+                final BlobBuilder bb = ib.blobBuilder(blobName);
+                bb.payload(RAWFILEBYTES);
+                bb.name(blobName);
+                final Blob testBlob = bb.build();
 
-        for (BytesToImagePainter pa : painters) {
-            final ImageGenerator ig = new ImageGenerator(pa);
-            final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(file), ig);
-            final String blobName = "blob.png";
-            final BlobBuilder bb = ib.blobBuilder(blobName);
-            bb.payload(RAWFILEBYTES);
-            bb.name(blobName);
-            final Blob testBlob = bb.build();
-            final String containerName = "TestContainer";
-            ib.putBlob(containerName, testBlob);
-            final Blob reTestBlob = ib.getBlob(containerName, blobName);
+                ib.putBlob(CONTAINER, testBlob);
+                final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            reTestBlob.getPayload().writeTo(bos);
-            byte[] bss = bos.toByteArray();
-            bos.close();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                reTestBlob.getPayload().writeTo(bos);
+                byte[] bss = bos.toByteArray();
+                bos.close();
 
-            assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
-                .toString(), Arrays.equals(RAWFILEBYTES, bss));
+                assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
+                    .toString(), Arrays.equals(RAWFILEBYTES, bss));
+            }
+            clean(host);
         }
+    }
+
+    public void clean(IImageHost host) {
+        host.clearImageSet(CONTAINER);
+        host.deleteImageSet(CONTAINER);
     }
 
     /**
@@ -113,11 +123,13 @@ public class ImageGeneratorTest {
         Object[][] returnVal =
             {
                 {
-                    BytesToImagePainter.class,
-                    new BytesToImagePainter[] {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
                         new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
+                    }, IImageHost.class, new IImageHost[] {
+                        new ImageHostFile(Files.createTempDir())
                     }
                 }
             };

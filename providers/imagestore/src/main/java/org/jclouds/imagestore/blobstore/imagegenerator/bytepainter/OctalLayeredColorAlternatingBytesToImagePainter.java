@@ -8,13 +8,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
+import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class OctalLayeredByteToPixelPainter.
  */
-public class OctalLayeredColorAlternatingBytesToImagePainter implements BytesToImagePainter {
+public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesToImagePainter {
 
     /** The number system. */
     private final int numberSystem = 8;
