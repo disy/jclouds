@@ -11,12 +11,18 @@ import javax.imageio.ImageIO;
 import org.jclouds.imagestore.blobstore.IImageHost;
 
 public class ImageHostFile implements IImageHost {
+    
+    /** The maximum image width. */
+    private static final int MAX_IMAGE_WIDTH = 2048;
+    
+    /** The maximum image height. */
+    private static final int MAX_IMAGE_HEIGHT = 2048;
 
     /** Location of this hoster. */
     private final File mFile;
 
     /** Standard container for the file. */
-    private final static String STANDARDCONTAINER = "tmp";
+    private static final String STANDARDCONTAINER = "tmp";
 
     /**
      * Constructor.
@@ -26,14 +32,24 @@ public class ImageHostFile implements IImageHost {
     public ImageHostFile(final File pFile) {
         mFile = pFile;
     }
+        
+    @Override
+    public int getMaxImageWidth() {
+        return MAX_IMAGE_WIDTH;
+    }
 
     @Override
-    public boolean createImageSet(String imageSetTitle) {
+    public int getMaxImageHeight() {
+        return MAX_IMAGE_HEIGHT;
+    }
+
+    @Override
+    public boolean createImageSet(final String imageSetTitle) {
         return new File(mFile, imageSetTitle).mkdir();
     }
 
     @Override
-    public boolean imageExists(String imageSetTitle, String imageTitle) {
+    public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             final File image = new File(set, imageTitle);
@@ -49,12 +65,12 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public boolean imageSetExists(String imageSetTitle) {
+    public boolean imageSetExists(final String imageSetTitle) {
         return new File(mFile, imageSetTitle).exists();
     }
 
     @Override
-    public void deleteImage(String imageSetTitle, String imageTitle) {
+    public void deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         for (File singleFile : set.listFiles()) {
             if (singleFile.getName().equals(imageTitle)) {
@@ -66,7 +82,7 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public void deleteImageSet(String imageSetTitle) {
+    public void deleteImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             for (File singleFile : set.listFiles()) {
@@ -77,7 +93,7 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage image)
+    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image)
         throws IOException {
         final File set = new File(mFile, imageSetTitle);
         set.mkdirs();
@@ -91,12 +107,12 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public String uploadImage(String imageTitle, BufferedImage image) throws IOException {
+    public String uploadImage(final String imageTitle, final BufferedImage image) throws IOException {
         return uploadImage(STANDARDCONTAINER, imageTitle, image);
     }
 
     @Override
-    public BufferedImage downloadImage(String imageSetTitle, String imageTitle) throws IOException {
+    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) throws IOException {
         final File set = new File(mFile, imageSetTitle);
         final File imageFile = new File(set, imageTitle);
         FileInputStream fis = new FileInputStream(imageFile);
@@ -106,13 +122,13 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public int countImagesInSet(String imageSetTitle) {
+    public int countImagesInSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         return set.list().length;
     }
 
     @Override
-    public void clearImageSet(String imageSetTitle) {
+    public void clearImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             for (File singleFile : set.listFiles()) {

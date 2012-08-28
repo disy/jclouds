@@ -34,7 +34,22 @@ import java.io.IOException;
  * 
  * @author Wolfgang Miller
  */
+
 public interface IImageHost {
+    
+    /**
+     * The maximum image with.
+     * 
+     * @return The maximum image width.
+     */
+    int getMaxImageWidth();
+    
+    /**
+     * The maximum image height.
+     *     
+     * @return The maximum image height.
+     */
+    int getMaxImageHeight();
 
     /**
      * Create image-set.

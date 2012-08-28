@@ -64,6 +64,10 @@ public class ImageHostFlickr implements IImageHost {
     private final PhotosetsInterface psi;
     /** The photos interface. */
     private final PhotosInterface poi;
+    /** The maximum image width. */
+    private static final int MAX_IMAGE_WIDTH = 2048;
+    /** The maximum image height. */
+    private static final int MAX_IMAGE_HEIGHT = 2048;
 
     /**
      * Instantiates a new Flickr IImageHost instance.
@@ -284,5 +288,15 @@ public class ImageHostFlickr implements IImageHost {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int getMaxImageWidth() {
+        return MAX_IMAGE_WIDTH;
+    }
+
+    @Override
+    public int getMaxImageHeight() {
+        return MAX_IMAGE_HEIGHT;
     }
 }
