@@ -277,9 +277,11 @@ public class ImageHostFlickr implements IImageHost {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
         try {
-            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-            for (Photo ph : pl) {
-                psi.removePhoto(imageSetId, ph.getId());
+            if (imageSetExists(imageSetTitle)) {
+                PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                for (Photo ph : pl) {
+                    psi.removePhoto(imageSetId, ph.getId());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

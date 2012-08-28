@@ -3,6 +3,7 @@
  */
 package org.jclouds.imagestore.blobstore.imagehoster;
 
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -69,7 +70,8 @@ public class ImageHostTest {
             assertTrue(host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, image);
             assertTrue(host.imageExists(SET1, IMAGE1));
-            BufferedImage img = host.downloadImage(SET1, IMAGE1);
+            BufferedImage download = host.downloadImage(SET1, IMAGE1);
+            compareImages(image, download);
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             host.uploadImage(SET1, IMAGE1, image);
@@ -85,6 +87,19 @@ public class ImageHostTest {
             assertTrue(host.imageExists(SET1, IMAGE2));
             host.deleteImageSet(SET1);
             assertFalse(host.imageSetExists(SET1));
+        }
+    }
+
+    private static final void compareImages(BufferedImage img1, BufferedImage img2) {
+        assertEquals(img1.getWidth(), img2.getWidth());
+        assertEquals(img1.getHeight(), img2.getHeight());
+        int columns = img1.getWidth();
+        int rows = img1.getHeight();
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+                assertEquals(img1.getRGB(col, row), img2.getRGB(col, row));
+            }
         }
     }
 
