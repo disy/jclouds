@@ -7,6 +7,22 @@ import org.jclouds.imagestore.blobstore.ImageHost;
 
 public class ImageHostFacebook implements ImageHost{
 
+    /** The maximum image width. */
+    private static final int MAX_IMAGE_WIDTH = 2048;
+    /** The maximum image height. */
+    private static final int MAX_IMAGE_HEIGHT = 2048;
+    
+    
+    @Override
+    public int getMaxImageWidth() {
+        return MAX_IMAGE_WIDTH;
+    }
+
+    @Override
+    public int getMaxImageHeight() {
+        return MAX_IMAGE_HEIGHT;
+    }
+    
     @Override
     public boolean createImageSet(final String imageSetTitle) {
         // TODO Auto-generated method stub
@@ -67,5 +83,4 @@ public class ImageHostFacebook implements ImageHost{
         // TODO Auto-generated method stub
         
     }
-
 }
