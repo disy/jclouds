@@ -60,27 +60,27 @@ public class ImageHostTest {
     }
 
     private void checkImage(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
-        BufferedImage[] images = createBufferedImage();
+        BufferedImage image = createBufferedImage();
 
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             assertFalse(host.imageSetExists(SET1));
             assertTrue(host.createImageSet(SET1));
-            host.uploadImage(SET1, IMAGE1, images[0]);
+            host.uploadImage(SET1, IMAGE1, image);
             assertTrue(host.imageExists(SET1, IMAGE1));
             BufferedImage img = host.downloadImage(SET1, IMAGE1);
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));
-            host.uploadImage(SET1, IMAGE1, images[0]);
-            host.uploadImage(SET1, IMAGE2, images[1]);
+            host.uploadImage(SET1, IMAGE1, image);
+            host.uploadImage(SET1, IMAGE2, image);
             assertTrue(host.imageExists(SET1, IMAGE1));
             assertTrue(host.imageExists(SET1, IMAGE2));
             host.clearImageSet(SET1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             assertFalse(host.imageExists(SET1, IMAGE2));
-            host.uploadImage(SET1, IMAGE1, images[0]);
-            host.uploadImage(SET1, IMAGE2, images[1]);
+            host.uploadImage(SET1, IMAGE1, image);
+            host.uploadImage(SET1, IMAGE2, image);
             assertTrue(host.imageExists(SET1, IMAGE1));
             assertTrue(host.imageExists(SET1, IMAGE2));
             host.deleteImageSet(SET1);
@@ -102,7 +102,7 @@ public class ImageHostTest {
     public void testImageHostSetsLocal(Class<IImageHost> clazz, IImageHost[] pHandlers) {
         check(clazz, pHandlers);
     }
-    
+
     @Test(dataProvider = "remoteHosts", groups = "remoteTests")
     public void testImageHostSetsRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) {
         check(clazz, pHandlers);
@@ -145,18 +145,13 @@ public class ImageHostTest {
         return returnVal;
     }
 
-    private static BufferedImage[] createBufferedImage() throws IOException {
+    private static BufferedImage createBufferedImage() throws IOException {
         final File imageFile =
             new File("src" + File.separator + "test" + File.separator + "resources" + File.separator
-                + "pictures");
-        BufferedImage[] returnVals = new BufferedImage[imageFile.listFiles().length];
-        int i = 0;
-        for (File file : imageFile.listFiles()) {
-            FileInputStream fis = new FileInputStream(file);
-            returnVals[i] = ImageIO.read(fis);
-            fis.close();
-            i++;
-        }
+                + "pictures" + File.separator + "black.png");
+        FileInputStream fis = new FileInputStream(imageFile);
+        BufferedImage returnVals = ImageIO.read(fis);
+        fis.close();
         return returnVals;
 
     }
