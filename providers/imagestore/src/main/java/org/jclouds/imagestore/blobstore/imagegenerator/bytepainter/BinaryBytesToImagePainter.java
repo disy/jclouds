@@ -45,9 +45,9 @@ import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The used numeral system. */
-    private final int NUMERAL_SYSTEM = 2;
+    private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed for one Byte. */
-    private final float PIXELS_PER_BYTE = 8;
+    private static final float PIXELS_PER_BYTE = 8;
 
     @Override
     public float bytesPerPixel() {

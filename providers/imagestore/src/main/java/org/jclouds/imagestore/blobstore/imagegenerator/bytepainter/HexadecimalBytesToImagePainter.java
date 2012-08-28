@@ -45,9 +45,9 @@ import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
 public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
     
     /** The used numeral system. */
-    private final int NUMERAL_SYSTEM = 16;
+    private static final int NUMERAL_SYSTEM = 16;
     /** Pixels needed for one Byte. */
-    private final float PIXELS_PER_BYTE = 2;
+    private static final float PIXELS_PER_BYTE = 2;
 
     /** The colors. */
     private final Color[] colors = new Color[] {

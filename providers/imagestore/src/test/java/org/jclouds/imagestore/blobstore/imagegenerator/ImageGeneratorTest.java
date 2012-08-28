@@ -56,7 +56,7 @@ import com.google.common.io.Files;
  * This class provides test cases for the image generators.
  * 
  * @author Wolfgang Miller, Sebastian Graf, University of Konstanz.
- *
+ * 
  */
 public class ImageGeneratorTest {
 
@@ -78,15 +78,22 @@ public class ImageGeneratorTest {
     }
 
     /**
-     * Tests all BytePainters on the remote hosts.
+     * Invokes tests for all byte painters on all remote hosts.
      * 
      * @param painterClazz
+     *            The byte painters interface.
      * @param painters
+     *            The different byte painter instances.
      * @param hostClazz
+     *            The host interface.
      * @param hosts
+     *            The different host instances.
      * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
      * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
      * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests")
     public void testByteRepresentationRemoteHosts(final Class<IBytesToImagePainter> painterClazz,
@@ -96,15 +103,22 @@ public class ImageGeneratorTest {
     }
 
     /**
-     * Tests all BytePainters local.
+     * Invokes tests for all byte painters local.
      * 
      * @param painterClazz
+     *            The byte painters interface.
      * @param painters
+     *            The different byte painter instances.
      * @param hostClazz
+     *            The host interface.
      * @param hosts
+     *            The local host instances.
      * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
      * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
      * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     @Test(dataProvider = "fileHostAllPainters", groups = "localTests")
     public void testByteRepresentationOnFileHost(final Class<IBytesToImagePainter> painterClazz,
@@ -117,6 +131,7 @@ public class ImageGeneratorTest {
      * Deletes all created images and sets.
      * 
      * @param host
+     *            The image host.
      */
     public void clean(final IImageHost host) {
         host.clearImageSet(CONTAINER);
@@ -175,12 +190,19 @@ public class ImageGeneratorTest {
      * The Tests.
      * 
      * @param painterClazz
+     *            The byte painters interface.
      * @param painters
+     *            The different byte painter instances.
      * @param hostClazz
+     *            The host interface.
      * @param hosts
+     *            The different host instances.
      * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
      * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
      * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     private void check(final Class<IBytesToImagePainter> painterClazz, final IBytesToImagePainter[] painters,
         final Class<IImageHost> hostClazz, final IImageHost[] hosts) throws NoSuchAlgorithmException,

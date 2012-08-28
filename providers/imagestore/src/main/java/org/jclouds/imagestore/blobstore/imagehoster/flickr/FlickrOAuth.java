@@ -66,9 +66,9 @@ public class FlickrOAuth {
     /** The callback-URL. oob = out-of-band. */
     private final String callbackURL = "oob";
     /** The flickr permission. */
-    private final Permission FLICKR_PERMISSION = Permission.DELETE;
+    private static final Permission FLICKR_PERMISSION = Permission.DELETE;
     /** The path to Flickr properties file. */
-    private final String FLICKR_PROPS_URI = "src/main/resources/flickr.properties";
+    private static final String FLICKR_PROPS_URI = "src/main/resources/flickr.properties";
     /** The Flickr properties. */
     private final Properties fp = new Properties();
 

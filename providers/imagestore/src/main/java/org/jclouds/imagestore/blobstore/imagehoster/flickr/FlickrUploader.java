@@ -53,7 +53,7 @@ public class FlickrUploader {
      * Instantiates a new Flickr uploader.
      * 
      * @param fl
-     *            the Flickr instance
+     *            The Flickr instance.
      */
     public FlickrUploader(final Flickr fl) {
         up = fl.getUploader();
@@ -63,18 +63,18 @@ public class FlickrUploader {
      * Upload buffered image.
      * 
      * @param imageTitle
-     *            the image title
+     *            The image title.
      * @param image
-     *            the BufferedImage
+     *            The BufferedImage.
      * @param meta
-     *            the Flickr meta data
-     * @return the Flickr photo id
+     *            The Flickr meta data.
+     * @return The Flickr photo id.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      * @throws FlickrException
-     *             the flickr exception
+     *             Signals that a flickr exception has occurred.
      * @throws SAXException
-     *             the sAX exception
+     *             Signals that an SAX exception has occurred.
      */
     public String uploadImage(final String imageTitle, final BufferedImage image,
         final UploadMetaData meta) throws IOException, FlickrException, SAXException {
@@ -85,8 +85,8 @@ public class FlickrUploader {
      * Returns the byte-array from given image.
      * 
      * @param image
-     *            the image
-     * @return the byte array from image
+     *            The image.
+     * @return The byte array from image.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
