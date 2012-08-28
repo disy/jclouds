@@ -52,8 +52,15 @@ import org.testng.annotations.Test;
 
 import com.google.common.io.Files;
 
+/**
+ * This class provides test cases for the image generators.
+ * 
+ * @author Wolfgang Miller, Sebastian Graf, University of Konstanz.
+ *
+ */
 public class ImageGeneratorTest {
 
+    /** The test container's name. */
     private static final String CONTAINER = "TestContainer";
 
     /** The path to the test input file. */
@@ -70,26 +77,57 @@ public class ImageGeneratorTest {
         }
     }
 
-    @Test(dataProvider = "remoteHostsAllPainters", groups="remoteTests")
-    public void testByteRepresentationRemoteHosts(Class<IBytesToImagePainter> painterClazz,
-        IBytesToImagePainter[] painters, Class<IImageHost> hostClazz, IImageHost[] hosts)
-        throws NoSuchAlgorithmException, CertificateException, IOException {
-        check(painterClazz, painters, hostClazz, hosts);
-    }
-    
-    @Test(dataProvider = "fileHostAllPainters", groups="localTests")
-    public void testByteRepresentationOnFileHost(Class<IBytesToImagePainter> painterClazz,
-        IBytesToImagePainter[] painters, Class<IImageHost> hostClazz, IImageHost[] hosts)
+    /**
+     * Tests all BytePainters on the remote hosts.
+     * 
+     * @param painterClazz
+     * @param painters
+     * @param hostClazz
+     * @param hosts
+     * @throws NoSuchAlgorithmException
+     * @throws CertificateException
+     * @throws IOException
+     */
+    @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests")
+    public void testByteRepresentationRemoteHosts(final Class<IBytesToImagePainter> painterClazz,
+        final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
         throws NoSuchAlgorithmException, CertificateException, IOException {
         check(painterClazz, painters, hostClazz, hosts);
     }
 
-    public void clean(IImageHost host) {
+    /**
+     * Tests all BytePainters local.
+     * 
+     * @param painterClazz
+     * @param painters
+     * @param hostClazz
+     * @param hosts
+     * @throws NoSuchAlgorithmException
+     * @throws CertificateException
+     * @throws IOException
+     */
+    @Test(dataProvider = "fileHostAllPainters", groups = "localTests")
+    public void testByteRepresentationOnFileHost(final Class<IBytesToImagePainter> painterClazz,
+        final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
+        throws NoSuchAlgorithmException, CertificateException, IOException {
+        check(painterClazz, painters, hostClazz, hosts);
+    }
+
+    /**
+     * Deletes all created images and sets.
+     * 
+     * @param host
+     */
+    public void clean(final IImageHost host) {
         host.clearImageSet(CONTAINER);
         host.deleteImageSet(CONTAINER);
     }
 
-    
+    /**
+     * Returns an Object with file host and all byte painters.
+     * 
+     * @return Object with file host and all byte painters.
+     */
     @DataProvider(name = "fileHostAllPainters")
     public Object[][] fileHostAllPainters() {
 
@@ -110,8 +148,9 @@ public class ImageGeneratorTest {
     }
 
     /**
+     * Returns an Object with all remote hosts and all byte painters.
      * 
-     * @return
+     * @return Object with all remote hosts and all byte painters.
      */
     @DataProvider(name = "remoteHostsAllPainters")
     public Object[][] remoteHostsAllPainters() {
@@ -124,15 +163,27 @@ public class ImageGeneratorTest {
                         new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
-                    }, IImageHost.class, new IImageHost[] {new ImageHostFlickr()
+                    }, IImageHost.class, new IImageHost[] {
+                        new ImageHostFlickr()
                     }
                 }
             };
         return returnVal;
     }
 
-    private void check(Class<IBytesToImagePainter> painterClazz, IBytesToImagePainter[] painters,
-        Class<IImageHost> hostClazz, IImageHost[] hosts) throws NoSuchAlgorithmException,
+    /**
+     * The Tests.
+     * 
+     * @param painterClazz
+     * @param painters
+     * @param hostClazz
+     * @param hosts
+     * @throws NoSuchAlgorithmException
+     * @throws CertificateException
+     * @throws IOException
+     */
+    private void check(final Class<IBytesToImagePainter> painterClazz, final IBytesToImagePainter[] painters,
+        final Class<IImageHost> hostClazz, final IImageHost[] hosts) throws NoSuchAlgorithmException,
         CertificateException, IOException {
 
         for (IImageHost host : hosts) {
@@ -140,7 +191,7 @@ public class ImageGeneratorTest {
             for (IBytesToImagePainter pa : painters) {
                 final ImageGenerator ig = new ImageGenerator(pa);
                 final ImageBlobStore ib = new ImageBlobStore(host, ig);
-                final String blobName = "blob.png";
+                final String blobName = "blob_" + System.currentTimeMillis();
                 final BlobBuilder bb = ib.blobBuilder(blobName);
                 bb.payload(RAWFILEBYTES);
                 bb.name(blobName);
