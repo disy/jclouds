@@ -190,7 +190,9 @@ public class ImageHostFlickr implements IImageHost {
     public void deleteImageSet(final String imageSetTitle) {
         String imageSetId = getFlickrImageSetId(imageSetTitle);
         try {
-            psi.delete(imageSetId);
+            if (imageSetExists(imageSetTitle)) {
+                psi.delete(imageSetId);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (FlickrException e) {

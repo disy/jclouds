@@ -55,15 +55,13 @@ public class ImageHostTest {
         BufferedImage[] images = createBufferedImage();
 
         for (IImageHost host : pHandlers) {
+            host.deleteImageSet(SET1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             assertFalse(host.imageSetExists(SET1));
             assertTrue(host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, images[0]);
             assertTrue(host.imageExists(SET1, IMAGE1));
             BufferedImage img = host.downloadImage(SET1, IMAGE1);
-            assertEquals(img.getHeight(), images[0].getHeight());
-            assertEquals(img.getWidth(), images[0].getWidth());
-            assertEquals(img.getGraphics().getColor(), images[0].getGraphics().getColor());
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             host.uploadImage(SET1, IMAGE1, images[0]);
@@ -96,6 +94,7 @@ public class ImageHostTest {
     @Test(dataProvider = "instantiateHosts")
     public void testImageHostSets(Class<IImageHost> clazz, IImageHost[] pHandlers) {
         for (IImageHost host : pHandlers) {
+            host.deleteImageSet(SET1);
             assertFalse(host.imageSetExists(SET1));
             assertTrue(host.createImageSet(SET1));
             assertTrue(host.imageSetExists(SET1));
