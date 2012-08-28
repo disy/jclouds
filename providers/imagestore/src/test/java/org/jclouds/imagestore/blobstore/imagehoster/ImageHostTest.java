@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.blobstore.ImageHost;
 import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -114,7 +115,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 ImageHost.class, new ImageHost[] {
-                    new ImageHostFile(Files.createTempDir())
+                    new ImageHostFile(Files.createTempDir()), new ImageHostFlickr()
                 }
             }
         };

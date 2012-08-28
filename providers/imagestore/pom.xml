@@ -11,7 +11,7 @@
 	<artifactId>imagestore</artifactId>
 	<name>jclouds image store providers</name>
 	<description>stores data on image-clouds</description>
-	<packaging>bundle</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>com.googlecode.flickrj-android</groupId>
