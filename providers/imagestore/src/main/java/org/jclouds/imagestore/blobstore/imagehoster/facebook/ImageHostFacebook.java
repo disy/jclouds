@@ -3,9 +3,9 @@ package org.jclouds.imagestore.blobstore.imagehoster.facebook;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.jclouds.imagestore.blobstore.ImageHost;
+import org.jclouds.imagestore.blobstore.IImageHost;
 
-public class ImageHostFacebook implements ImageHost{
+public class ImageHostFacebook implements IImageHost{
 
     /** The maximum image width. */
     private static final int MAX_IMAGE_WIDTH = 2048;
