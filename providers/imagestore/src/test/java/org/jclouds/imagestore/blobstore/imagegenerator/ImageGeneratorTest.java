@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore.blobstore;
+package org.jclouds.imagestore.blobstore.imagegenerator;
 
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -38,8 +38,7 @@ import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.imagestore.blobstore.imagegenerator.BytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.blobstore.ImageBlobStore;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
@@ -51,7 +50,7 @@ import org.testng.annotations.Test;
 
 import com.google.common.io.Files;
 
-public class ImageHostBlobStoreTest {
+public class ImageGeneratorTest {
 
     /** The path to the test input file. */
     private static final String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
@@ -67,7 +66,6 @@ public class ImageHostBlobStoreTest {
         }
     }
 
-
     /**
      * 
      * @param clazz
@@ -82,7 +80,7 @@ public class ImageHostBlobStoreTest {
             throws NoSuchAlgorithmException, CertificateException, IOException {
 
         File file = Files.createTempDir();
-        
+
         for (BytesToImagePainter pa : painters) {
             final ImageGenerator ig = new ImageGenerator(pa);
             final ImageBlobStore ib = new ImageBlobStore(new ImageHostFile(file), ig);
@@ -99,12 +97,12 @@ public class ImageHostBlobStoreTest {
             reTestBlob.getPayload().writeTo(bos);
             byte[] bss = bos.toByteArray();
             bos.close();
-            
+
             assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
                 .toString(), Arrays.equals(RAWFILEBYTES, bss));
         }
     }
-    
+
     /**
      * 
      * @return
@@ -112,13 +110,17 @@ public class ImageHostBlobStoreTest {
     @DataProvider(name = "instantiateBytePainters")
     public Object[][] instantiateBytePainters() {
 
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                BytesToImagePainter.class, new BytesToImagePainter[] {
-                    new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter()
+                {
+                    BytesToImagePainter.class,
+                    new BytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new QuaternaryLayeredBytesToImagePainter()
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 
