@@ -60,7 +60,7 @@ import org.jclouds.javax.annotation.Nullable;
 public class ImageBlobStore implements BlobStore {
 
     /** The image host instance. */
-    private final ImageHost ih;
+    private final IImageHost ih;
     /** The image generator instance. */
     private final ImageGenerator ig;
     /** The blob builder. */
@@ -69,13 +69,13 @@ public class ImageBlobStore implements BlobStore {
     /**
      * ImageBlobStore constructor.
      * 
-     * @param imageHost
+     * @param iImageHost
      *            The image host to be used.
      * @param imageGenerator
      *            The image generator to be used.
      */
-    public ImageBlobStore(final ImageHost imageHost, final ImageGenerator imageGenerator) {
-        ih = imageHost;
+    public ImageBlobStore(final IImageHost iImageHost, final ImageGenerator imageGenerator) {
+        ih = iImageHost;
         ig = imageGenerator;
         try {
             bb = new BlobBuilderImpl(new JCECrypto());

@@ -34,7 +34,7 @@ import java.io.IOException;
  * 
  * @author Wolfgang Miller
  */
-public interface ImageHost {
+public interface IImageHost {
 
     /**
      * Create image-set.

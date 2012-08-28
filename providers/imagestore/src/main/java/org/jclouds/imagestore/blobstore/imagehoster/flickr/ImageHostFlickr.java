@@ -30,7 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.jclouds.imagestore.blobstore.ImageHost;
+import org.jclouds.imagestore.blobstore.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 
@@ -44,11 +44,11 @@ import com.googlecode.flickrjandroid.photosets.PhotosetsInterface;
 import com.googlecode.flickrjandroid.uploader.UploadMetaData;
 
 /**
- * This class offers an implementation of the ImageHost interface for the image provider Flickr.
+ * This class offers an implementation of the IImageHost interface for the image provider Flickr.
  * 
  * @author Wolfgang Miller
  */
-public class ImageHostFlickr implements ImageHost {
+public class ImageHostFlickr implements IImageHost {
 
     /** The Flickr instance. */
     private Flickr fl;
@@ -66,7 +66,7 @@ public class ImageHostFlickr implements ImageHost {
     private final PhotosInterface poi;
 
     /**
-     * Instantiates a new Flickr ImageHost instance.
+     * Instantiates a new Flickr IImageHost instance.
      * 
      */
     public ImageHostFlickr() {

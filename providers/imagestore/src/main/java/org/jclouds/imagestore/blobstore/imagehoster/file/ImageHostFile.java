@@ -8,9 +8,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.blobstore.ImageHost;
+import org.jclouds.imagestore.blobstore.IImageHost;
 
-public class ImageHostFile implements ImageHost {
+public class ImageHostFile implements IImageHost {
 
     /** Location of this hoster. */
     private final File mFile;
@@ -68,10 +68,12 @@ public class ImageHostFile implements ImageHost {
     @Override
     public void deleteImageSet(String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
-        for (File singleFile : set.listFiles()) {
-            singleFile.delete();
+        if (set.exists()) {
+            for (File singleFile : set.listFiles()) {
+                singleFile.delete();
+            }
+            set.delete();
         }
-        set.delete();
     }
 
     @Override
@@ -112,10 +114,12 @@ public class ImageHostFile implements ImageHost {
     @Override
     public void clearImageSet(String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
-        for (File singleFile : set.listFiles()) {
-            if (!singleFile.delete()) {
-                throw new IllegalStateException(new StringBuilder("File ").append(
-                    singleFile.getAbsolutePath()).append(" could not be deleted!").toString());
+        if (set.exists()) {
+            for (File singleFile : set.listFiles()) {
+                if (!singleFile.delete()) {
+                    throw new IllegalStateException(new StringBuilder("File ").append(
+                        singleFile.getAbsolutePath()).append(" could not be deleted!").toString());
+                }
             }
         }
     }
