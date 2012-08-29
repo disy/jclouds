@@ -51,13 +51,15 @@ import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.io.Payload;
 import org.jclouds.javax.annotation.Nullable;
 
+import com.google.inject.Inject;
+
 /**
  * This class implements the jClouds BlobStore interface and acts as adapter between jClouds and the image
  * store.
  * 
  * @author Wolfgang Miller
  */
-public class ImageBlobStore implements BlobStore {
+public class SyncImageBlobStore implements BlobStore {
 
     /** The image host instance. */
     private final IImageHost ih;
@@ -74,7 +76,8 @@ public class ImageBlobStore implements BlobStore {
      * @param imageGenerator
      *            The image generator to be used.
      */
-    public ImageBlobStore(final IImageHost iImageHost, final ImageGenerator imageGenerator) {
+    @Inject
+    public SyncImageBlobStore(final IImageHost iImageHost, final ImageGenerator imageGenerator) {
         ih = iImageHost;
         ig = imageGenerator;
         try {

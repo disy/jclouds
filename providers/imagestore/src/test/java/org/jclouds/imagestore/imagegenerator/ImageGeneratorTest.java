@@ -39,7 +39,7 @@ import java.util.Arrays;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.IImageHost;
-import org.jclouds.imagestore.ImageBlobStore;
+import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
@@ -212,7 +212,7 @@ public class ImageGeneratorTest {
             clean(host);
             for (IBytesToImagePainter pa : painters) {
                 final ImageGenerator ig = new ImageGenerator(pa);
-                final ImageBlobStore ib = new ImageBlobStore(host, ig);
+                final SyncImageBlobStore ib = new SyncImageBlobStore(host, ig);
                 final String blobName = "blob_" + System.currentTimeMillis();
                 final BlobBuilder bb = ib.blobBuilder(blobName);
                 bb.payload(RAWFILEBYTES);

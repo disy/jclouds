@@ -31,6 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.Deflater;
 
+import com.google.inject.Inject;
+
 /**
  * This class is used to generate images from byte arrays or vice versa with specified byte painter.
  * 
@@ -47,6 +49,7 @@ public class ImageGenerator {
      * @param bytePainter
      *            the byte painter to be used
      */
+    @Inject
     public ImageGenerator(final IBytesToImagePainter bytePainter) {
         bp = bytePainter;
     }

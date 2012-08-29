@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.IImageHost;
 
+import com.google.inject.Inject;
+
 public class ImageHostFile implements IImageHost {
     
     /** The maximum image width. */
@@ -29,6 +31,7 @@ public class ImageHostFile implements IImageHost {
      * 
      * @param pFile
      */
+    @Inject
     public ImageHostFile(final File pFile) {
         mFile = pFile;
     }
