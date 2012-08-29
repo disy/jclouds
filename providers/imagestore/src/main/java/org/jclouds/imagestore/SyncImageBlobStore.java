@@ -106,8 +106,8 @@ public class SyncImageBlobStore implements BlobStore {
     }
 
     @Override
-    public BlobBuilder blobBuilder(final String name) {
-        return bb;
+    public BlobBuilder blobBuilder(final String blobName) {
+        return bb.name(blobName);
     }
 
     @Override
