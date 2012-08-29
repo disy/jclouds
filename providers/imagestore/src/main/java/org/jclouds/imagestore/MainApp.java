@@ -57,7 +57,7 @@ import com.google.common.io.ByteStreams;
  */
 public class MainApp {
 
-    private static byte[][] vals = new byte[128][128];
+    private static byte[][] vals = new byte[28][28];
 
     static {
         Random ran = new Random();
@@ -135,6 +135,7 @@ public class MainApp {
             }
 
         }
+        blobStore.deleteContainer(containerName);
 
         // close context
         // context2.close();
