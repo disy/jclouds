@@ -94,14 +94,14 @@ public class MainApp {
         String identity = args[1];
         String credential = args[2];
         String containerName = args[3];
-        
+
         Properties mProperties = new Properties();
         mProperties.setProperty(FilesystemConstants.PROPERTY_BASEDIR, "/tmp/bla");
 
         // Init
         BlobStoreContext context =
             ContextBuilder.newBuilder(provider).credentials(identity, credential).overrides(mProperties)
-            .buildView(BlobStoreContext.class);
+                .buildView(BlobStoreContext.class);
 
         // Create Container
         BlobStore blobStore = context.getBlobStore();
@@ -117,11 +117,10 @@ public class MainApp {
         }
         context.close();
 
-        BlobStoreContext context2 =
-            ContextBuilder.newBuilder(provider).credentials(identity, credential)
-                .overrides(mProperties)
-                .buildView(BlobStoreContext.class);
-        blobStore = context2.getBlobStore();
+        // BlobStoreContext context2 =
+        // ContextBuilder.newBuilder(provider).credentials(identity, credential).overrides(mProperties)
+        // .buildView(BlobStoreContext.class);
+        // blobStore = context2.getBlobStore();
 
         for (int i = 0; i < vals.length; i++) {
             Blob blobRetrieved =
@@ -138,7 +137,7 @@ public class MainApp {
         }
 
         // close context
-        context2.close();
+        // context2.close();
 
     }
 }
