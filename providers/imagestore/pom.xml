@@ -11,23 +11,18 @@
 	<artifactId>imagestore</artifactId>
 	<name>jclouds image store providers</name>
 	<description>stores data on image-clouds</description>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
+
+	<properties>
+		<jclouds.osgi.export>org.jclouds.imagestore*;version="${project.version}"</jclouds.osgi.export>
+		<jclouds.osgi.import>org.jclouds*;version="${project.version}",*</jclouds.osgi.import>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.googlecode.flickrj-android</groupId>
 			<artifactId>flickrj-android</artifactId>
 			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.6.2</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -40,24 +35,10 @@
 			<version>13.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jclouds.api</groupId>
-			<artifactId>s3</artifactId>
+			<groupId>org.jclouds</groupId>
+			<artifactId>jclouds-blobstore</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.jclouds.api</groupId>
-			<artifactId>s3</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jclouds</groupId>
-			<artifactId>jclouds-core</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jclouds</groupId>
@@ -73,16 +54,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jclouds.driver</groupId>
-			<artifactId>jclouds-apachehc</artifactId>
+			<groupId>org.jclouds</groupId>
+			<artifactId>jclouds-core</artifactId>
 			<version>${project.version}</version>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jclouds.driver</groupId>
-			<artifactId>jclouds-enterprise</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 </project>
