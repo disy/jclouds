@@ -68,4 +68,45 @@
 		</dependency>
 
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>disyInternal</id>
+			<name>Internal Repository for the Distributed System Group</name>
+			<url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternal/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>disyInternalSnapshot</id>
+			<name>Internal Snapshot Repository for the Distributed System Group</name>
+			<url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternalSnapshot/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>SonatypeSnapshot</id>
+			<name>Snapshot Repository for Sonatype</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>disyInternal</id>
+			<url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternal</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>disyInternalSnapshot</id>
+			<url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternalSnapshot</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
