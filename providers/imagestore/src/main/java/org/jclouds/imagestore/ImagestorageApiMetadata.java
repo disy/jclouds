@@ -4,7 +4,7 @@ import java.net.URI;
 
 import org.jclouds.apis.internal.BaseApiMetadata;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.imagestore.config.ImageBlobStoreContextModule;
+import org.jclouds.imagestore.config.ImagestoreContextModule;
 
 public class ImagestorageApiMetadata extends BaseApiMetadata {
 
@@ -35,7 +35,7 @@ public class ImagestorageApiMetadata extends BaseApiMetadata {
                 "http://localhost/transient").defaultIdentity(System.getProperty("user.name"))
                 .defaultCredential("bar").version("1").documentation(
                     URI.create("http://www.jclouds.org/documentation/userguide/blobstore-guide")).view(
-                    BlobStoreContext.class).defaultModule(ImageBlobStoreContextModule.class);
+                    BlobStoreContext.class).defaultModule(ImagestoreContextModule.class);
         }
 
         @Override

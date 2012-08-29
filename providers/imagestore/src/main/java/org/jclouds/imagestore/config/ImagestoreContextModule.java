@@ -21,7 +21,7 @@ import com.google.inject.AbstractModule;
  * 
  * @author Sebastian Graf, University of Konstanz
  */
-public class ImageBlobStoreContextModule extends AbstractModule {
+public class ImagestoreContextModule extends AbstractModule {
 
    @Override
    protected void configure() {

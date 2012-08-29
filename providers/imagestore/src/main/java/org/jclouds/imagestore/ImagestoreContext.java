@@ -12,7 +12,7 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.rest.RestContext;
 import org.jclouds.rest.Utils;
 
-public class ImageHostBlobStoreContext implements BlobStoreContext {
+public class ImagestoreContext implements BlobStoreContext {
 
     @Override
     public com.google.common.reflect.TypeToken<?> getBackendType() {
