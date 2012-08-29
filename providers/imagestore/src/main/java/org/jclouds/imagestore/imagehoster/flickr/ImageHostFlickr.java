@@ -193,9 +193,13 @@ public class ImageHostFlickr implements IImageHost {
     @Override
     public void deleteImageSet(final String imageSetTitle) {
         String imageSetId = getFlickrImageSetId(imageSetTitle);
+        
+        if(imageSetId.isEmpty()) return;
+        
         try {
-            if (imageSetExists(imageSetTitle)) {
-                psi.delete(imageSetId);
+            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+            for (Photo ph : pl) {
+                poi.delete(ph.getId());
             }
         } catch (IOException e) {
             e.printStackTrace();
