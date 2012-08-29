@@ -2,5 +2,5 @@
  * 
  * Here goes the package javadioc.
  */
-package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
+package org.jclouds.imagestore.imagegenerator.bytepainter;
 

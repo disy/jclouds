@@ -24,13 +24,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore.blobstore.imagehoster.flickr;
+package org.jclouds.imagestore.imagehoster.flickr;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.jclouds.imagestore.blobstore.IImageHost;
+import org.jclouds.imagestore.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 

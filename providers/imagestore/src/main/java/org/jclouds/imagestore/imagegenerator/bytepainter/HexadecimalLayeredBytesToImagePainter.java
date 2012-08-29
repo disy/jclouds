@@ -1,14 +1,14 @@
 /*
  * 
  */
-package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
+package org.jclouds.imagestore.imagegenerator.bytepainter;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 // TODO: Auto-generated Javadoc
 /**

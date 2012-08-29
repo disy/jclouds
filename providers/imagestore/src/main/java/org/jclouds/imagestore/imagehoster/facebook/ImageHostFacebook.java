@@ -1,9 +1,9 @@
-package org.jclouds.imagestore.blobstore.imagehoster.facebook;
+package org.jclouds.imagestore.imagehoster.facebook;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.jclouds.imagestore.blobstore.IImageHost;
+import org.jclouds.imagestore.IImageHost;
 
 public class ImageHostFacebook implements IImageHost{
 

@@ -1,4 +1,4 @@
-package org.jclouds.imagestore.blobstore.imagehoster.file;
+package org.jclouds.imagestore.imagehoster.file;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.blobstore.IImageHost;
+import org.jclouds.imagestore.IImageHost;
 
 public class ImageHostFile implements IImageHost {
     

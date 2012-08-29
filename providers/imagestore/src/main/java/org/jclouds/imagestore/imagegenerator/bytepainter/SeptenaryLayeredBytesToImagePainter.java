@@ -24,14 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore.blobstore.imagegenerator.bytepainter;
+package org.jclouds.imagestore.imagegenerator.bytepainter;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.jclouds.imagestore.blobstore.imagegenerator.IBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * This Class offers a byte painter.

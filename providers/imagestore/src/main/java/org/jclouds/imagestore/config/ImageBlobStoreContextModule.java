@@ -1,5 +1,5 @@
 
-package org.jclouds.imagestore.blobstore.config;
+package org.jclouds.imagestore.config;
 
 import org.jclouds.blobstore.AsyncBlobStore;
 import org.jclouds.blobstore.BlobRequestSigner;

@@ -1,4 +1,4 @@
-package org.jclouds.imagestore.blobstore;
+package org.jclouds.imagestore;
 
 import org.jclouds.Context;
 import org.jclouds.blobstore.AsyncBlobStore;

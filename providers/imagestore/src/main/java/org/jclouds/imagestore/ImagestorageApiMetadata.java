@@ -1,10 +1,10 @@
-package org.jclouds.imagestore.blobstore;
+package org.jclouds.imagestore;
 
 import java.net.URI;
 
 import org.jclouds.apis.internal.BaseApiMetadata;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.imagestore.blobstore.config.ImageBlobStoreContextModule;
+import org.jclouds.imagestore.config.ImageBlobStoreContextModule;
 
 public class ImagestorageApiMetadata extends BaseApiMetadata {
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jclouds.imagestore.blobstore.imagehoster;
+package org.jclouds.imagestore.imagehoster;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
@@ -14,9 +14,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.blobstore.IImageHost;
-import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.IImageHost;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

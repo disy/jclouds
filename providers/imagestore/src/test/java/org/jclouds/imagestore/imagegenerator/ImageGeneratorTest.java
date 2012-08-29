@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore.blobstore.imagegenerator;
+package org.jclouds.imagestore.imagegenerator;
 
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -38,15 +38,15 @@ import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.imagestore.blobstore.IImageHost;
-import org.jclouds.imagestore.blobstore.ImageBlobStore;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
-import org.jclouds.imagestore.blobstore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.blobstore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.IImageHost;
+import org.jclouds.imagestore.ImageBlobStore;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

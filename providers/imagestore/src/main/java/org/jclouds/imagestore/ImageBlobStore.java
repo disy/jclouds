@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore.blobstore;
+package org.jclouds.imagestore;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +47,7 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.encryption.internal.JCECrypto;
-import org.jclouds.imagestore.blobstore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.io.Payload;
 import org.jclouds.javax.annotation.Nullable;
 
