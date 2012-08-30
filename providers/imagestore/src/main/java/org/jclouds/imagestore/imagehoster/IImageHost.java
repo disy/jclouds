@@ -28,7 +28,6 @@ package org.jclouds.imagestore.imagehoster;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * The ImageHoster interface.
@@ -161,24 +160,5 @@ public interface IImageHost {
      */
     void clearImageSet(final String imageSetTitle);
 
-    /**
-     * 
-     * Factory for generating an {@link IImageHost}-instance. Needed mainly
-     * because of Guice-Assisted utilization.
-     * 
-     * @author Sebastian Graf, University of Konstanz
-     * 
-     */
-    public static interface IImageHostFactory {
-
-        /**
-         * Generating a storage for a fixed file.
-         * 
-         * @param pProperties
-         *            referencing not only to the storage.
-         * @return an {@link IImageHost}-instance
-         */
-        IImageHost create(Properties pProperties);
-    }
 
 }

@@ -1,7 +1,5 @@
 package org.jclouds.imagestore.config;
 
-import java.io.File;
-
 import org.jclouds.blobstore.AsyncBlobStore;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.attr.ConsistencyModel;
@@ -25,9 +23,7 @@ public class ImagestoreContextModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(IBytesToImagePainter.class).to(HexadecimalBytesToImagePainter.class);
-        bind(IImageHost.class).toInstance(new ImageHostFile(new File("/tmp/bla")));
-//        install(new FactoryModuleBuilder().implement(IImageHost.class, ImageHostFile.class).build(
-//            IImageHostFactory.class));
+        bind(IImageHost.class).to(ImageHostFile.class);
         bind(BlobStore.class).to(SyncImageBlobStore.class);
         bind(AsyncBlobStore.class).to(AsyncImageBlobStore.class);
         install(new BlobStoreObjectModule());

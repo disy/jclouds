@@ -7,16 +7,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.inject.Named;
 
+import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 
 import com.google.inject.Inject;
 
 public class ImageHostFile implements IImageHost {
-    
+
     /** The maximum image width. */
     private static final int MAX_IMAGE_WIDTH = 2048;
-    
+
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
 
@@ -32,10 +34,10 @@ public class ImageHostFile implements IImageHost {
      * @param pFile
      */
     @Inject
-    public ImageHostFile(final File pFile) {
-        mFile = pFile;
+    public ImageHostFile(@Named(FilesystemConstants.PROPERTY_BASEDIR) String baseDir) {
+        mFile = new File(baseDir);
     }
-        
+
     @Override
     public int getMaxImageWidth() {
         return MAX_IMAGE_WIDTH;
@@ -115,7 +117,8 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) throws IOException {
+    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle)
+        throws IOException {
         final File set = new File(mFile, imageSetTitle);
         final File imageFile = new File(set, imageTitle);
         FileInputStream fis = new FileInputStream(imageFile);

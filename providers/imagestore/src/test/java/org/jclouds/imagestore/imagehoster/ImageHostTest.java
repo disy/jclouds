@@ -185,7 +185,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    new ImageHostFile(Files.createTempDir())
+                    new ImageHostFile(Files.createTempDir().getAbsolutePath())
                 }
             }
         };

@@ -155,7 +155,7 @@ public class ImageGeneratorTest {
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
                     }, IImageHost.class, new IImageHost[] {
-                        new ImageHostFile(Files.createTempDir())
+                        new ImageHostFile(Files.createTempDir().getAbsolutePath())
                     }
                 }
             };
