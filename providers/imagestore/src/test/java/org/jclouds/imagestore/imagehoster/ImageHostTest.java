@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
@@ -38,16 +37,16 @@ public class ImageHostTest {
     private static final String IMAGE2 = "image2";
 
     /**
-     * Test method for {@link org.jclouds.imagestore.blobstore.IImageHost#ImageHostFile(java.io.File)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#imageExists(java.lang.String, java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#deleteImage(java.lang.String, java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#uploadImage(java.lang.String, java.lang.String, java.awt.image.BufferedImage)}
+     * Test method for {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#ImageHostFile(java.io.File)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageExists(java.lang.String, java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImage(java.lang.String, java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.lang.String, java.awt.image.BufferedImage)}
      * and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#uploadImage(java.lang.String, java.awt.image.BufferedImage)}
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.awt.image.BufferedImage)}
      * and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#downloadImage(java.lang.String, java.lang.String)}
-     * and {@link org.jclouds.imagestore.blobstore.IImageHost#countImagesInSet(java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#clearImageSet(java.lang.String)}.
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#downloadImage(java.lang.String, java.lang.String)}
+     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#countImagesInSet(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#clearImageSet(java.lang.String)}.
      * 
      * @param clazz
      *            to be tested with
@@ -134,9 +133,9 @@ public class ImageHostTest {
     }
 
     /**
-     * Set method for {@link org.jclouds.imagestore.blobstore.IImageHost#createImageSet(java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#imageSetExists(java.lang.String)} and
-     * {@link org.jclouds.imagestore.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
+     * Set method for {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#createImageSet(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageSetExists(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
      * 
      * @param clazz
      *            to be tested with

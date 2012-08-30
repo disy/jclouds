@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.IImageHost;
+import org.jclouds.imagestore.imagehoster.IImageHost;
 
 import com.google.inject.Inject;
 

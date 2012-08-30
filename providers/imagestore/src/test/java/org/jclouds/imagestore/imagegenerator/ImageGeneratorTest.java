@@ -38,13 +38,13 @@ import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.imagestore.IImageHost;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;

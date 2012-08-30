@@ -30,7 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.jclouds.imagestore.IImageHost;
+import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 

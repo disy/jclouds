@@ -24,10 +24,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.jclouds.imagestore;
+package org.jclouds.imagestore.imagehoster;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * The ImageHoster interface.
@@ -36,17 +37,17 @@ import java.io.IOException;
  */
 
 public interface IImageHost {
-    
+
     /**
      * The maximum image with.
      * 
      * @return The maximum image width.
      */
     int getMaxImageWidth();
-    
+
     /**
      * The maximum image height.
-     *     
+     * 
      * @return The maximum image height.
      */
     int getMaxImageHeight();
@@ -109,7 +110,8 @@ public interface IImageHost {
      *            the image
      * @return the image id
      * 
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image)
         throws IOException;
@@ -123,7 +125,8 @@ public interface IImageHost {
      *            the image
      * @return the image id
      * 
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     String uploadImage(final String imageTitle, final BufferedImage image) throws IOException;
 
@@ -136,7 +139,8 @@ public interface IImageHost {
      *            the image title
      * @return the buffered image
      * 
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) throws IOException;
 
@@ -156,5 +160,25 @@ public interface IImageHost {
      *            the set title
      */
     void clearImageSet(final String imageSetTitle);
+
+    /**
+     * 
+     * Factory for generating an {@link IImageHost}-instance. Needed mainly
+     * because of Guice-Assisted utilization.
+     * 
+     * @author Sebastian Graf, University of Konstanz
+     * 
+     */
+    public static interface IImageHostFactory {
+
+        /**
+         * Generating a storage for a fixed file.
+         * 
+         * @param pProperties
+         *            referencing not only to the storage.
+         * @return an {@link IImageHost}-instance
+         */
+        IImageHost create(Properties pProperties);
+    }
 
 }
