@@ -24,11 +24,8 @@
 			<artifactId>flickrj-android</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.restfb</groupId>
-			<artifactId>restfb</artifactId>
-			<version>1.6.9</version>
-		</dependency>
+		<!-- <dependency> <groupId>com.restfb</groupId> <artifactId>restfb</artifactId> 
+			<version>1.6.9</version> </dependency> -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
@@ -57,26 +54,14 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>org.jclouds</groupId>
-			<artifactId>jclouds-blobstore</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.jclouds.driver</groupId>
 			<artifactId>jclouds-log4j</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jclouds</groupId>
-			<artifactId>jclouds-core</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
+		
 
 	</dependencies>
 	<repositories>
