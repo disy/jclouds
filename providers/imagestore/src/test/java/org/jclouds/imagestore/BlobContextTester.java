@@ -46,6 +46,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 
 public class BlobContextTester {
 
@@ -77,7 +78,14 @@ public class BlobContextTester {
             String containerName = "testcontainer";
 
             Properties mProperties = new Properties();
-            mProperties.setProperty(FilesystemConstants.PROPERTY_BASEDIR, "/tmp/bla");
+            mProperties.setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir()
+                .getAbsolutePath());
+            mProperties.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
+                "org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter");
+            mProperties.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
+                "org.jclouds.imagestore.imagehoster.file.ImageHostFile");
+            mProperties.setProperty(ImageStoreConstants.PROPERTY_STORAGEPARAMETER, mProperties
+                .getProperty(FilesystemConstants.PROPERTY_BASEDIR));
 
             // Init
             BlobStoreContext context =

@@ -94,11 +94,15 @@ public class ImageGeneratorTest {
      *             Signals that a certificate exception has occurred.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
     @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests")
     public void testByteRepresentationRemoteHosts(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
-        throws NoSuchAlgorithmException, CertificateException, IOException {
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
         check(painterClazz, painters, hostClazz, hosts);
     }
 
@@ -119,11 +123,15 @@ public class ImageGeneratorTest {
      *             Signals that a certificate exception has occurred.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
     @Test(dataProvider = "fileHostAllPainters", groups = "localTests")
     public void testByteRepresentationOnFileHost(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
-        throws NoSuchAlgorithmException, CertificateException, IOException {
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
         check(painterClazz, painters, hostClazz, hosts);
     }
 
@@ -203,16 +211,21 @@ public class ImageGeneratorTest {
      *             Signals that a certificate exception has occurred.
      * @throws IOException
      *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
     private void check(final Class<IBytesToImagePainter> painterClazz, final IBytesToImagePainter[] painters,
         final Class<IImageHost> hostClazz, final IImageHost[] hosts) throws NoSuchAlgorithmException,
-        CertificateException, IOException {
+        CertificateException, IOException, InstantiationException, IllegalAccessException,
+        ClassNotFoundException {
 
         for (IImageHost host : hosts) {
             clean(host);
             for (IBytesToImagePainter pa : painters) {
-                final ImageGenerator ig = new ImageGenerator(pa);
-                final SyncImageBlobStore ib = new SyncImageBlobStore(host, ig);
+                final SyncImageBlobStore ib =
+                    new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), Files
+                        .createTempDir().getAbsolutePath());
                 final String blobName = "blob_" + System.currentTimeMillis();
                 final BlobBuilder bb = ib.blobBuilder(blobName);
                 bb.payload(RAWFILEBYTES);

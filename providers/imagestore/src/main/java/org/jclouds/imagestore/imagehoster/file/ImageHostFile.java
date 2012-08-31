@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.inject.Named;
 
-import org.jclouds.filesystem.reference.FilesystemConstants;
+import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 
 import com.google.inject.Inject;
@@ -34,7 +34,7 @@ public class ImageHostFile implements IImageHost {
      * @param pFile
      */
     @Inject
-    public ImageHostFile(@Named(FilesystemConstants.PROPERTY_BASEDIR) String baseDir) {
+    public ImageHostFile(@Named(ImageStoreConstants.PROPERTY_STORAGEPARAMETER) String baseDir) {
         mFile = new File(baseDir);
     }
 

@@ -33,6 +33,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
@@ -47,12 +49,16 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.encryption.internal.JCECrypto;
+import org.jclouds.imagestore.config.BytePainterAndHosterModule;
+import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.io.Payload;
 import org.jclouds.javax.annotation.Nullable;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 /**
  * This class implements the jClouds BlobStore interface and acts as adapter between jClouds and the image
@@ -72,15 +78,26 @@ public class SyncImageBlobStore implements BlobStore {
     /**
      * ImageBlobStore constructor.
      * 
-     * @param iImageHost
-     *            The image host to be used.
-     * @param imageGenerator
+     * @param pImageHoster
+     *            The class-name of the image host to be used.
+     * @param pBytePainter
      *            The image generator to be used.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
      */
     @Inject
-    public SyncImageBlobStore(final IImageHost iImageHost, final ImageGenerator imageGenerator) {
-        ih = iImageHost;
-        ig = imageGenerator;
+    public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) String pImageHoster,
+        @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) String pBytePainter,
+        @Named(ImageStoreConstants.PROPERTY_STORAGEPARAMETER) String pStorageParameter) {
+        Injector inj =
+            Guice
+                .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));
+        ih = inj.getInstance(IImageHost.class);
+        IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
+        ig = new ImageGenerator(painter);
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
