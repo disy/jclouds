@@ -27,6 +27,8 @@ public class BytePainterAndHosterModule extends AbstractModule {
         mImageHoster = pImageHoster;
         mProps = new Properties();
         mProps.setProperty(ImageStoreConstants.PROPERTY_STORAGEPARAMETER, pStorageParameter);
+        mProps.setProperty(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY, "3e6f5174edc3744e57c496db5d780ee8");
+        mProps.setProperty(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET, "a23933fe38c54919");
     }
 
     /**

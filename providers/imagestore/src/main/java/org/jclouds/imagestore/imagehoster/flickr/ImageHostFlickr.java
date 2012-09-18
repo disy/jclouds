@@ -30,10 +30,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.inject.Named;
+
+import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 
+import com.google.inject.Inject;
 import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.photos.Photo;
@@ -73,9 +77,11 @@ public class ImageHostFlickr implements IImageHost {
      * Instantiates a new Flickr IImageHost instance.
      * 
      */
-    public ImageHostFlickr() {
+    @Inject
+    public ImageHostFlickr(@Named(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY) String pAppKey,
+        @Named(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET) String pSecretKey) {
         try {
-            FlickrOAuth foa = new FlickrOAuth();
+            FlickrOAuth foa = new FlickrOAuth(pAppKey, pSecretKey);
             fl = foa.getAuthenticatedFlickrInstance();
             userId = foa.getUser().getId();
         } catch (IOException e) {

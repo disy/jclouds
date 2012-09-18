@@ -11,9 +11,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
+import org.jclouds.imagestore.ImageStoreConstants;
+import org.jclouds.imagestore.ImageStoreHelper;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
@@ -37,16 +40,19 @@ public class ImageHostTest {
     private static final String IMAGE2 = "image2";
 
     /**
-     * Test method for {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#ImageHostFile(java.io.File)} and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageExists(java.lang.String, java.lang.String)} and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImage(java.lang.String, java.lang.String)} and
+     * Test method for
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#ImageHostFile(java.io.File)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageExists(java.lang.String, java.lang.String)}
+     * and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImage(java.lang.String, java.lang.String)}
+     * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.lang.String, java.awt.image.BufferedImage)}
      * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.awt.image.BufferedImage)}
      * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#downloadImage(java.lang.String, java.lang.String)}
-     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#countImagesInSet(java.lang.String)} and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#clearImageSet(java.lang.String)}.
+     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#countImagesInSet(java.lang.String)}
+     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#clearImageSet(java.lang.String)}.
      * 
      * @param clazz
      *            to be tested with
@@ -66,7 +72,8 @@ public class ImageHostTest {
      * 
      * @param clazz
      * @param pHandlers
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
     @Test(dataProvider = "remoteHosts", groups = "remoteTests")
     public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
@@ -133,7 +140,8 @@ public class ImageHostTest {
     }
 
     /**
-     * Set method for {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#createImageSet(java.lang.String)} and
+     * Set method for
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#createImageSet(java.lang.String)} and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageSetExists(java.lang.String)} and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
      * 
@@ -146,7 +154,7 @@ public class ImageHostTest {
     public void testImageHostSetsLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
         check(clazz, pHandlers);
     }
-    
+
     /**
      * 
      * @param clazz
@@ -199,14 +207,17 @@ public class ImageHostTest {
      */
     @DataProvider(name = "remoteHosts")
     public Object[][] remoteHosts() {
-
-        Object[][] returnVal = {
+        Properties props = ImageStoreHelper.getProps();
+        Object[][] returnVal =
             {
-                IImageHost.class, new IImageHost[] {
-                    new ImageHostFlickr()
+                {
+                    IImageHost.class,
+                    new IImageHost[] {
+                        new ImageHostFlickr(props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY),
+                            props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET))
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 

@@ -26,6 +26,15 @@
  */
 package org.jclouds.imagestore.imagehoster.flickr;
 
+import static org.jclouds.imagestore.ImageStoreConstants.CALLBACK_URL;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PERMISSION;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_NAME;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_URI;
+import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_TOKEN;
+import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_TOKEN_SECRET;
+import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_USERNAME;
+import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_USER_ID;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,10 +45,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.inject.Named;
+
+import org.jclouds.imagestore.ImageStoreConstants;
+
 import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.RequestContext;
-import com.googlecode.flickrjandroid.auth.Permission;
 import com.googlecode.flickrjandroid.oauth.OAuth;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
 import com.googlecode.flickrjandroid.people.User;
@@ -67,9 +79,10 @@ public class FlickrOAuth {
      * @throws IOException
      *             Signals that an I/O exception has occurred
      */
-    public FlickrOAuth() throws IOException {
+    public FlickrOAuth(@Named(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY) String pAppKey,
+        @Named(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET) String pSecretKey) throws IOException {
         loadFlickrProperties();
-        fl = new Flickr(FlickrOAuthConstants.FLICKR_APP_KEY, FlickrOAuthConstants.FLICKR_SHARED_SECRET);
+        fl = new Flickr(pAppKey, pSecretKey);
     }
 
     /**
@@ -84,7 +97,7 @@ public class FlickrOAuth {
     public Flickr getAuthenticatedFlickrInstance() throws IOException, FlickrException {
 
         if (fp.getProperty("token").isEmpty()) {
-            rToken = fl.getOAuthInterface().getRequestToken(FlickrOAuthConstants.CALLBACK_URL);
+            rToken = fl.getOAuthInterface().getRequestToken(CALLBACK_URL);
             System.out.println(generateAuthenticationURL());
             readInVerifier();
 
@@ -103,8 +116,8 @@ public class FlickrOAuth {
      *             Signals that an I/O exception has occurred.
      */
     private void loadFlickrProperties() throws IOException {
-        File propFile = new File(FlickrOAuthConstants.FLICKR_PROP_FILE_URI);
-        
+        File propFile = new File(FLICKR_PROP_FILE_URI);
+
         if (!propFile.exists()) {
             propFile.createNewFile();
         }
@@ -121,10 +134,10 @@ public class FlickrOAuth {
      */
     private OAuth loadOAuthFromPropertiesFile() throws IOException {
 
-        final String token = fp.getProperty(FlickrOAuthConstants.PROPKEY_TOKEN);
-        final String tokenSecret = fp.getProperty(FlickrOAuthConstants.PROPKEY_TOKEN_SECRET);
-        final String userId = fp.getProperty(FlickrOAuthConstants.PROPKEY_USER_ID);
-        final String username = fp.getProperty(FlickrOAuthConstants.PROPKEY_USERNAME);
+        final String token = fp.getProperty(PROPKEY_TOKEN);
+        final String tokenSecret = fp.getProperty(PROPKEY_TOKEN_SECRET);
+        final String userId = fp.getProperty(PROPKEY_USER_ID);
+        final String username = fp.getProperty(PROPKEY_USERNAME);
 
         User usr = new User();
         usr.setId(userId);
@@ -152,12 +165,11 @@ public class FlickrOAuth {
         final String userId = aToken.getUser().getId();
         final String username = aToken.getUser().getUsername();
 
-        fp.setProperty(FlickrOAuthConstants.PROPKEY_TOKEN, token);
-        fp.setProperty(FlickrOAuthConstants.PROPKEY_TOKEN_SECRET, tokenSecret);
-        fp.setProperty(FlickrOAuthConstants.PROPKEY_USER_ID, userId);
-        fp.setProperty(FlickrOAuthConstants.PROPKEY_USERNAME, username);
-        fp.store(new FileOutputStream(new File(FlickrOAuthConstants.FLICKR_PROP_FILE_URI)),
-            FlickrOAuthConstants.FLICKR_PROP_FILE_NAME);
+        fp.setProperty(PROPKEY_TOKEN, token);
+        fp.setProperty(PROPKEY_TOKEN_SECRET, tokenSecret);
+        fp.setProperty(PROPKEY_USER_ID, userId);
+        fp.setProperty(PROPKEY_USERNAME, username);
+        fp.store(new FileOutputStream(new File(FLICKR_PROP_FILE_URI)), FLICKR_PROP_FILE_NAME);
     }
 
     /**
@@ -186,7 +198,7 @@ public class FlickrOAuth {
      *             Signals that malformed URL exception has occurred.
      */
     private URL generateAuthenticationURL() throws MalformedURLException {
-        return fl.getOAuthInterface().buildAuthenticationUrl(FlickrOAuthConstants.FLICKR_PERMISSION, rToken);
+        return fl.getOAuthInterface().buildAuthenticationUrl(FLICKR_PERMISSION, rToken);
     }
 
     /**
@@ -214,36 +226,5 @@ public class FlickrOAuth {
     private OAuth getAccessToken() throws IOException, FlickrException {
         return fl.getOAuthInterface().getAccessToken(rToken.getOauthToken(), rToken.getOauthTokenSecret(),
             verifier);
-    }
-
-    private static class FlickrOAuthConstants {
-
-        /** The callback-URL. oob = out-of-band. */
-        private static final String CALLBACK_URL = "oob";
-        /** The flickr permission. */
-        private static final Permission FLICKR_PERMISSION = Permission.DELETE;
-        /** The flickr properties file name. */
-        private static final String FLICKR_PROP_FILE_NAME = "flickr.properties";
-        /** The path to Flickr properties file. */
-        private static final String FLICKR_PROP_FILE_URI = FlickrOAuth.class.getResource(".").getPath() + "../../../../../"  + FlickrOAuthConstants.FLICKR_PROP_FILE_NAME;
-
-        // Application Identifier
-
-        /** The application key. */
-        private static final String FLICKR_APP_KEY = "3e6f5174edc3744e57c496db5d780ee8";
-        /** The shared secret. */
-        private static final String FLICKR_SHARED_SECRET = "a23933fe38c54919";
-
-        // Properties Keys
-
-        /** The token properties key. */
-        private static final String PROPKEY_TOKEN = "token";
-        /** The token secret properties key. */
-        private static final String PROPKEY_TOKEN_SECRET = "tokenSecret";
-        /** The user id properties key. */
-        private static final String PROPKEY_USER_ID = "userId";
-        /** The user name properties key. */
-        private static final String PROPKEY_USERNAME = "usernmae";
-
     }
 }

@@ -35,9 +35,12 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.Properties;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
+import org.jclouds.imagestore.ImageStoreConstants;
+import org.jclouds.imagestore.ImageStoreHelper;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
@@ -177,7 +180,7 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "remoteHostsAllPainters")
     public Object[][] remoteHostsAllPainters() {
-
+        Properties props = ImageStoreHelper.getProps();
         Object[][] returnVal =
             {
                 {
@@ -186,8 +189,12 @@ public class ImageGeneratorTest {
                         new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
-                    }, IImageHost.class, new IImageHost[] {
-                        new ImageHostFlickr()
+                    },
+                    IImageHost.class,
+                    new IImageHost[] {
+                        new ImageHostFlickr(props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY),
+                            props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET)),
+                        new ImageHostFile(Files.createTempDir().getAbsolutePath())
                     }
                 }
             };
