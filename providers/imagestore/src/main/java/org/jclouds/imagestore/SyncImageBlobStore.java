@@ -49,6 +49,7 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.encryption.internal.JCECrypto;
+import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
@@ -91,7 +92,7 @@ public class SyncImageBlobStore implements BlobStore {
     @Inject
     public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) String pImageHoster,
         @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) String pBytePainter,
-        @Named(ImageStoreConstants.PROPERTY_STORAGEPARAMETER) String pStorageParameter) {
+        @Named(FilesystemConstants.PROPERTY_BASEDIR) String pStorageParameter) {
         Injector inj =
             Guice
                 .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));

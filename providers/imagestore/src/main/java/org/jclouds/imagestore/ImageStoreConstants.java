@@ -10,16 +10,12 @@ public class ImageStoreConstants {
     public static final String PROPERTY_IMAGEHOSTER = "jclouds.imagestore.imagehoster";
     // Fully qualified name of imagepainter
     public static final String PROPERTY_BYTEPAINTER = "jclouds.imagestore.imagegenerator";
-    // Fully qualified name of local storage parameter
-    public static final String PROPERTY_STORAGEPARAMETER = "jclouds.imagestore.storageparameter";
-    
+
     // Name of Flickr Application Identifier
     public static final String PROPERTY_FLICKR_APP_KEY = "jclouds.imagestore.flickappkey";
     // Name of Flickr Application Secret
     public static final String PROPERTY_FLICKR_SHARED_SECRET = "jclouds.imagestore.flicksecret";
 
-    
-    
     /** The callback-URL. oob = out-of-band. */
     public static final String CALLBACK_URL = "oob";
     /** The flickr permission. */
