@@ -84,9 +84,9 @@ public class ImageHostFlickr implements IImageHost {
             fl = foa.getAuthenticatedFlickrInstance();
             userId = foa.getUser().getId();
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         fup = new FlickrUploader(fl);
         fdown = new FlickrDownloader(fl, userId);
@@ -113,11 +113,11 @@ public class ImageHostFlickr implements IImageHost {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return "";
     }
@@ -138,11 +138,11 @@ public class ImageHostFlickr implements IImageHost {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return "";
     }
@@ -158,11 +158,11 @@ public class ImageHostFlickr implements IImageHost {
         try {
             psi.create(imageSetTitle, "", dummyID);
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return true;
     }
@@ -187,11 +187,11 @@ public class ImageHostFlickr implements IImageHost {
         try {
             poi.delete(imageId);
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
     }
 
@@ -207,11 +207,11 @@ public class ImageHostFlickr implements IImageHost {
                 poi.delete(ph.getId());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
     }
 
@@ -229,9 +229,9 @@ public class ImageHostFlickr implements IImageHost {
         try {
             psi.addPhoto(imageSetId, imageId);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
 
         return imageId;
@@ -244,11 +244,11 @@ public class ImageHostFlickr implements IImageHost {
         try {
             return fdown.getImageAsBufferedImage(imageId);
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return null;
     }
@@ -258,11 +258,11 @@ public class ImageHostFlickr implements IImageHost {
         try {
             return fup.uploadImage(imageTitle, image, meta);
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (SAXException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return null;
     }
@@ -272,11 +272,11 @@ public class ImageHostFlickr implements IImageHost {
         try {
             return psi.getList(userId).getPhotosets().size();
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
         return -1;
     }
@@ -293,11 +293,11 @@ public class ImageHostFlickr implements IImageHost {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (FlickrException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
     }
 
