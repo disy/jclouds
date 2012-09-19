@@ -27,9 +27,6 @@
 package org.jclouds.imagestore.imagegenerator;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.Deflater;
 
 import com.google.inject.Inject;
 
@@ -54,45 +51,6 @@ public class ImageGenerator {
     @Inject
     public ImageGenerator(final IBytesToImagePainter bytePainter) {
         bp = bytePainter;
-    }
-
-    /**
-     * Compress data.
-     * 
-     * @param bs
-     *            the bs
-     * @return the byte[]
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
-     */
-    public byte[] compressData(final byte[] bs) throws IOException {
-        Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
-        deflater.setInput(bs);
-        deflater.finish();
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(bs.length);
-
-        byte[] buffer = new byte[1024];
-
-        /*
-         * Use
-         * 
-         * boolean finished() method of Deflater class to determine whether end
-         * of compressed data output stream reached.
-         */
-        while (!deflater.finished()) {
-            /*
-             * use int deflate(byte[] buffer) method to fill the buffer with the
-             * compressed data.
-             * 
-             * This method returns actual number of bytes compressed.
-             */
-
-            int bytesCompressed = deflater.deflate(buffer);
-            bos.write(buffer, 0, bytesCompressed);
-        }
-
-        return bos.toByteArray();
     }
 
     /**

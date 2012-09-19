@@ -69,8 +69,8 @@ public class ImageGeneratorTest {
         + File.separator + "Linie9C.pdf";
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
-    
-    private byte [] rb = createRandomArray(2048);
+
+    private byte[] rb = createRandomArray(2048);
 
     static {
         try {
@@ -180,17 +180,20 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "remoteHostsAllPainters")
     public Object[][] remoteHostsAllPainters() {
-
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
-                    new HexadecimalBytesToImagePainter()
-
-                }, IImageHost.class, new IImageHost[] {
-                    new ImageHostFlickr()
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new QuaternaryLayeredBytesToImagePainter()
+                    }, IImageHost.class, new IImageHost[] {
+                        new ImageHostFlickr(), new ImageHostFile(Files.createTempDir().getAbsolutePath())
+                    }
                 }
-            }
-        };
+
+            };
         return returnVal;
     }
 

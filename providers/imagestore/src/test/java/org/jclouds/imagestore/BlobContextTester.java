@@ -84,8 +84,6 @@ public class BlobContextTester {
                 "org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter");
             mProperties.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
                 "org.jclouds.imagestore.imagehoster.file.ImageHostFile");
-            mProperties.setProperty(ImageStoreConstants.PROPERTY_STORAGEPARAMETER, mProperties
-                .getProperty(FilesystemConstants.PROPERTY_BASEDIR));
 
             // Init
             BlobStoreContext context =

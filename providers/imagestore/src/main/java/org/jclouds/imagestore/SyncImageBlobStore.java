@@ -49,6 +49,7 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.encryption.internal.JCECrypto;
+import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
@@ -91,7 +92,7 @@ public class SyncImageBlobStore implements BlobStore {
     @Inject
     public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) String pImageHoster,
         @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) String pBytePainter,
-        @Named(ImageStoreConstants.PROPERTY_STORAGEPARAMETER) String pStorageParameter) {
+        @Named(FilesystemConstants.PROPERTY_BASEDIR) String pStorageParameter) {
         Injector inj =
             Guice
                 .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));
@@ -101,9 +102,9 @@ public class SyncImageBlobStore implements BlobStore {
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (CertificateException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
     }
 
@@ -210,6 +211,8 @@ public class SyncImageBlobStore implements BlobStore {
     public String putBlob(final String container, final Blob blob) {
         final Payload pl = blob.getPayload();
 
+        String name= blob.getMetadata().getName();
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] bs = null;
         try {
@@ -218,7 +221,7 @@ public class SyncImageBlobStore implements BlobStore {
             baos.flush();
             baos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         BufferedImage bi = ig.createImageFromBytes(bs);

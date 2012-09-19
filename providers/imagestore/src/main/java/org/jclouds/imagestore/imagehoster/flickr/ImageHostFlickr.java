@@ -34,6 +34,7 @@ import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 
+import com.google.inject.Inject;
 import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.photos.Photo;
@@ -69,10 +70,14 @@ public class ImageHostFlickr implements IImageHost {
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
 
+    
+    
+    
     /**
      * Instantiates a new Flickr IImageHost instance.
      * 
      */
+    @Inject
     public ImageHostFlickr() {
         try {
             FlickrOAuth foa = new FlickrOAuth();
