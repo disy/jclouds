@@ -160,5 +160,4 @@ public interface IImageHost {
      */
     void clearImageSet(final String imageSetTitle);
 
-
 }

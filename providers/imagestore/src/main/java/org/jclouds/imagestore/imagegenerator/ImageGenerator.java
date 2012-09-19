@@ -39,18 +39,28 @@ public class ImageGenerator {
 
     /** The bp. */
     private final IBytesToImagePainter bp;
-
-    private final static int HEADER_OFFSET = 4;
+    /** The byte array header offset. */
+    private static final int HEADER_OFFSET = 4;
+    /** The maximum image width for the specific image host. */
+    private final int maxImageHostWidth;
+    /** The maximum image height for the specific image host. */
+    private final int maxImageHostHeight;
 
     /**
      * Instantiates a new image generator.
      * 
      * @param bytePainter
-     *            the byte painter to be used
+     *            the byte painter to be used.
+     * @param ihMaxWidth
+     *            The maximum image width for the specific image host.
+     * @param ihMaxHeight
+     *            The maximum image height for the specific image host.
      */
     @Inject
-    public ImageGenerator(final IBytesToImagePainter bytePainter) {
+    public ImageGenerator(final IBytesToImagePainter bytePainter, final int ihMaxWidth, final int ihMaxHeight) {
         bp = bytePainter;
+        maxImageHostHeight = ihMaxHeight;
+        maxImageHostWidth = ihMaxWidth;
     }
 
     /**
@@ -60,7 +70,7 @@ public class ImageGenerator {
      *            The width.
      * @param height
      *            The height.
-     * @return The created buffered image
+     * @return The created buffered image.
      */
     BufferedImage createBufferedImage(final int width, final int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -75,8 +85,12 @@ public class ImageGenerator {
      * @return An Array with width and height.
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
-        int w = 2048;
+        int w = maxImageHostWidth;
         int h = (int)((byteArrayLength + HEADER_OFFSET) * bp.bytesPerPixel() / (float)w) + 1;
+
+        if (h > maxImageHostHeight) {
+
+        }
 
         return new int[] {
             w, h
@@ -116,13 +130,13 @@ public class ImageGenerator {
      */
     private static byte[] saveArrayLengthInFirst4Bytes(final byte[] bs) {
         final int length = bs.length;
-        final int newLength = length + 4;
+        final int newLength = length + HEADER_OFFSET;
         final byte[] bss = new byte[newLength];
         bss[0] = (byte)length;
         bss[1] = (byte)(length >> 8);
         bss[2] = (byte)(length >> 16);
         bss[3] = (byte)(length >> 24);
-        System.arraycopy(bs, 0, bss, 4, length);
+        System.arraycopy(bs, 0, bss, HEADER_OFFSET, length);
         return bss;
     }
 
@@ -140,7 +154,7 @@ public class ImageGenerator {
         final int b4 = (int)bs[3] & 0xFF;
         final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
         byte[] bss = new byte[oLength];
-        System.arraycopy(bs, 4, bss, 0, oLength);
+        System.arraycopy(bs, HEADER_OFFSET, bss, 0, oLength);
         return bss;
     }
 }
