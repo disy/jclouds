@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jclouds</groupId>
 		<artifactId>jclouds-project</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>1.6.0-SNAPSHOT</version>
 		<relativePath>../../project/pom.xml</relativePath>
 	</parent>
 	<groupId>org.jclouds.provider</groupId>
@@ -12,6 +12,7 @@
 	<name>jclouds image store providers</name>
 	<description>stores data on image-clouds</description>
 	<packaging>bundle</packaging>
+
 
 	<properties>
 		<jclouds.osgi.export>org.jclouds.imagestore*;version="${project.version}"</jclouds.osgi.export>
@@ -44,13 +45,13 @@
 			<artifactId>guava</artifactId>
 			<version>13.0</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>org.jclouds</groupId>
 			<artifactId>jclouds-core</artifactId>
 			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>org.jclouds</groupId>
 			<artifactId>jclouds-blobstore</artifactId>
