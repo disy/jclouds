@@ -39,7 +39,7 @@ public class ImageGenerator {
 
     /** The bp. */
     private final IBytesToImagePainter bp;
-    
+
     private final static int HEADER_OFFSET = 4;
 
     /**
@@ -140,11 +140,7 @@ public class ImageGenerator {
         final int b4 = (int)bs[3] & 0xFF;
         final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
         byte[] bss = new byte[oLength];
-        try {
-            System.arraycopy(bs, 4, bss, 0, oLength);
-        } catch (ArrayIndexOutOfBoundsException exc) {
-            exc.fillInStackTrace();
-        }
+        System.arraycopy(bs, 4, bss, 0, oLength);
         return bss;
     }
 }

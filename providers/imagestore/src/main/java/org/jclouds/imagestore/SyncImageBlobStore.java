@@ -211,8 +211,6 @@ public class SyncImageBlobStore implements BlobStore {
     public String putBlob(final String container, final Blob blob) {
         final Payload pl = blob.getPayload();
 
-        String name= blob.getMetadata().getName();
-        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] bs = null;
         try {
