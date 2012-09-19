@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
@@ -68,6 +69,8 @@ public class ImageGeneratorTest {
         + File.separator + "Linie9C.pdf";
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
+    
+    private byte [] rb = createRandomArray(2048);
 
     static {
         try {
@@ -178,19 +181,16 @@ public class ImageGeneratorTest {
     @DataProvider(name = "remoteHostsAllPainters")
     public Object[][] remoteHostsAllPainters() {
 
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
-                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new QuaternaryLayeredBytesToImagePainter()
-                    }, IImageHost.class, new IImageHost[] {
-                        new ImageHostFlickr()
-                    }
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new HexadecimalBytesToImagePainter()
+
+                }, IImageHost.class, new IImageHost[] {
+                    new ImageHostFlickr()
                 }
-            };
+            }
+        };
         return returnVal;
     }
 
@@ -228,7 +228,7 @@ public class ImageGeneratorTest {
                         .createTempDir().getAbsolutePath());
                 final String blobName = "blob_" + System.currentTimeMillis();
                 final BlobBuilder bb = ib.blobBuilder(blobName);
-                bb.payload(RAWFILEBYTES);
+                bb.payload(rb);
                 bb.name(blobName);
                 final Blob testBlob = bb.build();
 
@@ -241,7 +241,7 @@ public class ImageGeneratorTest {
                 bos.close();
 
                 assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
-                    .toString(), Arrays.equals(RAWFILEBYTES, bss));
+                    .toString(), Arrays.equals(rb, bss));
             }
             clean(host);
         }
@@ -272,6 +272,13 @@ public class ImageGeneratorTest {
 
         is.read(bs);
         is.close();
+        return bs;
+    }
+
+    byte[] createRandomArray(int count) {
+        byte[] bs = new byte[count];
+        Random rand = new Random();
+        rand.nextBytes(bs);
         return bs;
     }
 }

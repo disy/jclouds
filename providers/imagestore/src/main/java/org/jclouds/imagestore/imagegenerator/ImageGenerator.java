@@ -42,6 +42,8 @@ public class ImageGenerator {
 
     /** The bp. */
     private final IBytesToImagePainter bp;
+    
+    private final static int HEADER_OFFSET = 4;
 
     /**
      * Instantiates a new image generator.
@@ -116,7 +118,7 @@ public class ImageGenerator {
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
         int w = 2048;
-        int h = (int)(byteArrayLength * bp.bytesPerPixel() / (float)w) + 1;
+        int h = (int)((byteArrayLength + HEADER_OFFSET) * bp.bytesPerPixel() / (float)w) + 1;
 
         return new int[] {
             w, h
