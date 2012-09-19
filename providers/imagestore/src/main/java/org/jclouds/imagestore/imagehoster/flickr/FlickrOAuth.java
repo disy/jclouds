@@ -45,10 +45,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import javax.inject.Named;
-
-import org.jclouds.imagestore.ImageStoreConstants;
-
 import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.RequestContext;
@@ -73,16 +69,19 @@ public class FlickrOAuth {
     /** The Flickr properties. */
     private final Properties fp = new Properties();
 
+    //Data for app regarding to Flickr
+    private static final String FLICKR_APP_KEY = "3e6f5174edc3744e57c496db5d780ee8";
+    private static final String FLICKR_SHARED_SECRET = "a23933fe38c54919";
+    
     /**
      * Constructs Flickr OAuth authentication.
      * 
      * @throws IOException
      *             Signals that an I/O exception has occurred
      */
-    public FlickrOAuth(@Named(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY) String pAppKey,
-        @Named(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET) String pSecretKey) throws IOException {
+    public FlickrOAuth() throws IOException {
         loadFlickrProperties();
-        fl = new Flickr(pAppKey, pSecretKey);
+        fl = new Flickr(FLICKR_APP_KEY, FLICKR_SHARED_SECRET);
     }
 
     /**

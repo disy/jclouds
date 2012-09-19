@@ -6,7 +6,6 @@ package org.jclouds.imagestore.config;
 import java.util.Properties;
 
 import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 
@@ -28,8 +27,6 @@ public class BytePainterAndHosterModule extends AbstractModule {
         mImageHoster = pImageHoster;
         mProps = new Properties();
         mProps.setProperty(FilesystemConstants.PROPERTY_BASEDIR, pStorageParameter);
-        mProps.setProperty(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY, "3e6f5174edc3744e57c496db5d780ee8");
-        mProps.setProperty(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET, "a23933fe38c54919");
     }
 
     /**

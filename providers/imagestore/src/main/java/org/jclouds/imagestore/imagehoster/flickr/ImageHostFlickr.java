@@ -30,9 +30,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.inject.Named;
-
-import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
@@ -73,15 +70,17 @@ public class ImageHostFlickr implements IImageHost {
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
 
+    
+    
+    
     /**
      * Instantiates a new Flickr IImageHost instance.
      * 
      */
     @Inject
-    public ImageHostFlickr(@Named(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY) String pAppKey,
-        @Named(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET) String pSecretKey) {
+    public ImageHostFlickr() {
         try {
-            FlickrOAuth foa = new FlickrOAuth(pAppKey, pSecretKey);
+            FlickrOAuth foa = new FlickrOAuth();
             fl = foa.getAuthenticatedFlickrInstance();
             userId = foa.getUser().getId();
         } catch (IOException e) {

@@ -11,10 +11,6 @@ public class ImageStoreConstants {
     // Fully qualified name of imagepainter
     public static final String PROPERTY_BYTEPAINTER = "jclouds.imagestore.imagegenerator";
 
-    // Name of Flickr Application Identifier
-    public static final String PROPERTY_FLICKR_APP_KEY = "jclouds.imagestore.flickappkey";
-    // Name of Flickr Application Secret
-    public static final String PROPERTY_FLICKR_SHARED_SECRET = "jclouds.imagestore.flicksecret";
 
     /** The callback-URL. oob = out-of-band. */
     public static final String CALLBACK_URL = "oob";

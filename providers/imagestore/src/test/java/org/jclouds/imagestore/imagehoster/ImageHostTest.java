@@ -11,12 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.ImageStoreConstants;
-import org.jclouds.imagestore.ImageStoreHelper;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
@@ -207,14 +204,13 @@ public class ImageHostTest {
      */
     @DataProvider(name = "remoteHosts")
     public Object[][] remoteHosts() {
-        Properties props = ImageStoreHelper.getProps();
         Object[][] returnVal =
             {
                 {
                     IImageHost.class,
                     new IImageHost[] {
-                        new ImageHostFlickr(props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_APP_KEY),
-                            props.getProperty(ImageStoreConstants.PROPERTY_FLICKR_SHARED_SECRET))
+                        new ImageHostFlickr(),
+                        new ImageHostFile(Files.createTempDir().getAbsolutePath())
                     }
                 }
             };
