@@ -102,9 +102,9 @@ public class SyncImageBlobStore implements BlobStore {
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         } catch (CertificateException e) {
-            e.printStackTrace();
+            new RuntimeException(e);
         }
     }
 
@@ -211,6 +211,8 @@ public class SyncImageBlobStore implements BlobStore {
     public String putBlob(final String container, final Blob blob) {
         final Payload pl = blob.getPayload();
 
+        String name= blob.getMetadata().getName();
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] bs = null;
         try {
@@ -219,7 +221,7 @@ public class SyncImageBlobStore implements BlobStore {
             baos.flush();
             baos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         BufferedImage bi = ig.createImageFromBytes(bs);
