@@ -10,7 +10,6 @@ import javax.imageio.ImageIO;
 import javax.inject.Named;
 
 import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 
 import com.google.inject.Inject;
@@ -59,11 +58,7 @@ public class ImageHostFile implements IImageHost {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             final File image = new File(set, imageTitle);
-            if (image.exists()) {
-                return true;
-            } else {
-                return false;
-            }
+            return image.exists();
         } else {
             return false;
         }

@@ -70,7 +70,9 @@ public class FlickrOAuth {
     private final Properties fp = new Properties();
 
     //Data for app regarding to Flickr
+    /** The flickr app key. */
     private static final String FLICKR_APP_KEY = "3e6f5174edc3744e57c496db5d780ee8";
+    /** The flickr shared secrect. */
     private static final String FLICKR_SHARED_SECRET = "a23933fe38c54919";
     
     /**

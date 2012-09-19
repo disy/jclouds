@@ -98,7 +98,7 @@ public class SyncImageBlobStore implements BlobStore {
                 .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));
         ih = inj.getInstance(IImageHost.class);
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
-        ig = new ImageGenerator(painter);
+        ig = new ImageGenerator(painter, ih.getMaxImageWidth(), ih.getMaxImageHeight());
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
