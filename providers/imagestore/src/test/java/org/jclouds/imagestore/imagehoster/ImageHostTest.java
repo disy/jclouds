@@ -59,7 +59,7 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      * 
      */
-    @Test(dataProvider = "fileHost", groups = "localTests")
+    @Test(dataProvider = "fileHost", groups = "localTests", enabled=false)
     public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
         throws IOException {
         checkImage(clazz, pHandlers);
@@ -72,7 +72,7 @@ public class ImageHostTest {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
+    @Test(dataProvider = "remoteHosts", groups = "remoteTests", enabled=false)
     public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
         checkImage(clazz, pHandlers);
     }
