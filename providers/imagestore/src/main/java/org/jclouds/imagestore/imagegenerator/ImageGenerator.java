@@ -89,7 +89,12 @@ public class ImageGenerator {
         int h = (int)((byteArrayLength + HEADER_OFFSET) * bp.bytesPerPixel() / (float)w) + 1;
 
         if (h > maxImageHostHeight) {
-
+            try {
+                throw new IllegalArgumentException(
+                    "Byte array too large for image generation! Generated image would be out of image-host's maximum image size.");
+            } catch (IllegalArgumentException e) {
+                new RuntimeException(e);
+            }
         }
 
         return new int[] {
