@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
-import java.util.Random;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
@@ -69,8 +68,6 @@ public class ImageGeneratorTest {
         + File.separator + "Linie9C.pdf";
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
-
-    private byte[] rb = createRandomArray(2048);
 
     static {
         try {
@@ -192,7 +189,6 @@ public class ImageGeneratorTest {
                         new ImageHostFlickr(), new ImageHostFile(Files.createTempDir().getAbsolutePath())
                     }
                 }
-
             };
         return returnVal;
     }
@@ -231,7 +227,7 @@ public class ImageGeneratorTest {
                         .createTempDir().getAbsolutePath());
                 final String blobName = "blob_" + System.currentTimeMillis();
                 final BlobBuilder bb = ib.blobBuilder(blobName);
-                bb.payload(rb);
+                bb.payload(RAWFILEBYTES);
                 bb.name(blobName);
                 final Blob testBlob = bb.build();
 
@@ -244,7 +240,7 @@ public class ImageGeneratorTest {
                 bos.close();
 
                 assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
-                    .toString(), Arrays.equals(rb, bss));
+                    .toString(), Arrays.equals(RAWFILEBYTES, bss));
             }
             clean(host);
         }
@@ -266,8 +262,11 @@ public class ImageGeneratorTest {
         long len = f.length();
 
         if (len > Integer.MAX_VALUE) {
-            System.out.println("File too large");
-            return new byte[0];
+            try {
+                throw new IllegalArgumentException("File too large!");
+            } catch (IllegalArgumentException e) {
+                new RuntimeException(e);
+            }
         }
 
         byte[] bs = new byte[(int)len];
@@ -275,13 +274,6 @@ public class ImageGeneratorTest {
 
         is.read(bs);
         is.close();
-        return bs;
-    }
-
-    byte[] createRandomArray(int count) {
-        byte[] bs = new byte[count];
-        Random rand = new Random();
-        rand.nextBytes(bs);
         return bs;
     }
 }
