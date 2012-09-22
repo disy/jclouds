@@ -50,7 +50,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     private static final float PIXELS_PER_BYTE = 8;
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 

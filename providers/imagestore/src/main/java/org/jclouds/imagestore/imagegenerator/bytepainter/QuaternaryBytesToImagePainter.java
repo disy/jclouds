@@ -55,7 +55,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
     };
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 

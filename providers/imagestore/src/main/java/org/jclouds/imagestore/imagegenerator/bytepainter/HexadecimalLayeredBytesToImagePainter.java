@@ -43,7 +43,7 @@ public class HexadecimalLayeredBytesToImagePainter implements IBytesToImagePaint
     private static final float PIXELS_PER_BYTE = 0.5f;
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 

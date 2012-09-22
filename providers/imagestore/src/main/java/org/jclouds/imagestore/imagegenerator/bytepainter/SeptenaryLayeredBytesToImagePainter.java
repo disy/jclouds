@@ -53,7 +53,7 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
     private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return BYTES_PER_PIXEL;
     }
 

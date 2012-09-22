@@ -86,7 +86,7 @@ public class ImageGenerator {
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
         int w = maxImageHostWidth;
-        int h = (int)((byteArrayLength + HEADER_OFFSET) * bp.bytesPerPixel() / (float)w) + 1;
+        int h = (int)((byteArrayLength + HEADER_OFFSET) * bp.pixelsPerByte() / (float)w) + 1;
 
         if (h > maxImageHostHeight) {
             try {

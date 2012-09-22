@@ -54,7 +54,7 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
         .generateUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 

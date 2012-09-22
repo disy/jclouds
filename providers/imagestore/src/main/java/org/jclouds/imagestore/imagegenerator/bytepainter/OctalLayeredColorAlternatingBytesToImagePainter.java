@@ -26,7 +26,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
     public static final float BYTES_PER_PIXEL = 3;
 
     @Override
-    public float bytesPerPixel() {
+    public float pixelsPerByte() {
         return BYTES_PER_PIXEL;
     }
 
