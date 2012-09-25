@@ -27,11 +27,14 @@
 package org.jclouds.imagestore.imagehoster.flickr;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.jclouds.imagestore.imagehoster.ImageHostHelper;
 import org.xml.sax.SAXException;
 
 import com.googlecode.flickrjandroid.Flickr;
@@ -78,24 +81,6 @@ public class FlickrUploader {
      */
     public String uploadImage(final String imageTitle, final BufferedImage image,
         final UploadMetaData meta) throws IOException, FlickrException, SAXException {
-        return up.upload(imageTitle, getByteArrayFromImage(image), meta);
-    }
-
-    /**
-     * Returns the byte-array from given image.
-     * 
-     * @param image
-     *            The image.
-     * @return The byte array from image.
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
-     */
-    private byte[] getByteArrayFromImage(final BufferedImage image) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
-        baos.flush();
-        byte[] imageInByte = baos.toByteArray();
-        baos.close();
-        return imageInByte;
+        return up.upload(imageTitle, ImageHostHelper.getInputStreamFromImage(image), meta);
     }
 }
