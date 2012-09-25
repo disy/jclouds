@@ -99,14 +99,14 @@ public class ImageHostFlickr implements IImageHost {
      *            the flickr set-id
      * @param imageTitle
      *            the image-title
-     * @return the flickr image-id
+     * @return the flickr Photo
      */
-    private String getFlickrImageId(final String imageSetId, final String imageTitle) {
+    private Photo getFlickrImage(final String imageSetId, final String imageTitle) {
         try {
-            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-            for (Photo ph : pl) {
+            final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+            for (final Photo ph : pl) {
                 if (ph.getTitle().equals(imageTitle)) {
-                    return ph.getId();
+                    return ph;
                 }
             }
         } catch (IOException e) {
@@ -116,44 +116,81 @@ public class ImageHostFlickr implements IImageHost {
         } catch (JSONException e) {
             new RuntimeException(e);
         }
-        return "";
+        return null;
     }
 
     /**
-     * Searches for set-title and return flickr-set-id.
+     * Searches for set-title and return flickr set-id.
+     * 
+     * @param imageSetTitle
+     *            the image-title
+     * @return the flickr Photoset
+     */
+    private Photoset getFlickrImageSet(final String imageSetTitle) {
+        try {
+            final Collection<Photoset> pc = psi.getList(userId).getPhotosets();
+            for (final Photoset ps : pc) {
+                if (ps.getTitle().equals(imageSetTitle)) {
+                    return ps;
+                }
+            }
+        } catch (IOException e) {
+            new RuntimeException(e);
+        } catch (FlickrException e) {
+            new RuntimeException(e);
+        } catch (JSONException e) {
+            new RuntimeException(e);
+        }
+        return null;
+    }
+
+    /**
+     * Returns flickr set-id from given set-title.
      * 
      * @param imageSetTitle
      *            the image-title
      * @return the flickr set-id
      */
     private String getFlickrImageSetId(final String imageSetTitle) {
-        try {
-            Collection<Photoset> pc = psi.getList(userId).getPhotosets();
-            for (Photoset ps : pc) {
-                if (ps.getTitle().equals(imageSetTitle)) {
-                    return ps.getId();
-                }
-            }
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        }
-        return "";
+        Photoset ps = getFlickrImageSet(imageSetTitle);
+        return ps == null ? "" : ps.getId();
+    }
+
+    /**
+     * Returns flickr image-id form given set-id and image-title.
+     * 
+     * @param imageSetId
+     *            the flickr set-id
+     * @param imageSetTitle
+     *            the set-title
+     * @return the flickr image-id
+     */
+    private String getFlickrImageId(final String imageSetId, final String imageSetTitle) {
+        Photo ph = getFlickrImage(imageSetId, imageSetTitle);
+        return ph == null ? "" : ph.getId();
     }
 
     @Override
     public boolean createImageSet(final String imageSetTitle) {
+        return createImageSetAndGetSet(imageSetTitle) == null;
+    }
+
+    /**
+     * Creates a Photoset with the given image-title and returns it's id. Returns null if a Photoset with given name already exists.
+     * 
+     * @param imageSetTitle
+     *            the set-title
+     * @return the Photoset
+     */
+    private Photoset createImageSetAndGetSet(final String imageSetTitle) {
         if (imageSetExists(imageSetTitle))
-            return false;
+            return null;
 
         final BufferedImage dummyImage = new BufferedImage(10, 10, BufferedImage.TYPE_BYTE_BINARY);
 
         final String dummyID = uploadImage("Dummy_" + Long.toString(System.currentTimeMillis()), dummyImage);
         try {
-            psi.create(imageSetTitle, "", dummyID);
+            return psi.create(imageSetTitle, "", dummyID);
         } catch (IOException e) {
             new RuntimeException(e);
         } catch (FlickrException e) {
@@ -161,7 +198,7 @@ public class ImageHostFlickr implements IImageHost {
         } catch (JSONException e) {
             new RuntimeException(e);
         }
-        return true;
+        return null;
     }
 
     @Override
@@ -194,14 +231,14 @@ public class ImageHostFlickr implements IImageHost {
 
     @Override
     public void deleteImageSet(final String imageSetTitle) {
-        String imageSetId = getFlickrImageSetId(imageSetTitle);
+        final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty())
             return;
 
         try {
-            PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-            for (Photo ph : pl) {
+            final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+            for (final Photo ph : pl) {
                 poi.delete(ph.getId());
             }
         } catch (IOException e) {
@@ -217,14 +254,13 @@ public class ImageHostFlickr implements IImageHost {
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
         final String imageId = uploadImage(imageTitle, img);
 
-        if (!imageSetExists(imageSetTitle)) {
-            createImageSet(imageSetTitle);
+        Photoset ps = createImageSetAndGetSet(imageSetTitle);
+        if(ps == null) {
+            ps = getFlickrImageSet(imageSetTitle);
         }
 
-        String imageSetId = getFlickrImageSetId(imageSetTitle);
-
         try {
-            psi.addPhoto(imageSetId, imageId);
+            psi.addPhoto(ps.getId(), imageId);
         } catch (FlickrException e) {
             new RuntimeException(e);
         } catch (JSONException e) {
@@ -239,9 +275,9 @@ public class ImageHostFlickr implements IImageHost {
     @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
-        final String imageId = getFlickrImageId(imageSetId, imageTitle);
+        final Photo ph = getFlickrImage(imageSetId, imageTitle);
         try {
-            return fdown.getImageAsBufferedImage(imageId);
+            return fdown.getImageAsBufferedImage(ph);
         } catch (IOException e) {
             new RuntimeException(e);
         } catch (FlickrException e) {
@@ -268,16 +304,10 @@ public class ImageHostFlickr implements IImageHost {
 
     @Override
     public int countImagesInSet(final String imageSetTitle) {
-        try {
-            return psi.getList(userId).getPhotosets().size();
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        }
-        return -1;
+        final Photoset ps = getFlickrImageSet(imageSetTitle);
+        if (ps == null)
+            return 0;
+        return ps.getPhotoCount();
     }
 
     @Override
@@ -285,9 +315,9 @@ public class ImageHostFlickr implements IImageHost {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
         try {
-            if (imageSetExists(imageSetTitle)) {
-                PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-                for (Photo ph : pl) {
+            if (!imageSetId.isEmpty()) {
+                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                for (final Photo ph : pl) {
                     psi.removePhoto(imageSetId, ph.getId());
                 }
             }

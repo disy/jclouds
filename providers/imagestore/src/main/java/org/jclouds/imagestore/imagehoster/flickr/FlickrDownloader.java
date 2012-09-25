@@ -79,8 +79,8 @@ public class FlickrDownloader {
     /**
      * Downloads specified photo from flickr.
      * 
-     * @param imageId
-     *            the image-id
+     * @param ph
+     *            the Photo
      * @return the image as BufferedImage
      * @throws IOException
      *             Signals that an I/O exception has occurred.
@@ -89,9 +89,8 @@ public class FlickrDownloader {
      * @throws JSONException
      *             the jSON exception
      */
-    public BufferedImage getImageAsBufferedImage(final String imageId) throws IOException, FlickrException,
+    public BufferedImage getImageAsBufferedImage(final Photo ph) throws IOException, FlickrException,
         JSONException {
-        final Photo ph = pi.getPhoto(imageId);
         return ImageIO.read(getImageAsStream(ph));
     }
 
