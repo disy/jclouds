@@ -94,33 +94,39 @@ public class ImageHostFile implements IImageHost {
     }
 
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image)
-        throws IOException {
+    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         final File set = new File(mFile, imageSetTitle);
         set.mkdirs();
         final File imageFile = new File(set, imageTitle);
-        imageFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(imageFile);
-        ImageIO.write(image, "png", fos);
-        fos.flush();
-        fos.close();
-        return imageFile.getAbsolutePath();
+        try {
+            imageFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            ImageIO.write(image, "png", fos);
+            fos.flush();
+            fos.close();
+            return imageFile.getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public String uploadImage(final String imageTitle, final BufferedImage image) throws IOException {
+    public String uploadImage(final String imageTitle, final BufferedImage image) {
         return uploadImage(STANDARDCONTAINER, imageTitle, image);
     }
 
     @Override
-    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle)
-        throws IOException {
+    public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         final File imageFile = new File(set, imageTitle);
-        FileInputStream fis = new FileInputStream(imageFile);
-        BufferedImage returnVal = ImageIO.read(fis);
-        fis.close();
-        return returnVal;
+        try {
+            FileInputStream fis = new FileInputStream(imageFile);
+            BufferedImage returnVal = ImageIO.read(fis);
+            fis.close();
+            return returnVal;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

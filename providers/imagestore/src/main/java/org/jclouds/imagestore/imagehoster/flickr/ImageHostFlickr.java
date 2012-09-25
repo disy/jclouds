@@ -70,9 +70,6 @@ public class ImageHostFlickr implements IImageHost {
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
 
-    
-    
-    
     /**
      * Instantiates a new Flickr IImageHost instance.
      * 
@@ -198,9 +195,10 @@ public class ImageHostFlickr implements IImageHost {
     @Override
     public void deleteImageSet(final String imageSetTitle) {
         String imageSetId = getFlickrImageSetId(imageSetTitle);
-        
-        if(imageSetId.isEmpty()) return;
-        
+
+        if (imageSetId.isEmpty())
+            return;
+
         try {
             PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
             for (Photo ph : pl) {
@@ -216,8 +214,7 @@ public class ImageHostFlickr implements IImageHost {
     }
 
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img)
-        throws IOException {
+    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
         final String imageId = uploadImage(imageTitle, img);
 
         if (!imageSetExists(imageSetTitle)) {
@@ -231,6 +228,8 @@ public class ImageHostFlickr implements IImageHost {
         } catch (FlickrException e) {
             new RuntimeException(e);
         } catch (JSONException e) {
+            new RuntimeException(e);
+        } catch (IOException e) {
             new RuntimeException(e);
         }
 

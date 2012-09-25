@@ -109,11 +109,8 @@ public interface IImageHost {
      *            the image
      * @return the image id
      * 
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
      */
-    String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image)
-        throws IOException;
+    String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image);
 
     /**
      * Upload image.
@@ -124,10 +121,8 @@ public interface IImageHost {
      *            the image
      * @return the image id
      * 
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
      */
-    String uploadImage(final String imageTitle, final BufferedImage image) throws IOException;
+    String uploadImage(final String imageTitle, final BufferedImage image);
 
     /**
      * Download image.
@@ -138,10 +133,8 @@ public interface IImageHost {
      *            the image title
      * @return the buffered image
      * 
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
      */
-    BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) throws IOException;
+    BufferedImage downloadImage(final String imageSetTitle, final String imageTitle);
 
     /**
      * Returns number of images in given set.

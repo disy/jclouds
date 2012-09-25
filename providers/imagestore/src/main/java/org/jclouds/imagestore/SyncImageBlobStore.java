@@ -224,11 +224,7 @@ public class SyncImageBlobStore implements BlobStore {
 
         BufferedImage bi = ig.createImageFromBytes(bs);
 
-        try {
-            return ih.uploadImage(container, blob.getMetadata().getName(), bi);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return ih.uploadImage(container, blob.getMetadata().getName(), bi);
     }
 
     @Override
@@ -244,14 +240,10 @@ public class SyncImageBlobStore implements BlobStore {
 
     @Override
     public Blob getBlob(final String container, final String name) {
-        try {
-            BufferedImage bi = ih.downloadImage(container, name);
-            final byte[] bs = ig.getBytesFromImage(bi);
-            bb.payload(bs);
-            return bb.build();
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        }
+        BufferedImage bi = ih.downloadImage(container, name);
+        final byte[] bs = ig.getBytesFromImage(bi);
+        bb.payload(bs);
+        return bb.build();
     }
 
     @Override
