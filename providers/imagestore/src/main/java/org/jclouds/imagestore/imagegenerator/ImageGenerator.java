@@ -37,7 +37,7 @@ import com.google.inject.Inject;
  */
 public class ImageGenerator {
 
-    /** The bp. */
+    /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
     /** The byte array header offset. */
     private static final int HEADER_OFFSET = 4;
