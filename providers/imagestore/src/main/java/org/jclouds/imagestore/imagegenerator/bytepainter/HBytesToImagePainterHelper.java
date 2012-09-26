@@ -43,37 +43,29 @@ public final class HBytesToImagePainterHelper {
     };
 
     /**
-     * Calculates the colors for the current byte.
+     * Gets color from byte.
      * 
-     * @param colors
-     *            The colors used
      * @param b
-     *            The current byte
-     * @param layer
-     *            The current layer
-     * @param numeralSystem
-     *            The numeral system used
-     * @param pixelInNumSys
-     *            The amount of pixels needed for one byte in one layer
-     * @return The byte's colors.
+     *            the byte
+     * @return the color from byte
      */
-    static int[] getLayeredColorsFromByte(final Color[][] colors, final byte b, final int layer,
-        final int numeralSystem, final int pixelInNumSys) {
+    static int[] getColorsFromByte(final byte b, final int numeralSystem, final int pixelInNumSys) {
         final int it = b & 0xFF;
-        String numVal = Integer.toString(it, numeralSystem);
-        final int[] byteColors = new int[pixelInNumSys];
+        String septenary = Integer.toString(it, numeralSystem);
+        int[] byteColors = new int[numeralSystem];
+        final int l = pixelInNumSys;
 
-        while (numVal.length() < pixelInNumSys) {
-            numVal = "0" + numVal;
+        while (septenary.length() < l) {
+            septenary = "0" + septenary;
         }
 
-        for (int i = 0; i < pixelInNumSys; i++) {
+        for (int i = 0; i < l; i++) {
 
-            String val = numVal.substring(i, i + 1);
+            String val = septenary.substring(i, i + 1);
 
             int dc = Integer.parseInt(val, numeralSystem);
 
-            byteColors[i] = colors[layer][dc].getRGB();
+            byteColors[i] = dc;
         }
         return byteColors;
     }
@@ -116,6 +108,42 @@ public final class HBytesToImagePainterHelper {
     }
 
     /**
+     * Calculates the colors for the current byte.
+     * 
+     * @param colors
+     *            The colors used
+     * @param b
+     *            The current byte
+     * @param layer
+     *            The current layer
+     * @param numeralSystem
+     *            The numeral system used
+     * @param pixelInNumSys
+     *            The amount of pixels needed for one byte in one layer
+     * @return The byte's colors.
+     */
+    static int[] getLayeredColorsFromByte(final Color[][] colors, final byte b, final int layer,
+        final int numeralSystem, final int pixelInNumSys) {
+        final int it = b & 0xFF;
+        String numVal = Integer.toString(it, numeralSystem);
+        final int[] byteColors = new int[pixelInNumSys];
+
+        while (numVal.length() < pixelInNumSys) {
+            numVal = "0" + numVal;
+        }
+
+        for (int i = 0; i < pixelInNumSys; i++) {
+
+            String val = numVal.substring(i, i + 1);
+
+            int dc = Integer.parseInt(val, numeralSystem);
+
+            byteColors[i] = colors[layer][dc].getRGB();
+        }
+        return byteColors;
+    }
+
+    /**
      * Extracts the numerical value from current pixel's RGB-value.
      * 
      * @param colors
@@ -127,7 +155,7 @@ public final class HBytesToImagePainterHelper {
      * @param numericalValues
      *            Array to be filled with the numerical values of the current pixel
      */
-    static void getNumericalValueFromLayeredPixelColor(final Color[][] colors, final int rgb,
+    static void getLayeredNumericalValueFromPixelColor(final Color[][] colors, final int rgb,
         final int numeralSystem, final String[] numericalValues) {
 
         final Color c = new Color(rgb);
@@ -188,7 +216,7 @@ public final class HBytesToImagePainterHelper {
      * @return the calculated colors
      */
 
-    static Color[][] generateUniformlyDistributedLayeredColors(final int numColors) {
+    static Color[][] generateLayeredUniformlyDistributedColors(final int numColors) {
         final Color[][] caa = new Color[3][numColors];
         final int len = numColors;
 

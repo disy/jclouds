@@ -53,7 +53,7 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
 
     /** The colors. */
     private final Color[][] colors = HBytesToImagePainterHelper
-        .generateUniformlyDistributedLayeredColors(NUMERAL_SYSTEM);
+        .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
     public float pixelsPerByte() {
@@ -130,7 +130,7 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
 
                 final int pix = hpix + x;
 
-                HBytesToImagePainterHelper.getNumericalValueFromLayeredPixelColor(colors, img.getRGB(x, y),
+                HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y),
                     NUMERAL_SYSTEM, quaters);
 
                 if (pix % 4 == 3) {

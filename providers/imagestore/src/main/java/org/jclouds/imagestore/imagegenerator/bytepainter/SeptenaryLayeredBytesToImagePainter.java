@@ -53,7 +53,7 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
 
     /** The different pixel colors. */
     private final Color[][] colors = HBytesToImagePainterHelper
-        .generateUniformlyDistributedLayeredColors(NUMERAL_SYSTEM);
+        .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     @Override
     public float pixelsPerByte() {
@@ -144,7 +144,7 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
 
                 final int pix = hpix + x;
 
-                HBytesToImagePainterHelper.getNumericalValueFromLayeredPixelColor(colors, img.getRGB(x, y),
+                HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y),
                     NUMERAL_SYSTEM, septs);
 
                 if (pix % 3 == 2) {

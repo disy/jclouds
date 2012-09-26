@@ -68,7 +68,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
         int len = bs.length;
         int bsPos = 0;
-        int[] greys = null;
+        int[] colorIdx = null;
 
         for (int y = 0; y < h; y++) {
 
@@ -77,9 +77,9 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
             for (int x = 0; x < w; x++) {
 
                 final int pix = hpix + x;
-                final int pos = pix % 4;
+                final int pos = pix % (int)PIXELS_PER_BYTE;
 
-                if (pix % 4 == 0) {
+                if (pos == 0) {
 
                     /* if picture is too small for next bytes return */
                     if ((y == h - 1) && (x + 3 > w))
@@ -91,43 +91,17 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
                     byte currB = bs[bsPos++];
 
-                    greys = getGreyFromByte(currB);
+                    colorIdx =
+                        HBytesToImagePainterHelper.getColorsFromByte(currB, NUMERAL_SYSTEM,
+                            (int)PIXELS_PER_BYTE);
                 }
 
-                g.setColor(colors[greys[pos]]);
+                g.setColor(colors[colorIdx[pos]]);
 
                 g.drawLine(x, y, x, y);
             }
         }
         return bi;
-    }
-
-    /**
-     * Gets the grey from byte.
-     * 
-     * @param b
-     *            the b
-     * @return the grey from byte
-     */
-    private int[] getGreyFromByte(final byte b) {
-        final int it = b & 0xFF;
-        String quaternary = Integer.toString(it, NUMERAL_SYSTEM);
-        int[] byteColors = new int[NUMERAL_SYSTEM];
-        final int l = 4;
-
-        while (quaternary.length() < l) {
-            quaternary = "0" + quaternary;
-        }
-
-        for (int i = 0; i < l; i++) {
-
-            String val = quaternary.substring(i, i + 1);
-
-            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
-
-            byteColors[i] = dc;
-        }
-        return byteColors;
     }
 
     @Override
