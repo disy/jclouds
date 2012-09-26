@@ -27,7 +27,6 @@
 package org.jclouds.imagestore.imagehoster;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 /**
  * The ImageHoster interface.
