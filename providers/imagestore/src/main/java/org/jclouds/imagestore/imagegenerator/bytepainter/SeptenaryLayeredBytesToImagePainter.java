@@ -43,14 +43,17 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * @author Wolfgang Miller
  */
 public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter {
-    
+
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 7;
-    /** Bytes needed per pixel. */
+    /** Pixels needed per Byte. */
     private static final float BYTES_PER_PIXEL = 1;
+    /** Pixels needed per Byte in one layer. */
+    private static final int BYTES_PER_PIXEL_PER_LAYER = 3;
 
     /** The different pixel colors. */
-    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(NUMERAL_SYSTEM);
+    private final Color[][] colors = HBytesToImagePainterHelper
+        .generateUniformlyDistributedLayeredColors(NUMERAL_SYSTEM);
 
     @Override
     public float pixelsPerByte() {
@@ -97,7 +100,9 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
 
                         byte currB = bs[bsPos];
 
-                        int[] bc = getColorsFromByte(currB, layer);
+                        int[] bc =
+                            HBytesToImagePainterHelper.getLayeredColorsFromByte(colors, currB, layer,
+                                NUMERAL_SYSTEM, BYTES_PER_PIXEL_PER_LAYER);
 
                         if (currByteColor == null) {
                             currByteColor = bc;
@@ -120,36 +125,6 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
         return image;
     }
 
-    /**
-     * Calculates the colors for the current byte.
-     * 
-     * @param b
-     *            The current byte.
-     * @param layer
-     *            The current layer.
-     * @return The byte's colors.
-     */
-    private int[] getColorsFromByte(final byte b, final int layer) {
-        final int it = b & 0xFF;
-        String sept = Integer.toString(it, NUMERAL_SYSTEM);
-        int[] byteColors = new int[3];
-
-        while (sept.length() < 3) {
-            sept = "0" + sept;
-        }
-
-        for (int i = 0; i < 3; i++) {
-
-            String val = sept.substring(i, i + 1);
-
-            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
-
-            byteColors[i] = colors[layer][dc].getRGB();
-
-        }
-        return byteColors;
-    }
-
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
@@ -169,7 +144,8 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
 
                 final int pix = hpix + x;
 
-                getNumericalValueFromPixelColor(img.getRGB(x, y), septs);
+                HBytesToImagePainterHelper.getNumericalValueFromLayeredPixelColor(colors, img.getRGB(x, y),
+                    NUMERAL_SYSTEM, septs);
 
                 if (pix % 3 == 2) {
 
@@ -185,67 +161,6 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
             }
         }
 
-        return BytesToImagePainterHelper.arrayListToByteArray(al);
-    }
-
-    /**
-     * Extracts the numerical value from current pixel's RGB-value.
-     * 
-     * @param rgb
-     *            The RGB-value of the current pixel.
-     * @param septs
-     *            Array to be filled with the numerical values of the current pixel.
-     */
-    private void getNumericalValueFromPixelColor(final int rgb, final String[] septs) {
-
-        final Color c = new Color(rgb);
-        final int red = c.getRed();
-        final int green = c.getGreen();
-        final int blue = c.getBlue();
-
-        for (int l = 0; l < 3; l++) {
-            int dist = -1;
-            int idx = -1;
-
-            if (l == 0) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
-
-                    int currDist = Math.abs(cred - red);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-
-            } else if (l == 1) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
-
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-
-                    int currDist = Math.abs(cblue - blue);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-            septs[l] += Integer.toString(idx, NUMERAL_SYSTEM);
-        }
+        return HBytesToImagePainterHelper.arrayListToByteArray(al);
     }
 }

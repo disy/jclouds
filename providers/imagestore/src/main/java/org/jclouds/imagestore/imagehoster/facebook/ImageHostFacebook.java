@@ -9,9 +9,10 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.ImageHostHelper;
+import org.jclouds.imagestore.imagehoster.HImageHostHelper;
 
 import com.restfb.BinaryAttachment;
+import com.restfb.DefaultFacebookClient;
 import com.restfb.Facebook;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -27,8 +28,8 @@ public class ImageHostFacebook implements IImageHost {
     /** The FacebookClient instance. */
     private final FacebookClient fbClient;
 
-    public ImageHostFacebook(FacebookClient client) {
-        fbClient = client;
+    public ImageHostFacebook() {
+        fbClient = FacebookOAuth.getNewFacebookClient();
     }
 
     private static class FqlAlbum {
@@ -166,7 +167,8 @@ public class ImageHostFacebook implements IImageHost {
         if (imageSetId.isEmpty()) {
             throwAlbumNotFoundException(imageSetTitle);
         }
-        fbClient.deleteObject(imageSetId);
+        
+        //fbClient.deleteObject(imageSetId);
     }
 
     @Override
@@ -180,7 +182,7 @@ public class ImageHostFacebook implements IImageHost {
         // upload image to facebook
         try {
             return fbClient.publish(imageSetId + "/photos", FacebookType.class,
-                BinaryAttachment.with(imageTitle + ".png", ImageHostHelper.getInputStreamFromImage(image)),
+                BinaryAttachment.with(imageTitle + ".png", HImageHostHelper.getInputStreamFromImage(image)),
                 Parameter.with("name", imageTitle)).getId();
         } catch (IOException e) {
             new RuntimeException(e);
@@ -233,9 +235,8 @@ public class ImageHostFacebook implements IImageHost {
     @Override
     public void clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
-        if (imageSetId.isEmpty()) {
-            throwAlbumNotFoundException(imageSetTitle);
-        }
+        if (imageSetId.isEmpty())
+            return;
 
         final String query =
             "SELECT object_id FROM photo WHERE album_object_id = \"" + imageSetId + "\" AND owner = me()";
@@ -263,4 +264,22 @@ public class ImageHostFacebook implements IImageHost {
             new RuntimeException(e);
         }
     }
+
+    // public static void main(String args[]) {
+    // final String MY_ACCESS_TOKEN =
+    // "AAACEdEose0cBANZBZCVzKyZCW3n4gIgQ9HDYqRy1Lxqr7qcN4cDLKL4kjPOlhaEYWjwz4csG4m0uZCSVhIyRJ3b6FXeaUXmSumfZCA2Cir09SuCFsZAAC1";
+    // ImageHostFacebook ihf = new ImageHostFacebook(new DefaultFacebookClient(MY_ACCESS_TOKEN));
+    //
+    // BufferedImage bi = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_RGB);
+    // final String imageTitle = "t_" + Long.toString(System.currentTimeMillis());
+    // final String albumName = "TestAlbum";
+    // ihf.uploadImage(albumName, imageTitle, bi);
+    // // ihf.clearImageSet(albumName);
+    // BufferedImage bi2 = ihf.downloadImage(albumName, imageTitle);
+    // // ihf.downloadImage("Test1", "blablabla");
+    // System.out.println(bi2.getWidth());
+    // System.out.println(ihf.countImagesInSet("test1"));
+    // // ihf.getFacebookImage(albumId, "test1");
+    //
+    // }
 }

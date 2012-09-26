@@ -20,7 +20,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
     private final int numberSystem = 8;
 
     /** The colors. */
-    private final Color[][] colors = BytesToImagePainterHelper.generateUniformlyDistributedColors(numberSystem);
+    private final Color[][] colors = HBytesToImagePainterHelper.generateUniformlyDistributedLayeredColors(numberSystem);
     
     /** Bytes needed per pixel. */
     public static final float BYTES_PER_PIXEL = 3;
@@ -179,7 +179,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
                 }
             }
         }
-        return BytesToImagePainterHelper.arrayListToByteArray(li);
+        return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

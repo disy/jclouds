@@ -48,10 +48,12 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
     private static final int NUMERAL_SYSTEM = 4;
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 4 / 3f;
+    /** Pixels needed per Byte in one layer. */
+    private static final int BYTES_PER_PIXEL_PER_LAYER = 4;
 
     /** The colors. */
-    private final Color[][] colors = BytesToImagePainterHelper
-        .generateUniformlyDistributedColors(NUMERAL_SYSTEM);
+    private final Color[][] colors = HBytesToImagePainterHelper
+        .generateUniformlyDistributedLayeredColors(NUMERAL_SYSTEM);
 
     @Override
     public float pixelsPerByte() {
@@ -78,7 +80,9 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
 
                     final byte b = bs[bp++];
 
-                    int[] bc = getColorsFromByte(b, layer);
+                    int[] bc =
+                        HBytesToImagePainterHelper.getLayeredColorsFromByte(colors, b, layer, NUMERAL_SYSTEM,
+                            BYTES_PER_PIXEL_PER_LAYER);
 
                     if (currByteColor == null) {
                         currByteColor = bc;
@@ -106,35 +110,6 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
         return image;
     }
 
-    /**
-     * Calculates the colors for the current byte.
-     * 
-     * @param b
-     *            The current byte.
-     * @param layer
-     *            The current layer.
-     * @return The byte's colors.
-     */
-    private int[] getColorsFromByte(final byte b, final int layer) {
-        final int it = b & 0xFF;
-        String tetra = Integer.toString(it, NUMERAL_SYSTEM);
-        final int[] byteColors = new int[4];
-
-        while (tetra.length() < 4) {
-            tetra = "0" + tetra;
-        }
-
-        for (int i = 0; i < 4; i++) {
-
-            String val = tetra.substring(i, i + 1);
-
-            int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
-
-            byteColors[i] = colors[layer][dc].getRGB();
-        }
-        return byteColors;
-    }
-
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
 
@@ -155,7 +130,8 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
 
                 final int pix = hpix + x;
 
-                getNumericalValueFromPixelColor(img.getRGB(x, y), quaters);
+                HBytesToImagePainterHelper.getNumericalValueFromLayeredPixelColor(colors, img.getRGB(x, y),
+                    NUMERAL_SYSTEM, quaters);
 
                 if (pix % 4 == 3) {
 
@@ -171,68 +147,6 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
             }
         }
 
-        return BytesToImagePainterHelper.arrayListToByteArray(al);
-    }
-
-    /**
-     * Extracts the numerical value from current pixel's RGB-value.
-     * 
-     * @param rgb
-     *            The RGB-value of the current pixel.
-     * @param quaters
-     *            Array to be filled with the numerical values of the current pixel.
-     */
-    private void getNumericalValueFromPixelColor(final int rgb, final String[] quaters) {
-
-        Color c = new Color(rgb);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
-
-        for (int l = 0; l < 3; l++) {
-            int dist = -1;
-            int idx = -1;
-
-            if (l == 0) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
-
-                    int currDist = Math.abs(cred - red);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-
-            } else if (l == 1) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
-
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-                    int currDist = Math.abs(cblue - blue);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-
-            quaters[l] += Integer.toString(idx, NUMERAL_SYSTEM);
-        }
+        return HBytesToImagePainterHelper.arrayListToByteArray(al);
     }
 }

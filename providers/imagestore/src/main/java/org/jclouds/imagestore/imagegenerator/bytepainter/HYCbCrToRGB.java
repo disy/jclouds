@@ -27,67 +27,65 @@
 package org.jclouds.imagestore.imagegenerator.bytepainter;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
+// TODO: Auto-generated Javadoc
 /**
- * This Class offers helper methods for the byte painters.
- * 
- * @author Wolfgang Miller, University of Konstanz
+ * The Class YCbCrToRGB.
  */
-public final class BytesToImagePainterHelper {
-    
-    /**
-     * Protected constructor. Protects helper class from being instantiated.
-     */
-    private BytesToImagePainterHelper() { };
+public final class HYCbCrToRGB {
+
+    /** The red color constant. */
+    static final double COLOR_RED = 0.299;
+    /** The green color constant. */
+    static final double COLOR_GREEN = 0.587;
+    /** The blue color constant. */
+    static final double COLOR_BLUE = 0.114;
 
     /**
-     * Returns a 2-dimensional array. The first dimension stands .
+     * Private constructor. Protects helper class from being instantiated.
+     */
+    private HYCbCrToRGB() {
+    };
+
+    /**
+     * Gets the rGB color from y cb cr.
      * 
-     * @param numColors
-     *            the number of different colors
-     * @return the calculated colors
+     * @param y
+     *            the y
+     * @param cb
+     *            the cb
+     * @param cr
+     *            the cr
+     * @return the rGB color from y cb cr
      */
-
-    public static Color[][] generateUniformlyDistributedColors(final int numColors) {
-        Color[][] caa = new Color[3][numColors];
-
-        for (int i = 0; i < caa.length; i++) {
-            Color[] ca = caa[i];
-            int sum = 0;
-            final int len = ca.length;
-            final float ratio = 255f / (len - 1);
-
-            for (int y = 0; y < len; y++) {
-
-                if (i == 0) {
-                    ca[y] = new Color(sum, 0, 0);
-                } else if (i == 1) {
-                    ca[y] = new Color(0, sum, 0);
-                } else {
-                    ca[y] = new Color(0, 0, sum);
-                }
-
-                sum += ratio;
-            }
-        }
-        return caa;
+    static Color getRGBColorFromYCbCr(final float y, final float cb, final float cr) {
+        return getRGBColorFromYCbCr((int)(y * 255 + 0.5), (int)(cb * 255 + 0.5), (int)(cr * 255 + 0.5));
     }
 
     /**
-     * Converts ArrayList<Byte> to byte[].
+     * Gets the rGB color from y cb cr.
      * 
-     * @param li
-     *            the array list
-     * @return the byte array
+     * @param Y
+     *            the y
+     * @param cB
+     *            the c b
+     * @param cR
+     *            the c r
+     * @return the rGB color from y cb cr
      */
+    static Color getRGBColorFromYCbCr(final int Y, final int cB, final int cR) {
 
-    public static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
-        byte[] bs = new byte[li.size()];
-        int i = 0;
-        for (Byte b : li) {
-            bs[i++] = b;
-        }
-        return bs;
+        // range of each input (R,G,B) is [-128...+127]
+        // http://www.impulseadventure.com/photo/jpeg-color-space.html
+
+        int R = (int)(Y + 1.402 * (cR - 128)) & 0xFF;
+        int G = (int)(Y - 0.34414 * (cB - 128) - 0.71414 * (cR - 128)) & 0xFF;
+        int B = (int)(Y + 1.772 * (cB - 128)) & 0xFF;
+
+        System.out.println(R + " " + Integer.toBinaryString(R));
+        System.out.println(G + " " + Integer.toBinaryString(G));
+        System.out.println(B + " " + Integer.toBinaryString(B));
+
+        return new Color((int)R, (int)G, (int)B);
     }
 }

@@ -8,7 +8,13 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-public class ImageHostHelper {
+public final class HImageHostHelper {
+
+    /**
+     * Private constructor. Protects helper class from being instantiated.
+     */
+    private HImageHostHelper() { };
+
     /**
      * Returns an InputStream from given BufferedImage.
      * 

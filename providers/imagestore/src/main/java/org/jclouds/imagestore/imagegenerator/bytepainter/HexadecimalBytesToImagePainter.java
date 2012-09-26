@@ -43,7 +43,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * @author Wolfgang Miller
  */
 public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
-    
+
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 16;
     /** Pixels needed for one Byte. */
@@ -57,7 +57,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
         new Color(0.5f, 1f, 0f), new Color(1f, 1f, 0.5f), new Color(0.5f, 1f, 0.5f), new Color(1f, 0f, 0f),
         new Color(0f, 0f, 0f)
     };
-    
+
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
@@ -97,7 +97,9 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
 
-                hex += getNumericalValueFromPixelColor(img.getRGB(x, y));
+                hex +=
+                    HBytesToImagePainterHelper.getNumericalValueFromPixelColor(colors, img.getRGB(x, y),
+                        NUMERAL_SYSTEM);
 
                 if (x % 2 == 1) {
 
@@ -108,40 +110,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
 
             }
         }
-        return BytesToImagePainterHelper.arrayListToByteArray(li);
-    }
-
-    /**
-     * Extracts the hexadecimal value from current pixel's RGB-value.
-     * 
-     * @param rgb
-     *            The RGB-value of the current pixel.
-     * @return The hexadecimal value.
-     */
-    private String getNumericalValueFromPixelColor(final int rgb) {
-
-        final Color c = new Color(rgb);
-        final int red = c.getRed();
-        final int green = c.getGreen();
-        final int blue = c.getBlue();
-
-        int dist = -1;
-        int idx = -1;
-
-        for (int i = 0; i < colors.length; i++) {
-            final int cred = colors[i].getRed();
-            final int cgreen = colors[i].getGreen();
-            final int cblue = colors[i].getBlue();
-
-            int currDist = Math.abs(cred - red) + Math.abs(cgreen - green) + Math.abs(cblue - blue);
-
-            if (dist == -1 || currDist < dist) {
-                dist = currDist;
-                idx = i;
-            }
-        }
-
-        return Integer.toString(idx, NUMERAL_SYSTEM);
+        return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

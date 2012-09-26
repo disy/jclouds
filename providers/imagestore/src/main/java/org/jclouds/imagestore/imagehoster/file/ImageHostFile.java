@@ -34,7 +34,7 @@ public class ImageHostFile implements IImageHost {
      * @param pFile
      */
     @Inject
-    public ImageHostFile(@Named(FilesystemConstants.PROPERTY_BASEDIR) String baseDir) {
+    public ImageHostFile(@Named(FilesystemConstants.PROPERTY_BASEDIR) final String baseDir) {
         mFile = new File(baseDir);
     }
 

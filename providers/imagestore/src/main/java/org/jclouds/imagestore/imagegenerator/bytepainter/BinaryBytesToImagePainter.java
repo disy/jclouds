@@ -151,7 +151,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
                 }
             }
         }
-        return BytesToImagePainterHelper.arrayListToByteArray(li);
+        return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
     /**

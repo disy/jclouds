@@ -34,7 +34,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.jclouds.imagestore.imagehoster.ImageHostHelper;
+import org.jclouds.imagestore.imagehoster.HImageHostHelper;
 import org.xml.sax.SAXException;
 
 import com.googlecode.flickrjandroid.Flickr;
@@ -81,6 +81,6 @@ public class FlickrUploader {
      */
     public String uploadImage(final String imageTitle, final BufferedImage image,
         final UploadMetaData meta) throws IOException, FlickrException, SAXException {
-        return up.upload(imageTitle, ImageHostHelper.getInputStreamFromImage(image), meta);
+        return up.upload(imageTitle, HImageHostHelper.getInputStreamFromImage(image), meta);
     }
 }

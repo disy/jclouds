@@ -1,29 +1,3 @@
-/**
- * Copyright (c) 2012, University of Konstanz, Distributed Systems Group
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * * Neither the name of the University of Konstanz nor the
- * names of its contributors may be used to endorse or promote products
- * derived from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package org.jclouds.imagestore.imagegenerator.bytepainter;
 
 import java.awt.Color;
@@ -36,22 +10,23 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 /**
  * This Class offers a byte painter.
  * 
- * Numeral System: Quaternary
+ * Numeral System: Septenary
  * Layers: 1
- * 1 Byte = 4 Pixel
+ * 1 Byte = 3 Pixel
  * 
  * @author Wolfgang Miller
  */
-public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
+public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The used numeral system. */
-    private static final int NUMERAL_SYSTEM = 4;
+    private static final int NUMERAL_SYSTEM = 7;
     /** Pixels needed for one Byte. */
-    private static final float PIXELS_PER_BYTE = 4;
+    private static final float PIXELS_PER_BYTE = 3;
 
     /** The colors. */
-    Color[] colors = new Color[] {
-        Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
+    private final Color[] colors = new Color[] {
+        new Color(0f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 1f, 0f), new Color(0f, 0f, 1f),
+        new Color(1f, 0f, 1f), new Color(1f, 1f, 0f), new Color(0f, 1f, 1f)
     };
 
     @Override
@@ -91,7 +66,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
                     byte currB = bs[bsPos++];
 
-                    greys = getGreyFromByte(currB);
+                    greys = getColorFromByte(currB);
                 }
 
                 g.setColor(colors[greys[pos]]);
@@ -103,25 +78,25 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
     }
 
     /**
-     * Gets the grey from byte.
+     * Gets color from byte.
      * 
      * @param b
-     *            the b
-     * @return the grey from byte
+     *            the byte
+     * @return the color from byte
      */
-    private int[] getGreyFromByte(final byte b) {
+    private int[] getColorFromByte(final byte b) {
         final int it = b & 0xFF;
-        String quaternary = Integer.toString(it, NUMERAL_SYSTEM);
+        String septenary = Integer.toString(it, NUMERAL_SYSTEM);
         int[] byteColors = new int[NUMERAL_SYSTEM];
         final int l = 4;
 
-        while (quaternary.length() < l) {
-            quaternary = "0" + quaternary;
+        while (septenary.length() < l) {
+            septenary = "0" + septenary;
         }
 
         for (int i = 0; i < l; i++) {
 
-            String val = quaternary.substring(i, i + 1);
+            String val = septenary.substring(i, i + 1);
 
             int dc = Integer.parseInt(val, NUMERAL_SYSTEM);
 
@@ -138,7 +113,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         final int h = img.getHeight();
         final int mod = (int)(PIXELS_PER_BYTE - 1);
 
-        String quaternary = "";
+        String septenary = "";
 
         for (int y = 0; y < h; y++) {
 
@@ -148,18 +123,17 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                quaternary +=
+                septenary +=
                     HBytesToImagePainterHelper.getNumericalValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
                 if (pix % PIXELS_PER_BYTE == mod) {
-                    byte b = (byte)Integer.parseInt(quaternary, NUMERAL_SYSTEM);
+                    byte b = (byte)Integer.parseInt(septenary, NUMERAL_SYSTEM);
                     li.add(b);
-                    quaternary = "";
+                    septenary = "";
                 }
             }
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
-
 }
