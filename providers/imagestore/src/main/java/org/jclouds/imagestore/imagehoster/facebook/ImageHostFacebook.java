@@ -7,12 +7,12 @@ import java.net.URL;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.HImageHostHelper;
+import org.jclouds.imagestore.imagehoster.IImageHost;
 
 import com.restfb.BinaryAttachment;
-import com.restfb.DefaultFacebookClient;
 import com.restfb.Facebook;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
@@ -26,39 +26,74 @@ public class ImageHostFacebook implements IImageHost {
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 720;
     /** The FacebookClient instance. */
-    private final FacebookClient fbClient;
+    private FacebookClient fbClient;
 
+    /**
+     * The ImageHostFacebook constructor.
+     */
     public ImageHostFacebook() {
-        fbClient = FacebookOAuth.getNewFacebookClient();
+        try {
+            fbClient = FacebookOAuth.getNewFacebookClient();
+        } catch (IOException e) {
+            new RuntimeException(e);
+        } catch (ParserConfigurationException e) {
+            new RuntimeException(e);
+        }
     }
 
     private static class FqlAlbum {
+        /** The album id. */
         @Facebook
         private String object_id;
 
+        /** The photo count. */
         @Facebook
         private int photo_count;
 
+        /**
+         * Returns the album id.
+         * 
+         * @return The album id
+         */
         String getAlbumId() {
             return object_id;
         }
 
+        /**
+         * Returns the photo count.
+         * 
+         * @return The photo count
+         */
         int getPhotoCount() {
             return photo_count;
         }
     }
 
     private static class FqlPhoto {
+        /** The photo id. */
         @Facebook
         private String object_id;
 
+        /** The big photo URL. */
         @Facebook
         private String src_big;
 
+        /**
+         * Returns the big photo URL.
+         * 
+         * @return The photo URL
+         * @throws MalformedURLException
+         *             Signals that an MalformedURLException has occurred
+         */
         URL getBigPhotoURL() throws MalformedURLException {
             return new URL(src_big);
         }
 
+        /**
+         * Returns the photo id.
+         * 
+         * @return The photo id
+         */
         String getPhotoId() {
             return object_id;
         }
@@ -95,6 +130,15 @@ public class ImageHostFacebook implements IImageHost {
         return null;
     }
 
+    /**
+     * Returns an FqlPhoto object for the given parameters.
+     * 
+     * @param imageSetId
+     *            The set id
+     * @param imageTitle
+     *            The image title
+     * @return The FqlPhoto object
+     */
     private FqlPhoto getFacebookImageFql(final String imageSetId, final String imageTitle) {
         final String query =
             "SELECT object_id, src_big FROM photo WHERE album_object_id = \"" + imageSetId
@@ -109,11 +153,27 @@ public class ImageHostFacebook implements IImageHost {
         return null;
     }
 
+    /**
+     * Returns the set id from given set title.
+     * 
+     * @param imageSetTitle
+     *            The set title
+     * @return The album id
+     */
     private String getFacebookImageSetId(final String imageSetTitle) {
         final FqlAlbum fAlbum = getFacebookImageSetFql(imageSetTitle);
         return fAlbum == null ? "" : fAlbum.getAlbumId();
     }
 
+    /**
+     * Returns the image id from given set id and image title.
+     * 
+     * @param imageSetId
+     *            The set id
+     * @param imageTitle
+     *            The set title
+     * @return The image id
+     */
     private String getFacebookImageId(final String imageSetId, final String imageTitle) {
         final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle);
         return fPh == null ? "" : fPh.getPhotoId();
@@ -167,8 +227,8 @@ public class ImageHostFacebook implements IImageHost {
         if (imageSetId.isEmpty()) {
             throwAlbumNotFoundException(imageSetTitle);
         }
-        
-        //fbClient.deleteObject(imageSetId);
+
+        // fbClient.deleteObject(imageSetId);
     }
 
     @Override
@@ -247,6 +307,12 @@ public class ImageHostFacebook implements IImageHost {
         }
     }
 
+    /**
+     * Throws an exception if an album with given title does not exist.
+     * 
+     * @param imageSetTitle
+     *            The title
+     */
     private void throwAlbumNotFoundException(final String imageSetTitle) {
         try {
             throw new IllegalArgumentException("There is no facebook album with given title: \""
@@ -256,6 +322,14 @@ public class ImageHostFacebook implements IImageHost {
         }
     }
 
+    /**
+     * Throws an exception if no photo with the given title in the given set exists.
+     * 
+     * @param imageSetTitle
+     *            The set title
+     * @param imageTitle
+     *            The image title
+     */
     private void throwPhotoNotFoundException(final String imageSetTitle, final String imageTitle) {
         try {
             throw new IllegalArgumentException("There is no image named \"" + imageTitle
@@ -264,22 +338,4 @@ public class ImageHostFacebook implements IImageHost {
             new RuntimeException(e);
         }
     }
-
-    // public static void main(String args[]) {
-    // final String MY_ACCESS_TOKEN =
-    // "AAACEdEose0cBANZBZCVzKyZCW3n4gIgQ9HDYqRy1Lxqr7qcN4cDLKL4kjPOlhaEYWjwz4csG4m0uZCSVhIyRJ3b6FXeaUXmSumfZCA2Cir09SuCFsZAAC1";
-    // ImageHostFacebook ihf = new ImageHostFacebook(new DefaultFacebookClient(MY_ACCESS_TOKEN));
-    //
-    // BufferedImage bi = new BufferedImage(2048, 2048, BufferedImage.TYPE_INT_RGB);
-    // final String imageTitle = "t_" + Long.toString(System.currentTimeMillis());
-    // final String albumName = "TestAlbum";
-    // ihf.uploadImage(albumName, imageTitle, bi);
-    // // ihf.clearImageSet(albumName);
-    // BufferedImage bi2 = ihf.downloadImage(albumName, imageTitle);
-    // // ihf.downloadImage("Test1", "blablabla");
-    // System.out.println(bi2.getWidth());
-    // System.out.println(ihf.countImagesInSet("test1"));
-    // // ihf.getFacebookImage(albumId, "test1");
-    //
-    // }
 }
