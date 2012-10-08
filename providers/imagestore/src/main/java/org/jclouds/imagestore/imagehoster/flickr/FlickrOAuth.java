@@ -26,14 +26,17 @@
  */
 package org.jclouds.imagestore.imagehoster.flickr;
 
-import static org.jclouds.imagestore.ImageStoreConstants.CALLBACK_URL;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_CALLBACK_URL;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PERMISSION;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_NAME;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_URI;
-import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_TOKEN;
-import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_TOKEN_SECRET;
-import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_USERNAME;
-import static org.jclouds.imagestore.ImageStoreConstants.PROPKEY_USER_ID;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_TOKEN;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_TOKEN_SECRET;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_USERNAME;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_USER_ID;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_APP_KEY;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_SHARED_SECRET;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -69,12 +72,7 @@ public class FlickrOAuth {
     /** The Flickr properties. */
     private final Properties fp = new Properties();
 
-    //Data for app regarding to Flickr
-    /** The flickr app key. */
-    private static final String FLICKR_APP_KEY = "3e6f5174edc3744e57c496db5d780ee8";
-    /** The flickr shared secrect. */
-    private static final String FLICKR_SHARED_SECRET = "a23933fe38c54919";
-    
+   
     /**
      * Constructs Flickr OAuth authentication.
      * 
@@ -97,8 +95,8 @@ public class FlickrOAuth {
      */
     public Flickr getAuthenticatedFlickrInstance() throws IOException, FlickrException {
 
-        if (fp.getProperty("token").isEmpty()) {
-            rToken = fl.getOAuthInterface().getRequestToken(CALLBACK_URL);
+        if (fp.getProperty(FLICKR_PROPKEY_TOKEN).isEmpty()) {
+            rToken = fl.getOAuthInterface().getRequestToken(FLICKR_CALLBACK_URL);
             System.out.println(generateAuthenticationURL());
             readInVerifier();
 
@@ -135,10 +133,10 @@ public class FlickrOAuth {
      */
     private OAuth loadOAuthFromPropertiesFile() throws IOException {
 
-        final String token = fp.getProperty(PROPKEY_TOKEN);
-        final String tokenSecret = fp.getProperty(PROPKEY_TOKEN_SECRET);
-        final String userId = fp.getProperty(PROPKEY_USER_ID);
-        final String username = fp.getProperty(PROPKEY_USERNAME);
+        final String token = fp.getProperty(FLICKR_PROPKEY_TOKEN);
+        final String tokenSecret = fp.getProperty(FLICKR_PROPKEY_TOKEN_SECRET);
+        final String userId = fp.getProperty(FLICKR_PROPKEY_USER_ID);
+        final String username = fp.getProperty(FLICKR_PROPKEY_USERNAME);
 
         User usr = new User();
         usr.setId(userId);
@@ -166,10 +164,10 @@ public class FlickrOAuth {
         final String userId = aToken.getUser().getId();
         final String username = aToken.getUser().getUsername();
 
-        fp.setProperty(PROPKEY_TOKEN, token);
-        fp.setProperty(PROPKEY_TOKEN_SECRET, tokenSecret);
-        fp.setProperty(PROPKEY_USER_ID, userId);
-        fp.setProperty(PROPKEY_USERNAME, username);
+        fp.setProperty(FLICKR_PROPKEY_TOKEN, token);
+        fp.setProperty(FLICKR_PROPKEY_TOKEN_SECRET, tokenSecret);
+        fp.setProperty(FLICKR_PROPKEY_USER_ID, userId);
+        fp.setProperty(FLICKR_PROPKEY_USERNAME, username);
         fp.store(new FileOutputStream(new File(FLICKR_PROP_FILE_URI)), FLICKR_PROP_FILE_NAME);
     }
 

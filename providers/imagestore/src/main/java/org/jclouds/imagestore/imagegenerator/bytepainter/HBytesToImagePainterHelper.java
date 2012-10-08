@@ -47,6 +47,10 @@ public final class HBytesToImagePainterHelper {
      * 
      * @param b
      *            the byte
+     * @param numeralSystem
+     *            the numeral system
+     * @param pixelInNumSys
+     *            the pixels needed per byte in the numeral system
      * @return the color from byte
      */
     static int[] getColorsFromByte(final byte b, final int numeralSystem, final int pixelInNumSys) {
