@@ -44,6 +44,8 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  */
 public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The image type to be used. */
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 4;
     /** Pixels needed for one Byte. */
@@ -54,6 +56,11 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
     };
 
+    @Override
+    public int getImageType() {
+        return BUFFERED_IMAGE_TYPE;
+    }
+    
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;

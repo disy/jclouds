@@ -16,6 +16,9 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  */
 public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The image type to be used. */
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
+    
     /** The number system. */
     private final int numberSystem = 8;
 
@@ -25,6 +28,11 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
     /** Bytes needed per pixel. */
     public static final float BYTES_PER_PIXEL = 3;
+    
+    @Override
+    public int getImageType() {
+        return BUFFERED_IMAGE_TYPE;
+    }
 
     @Override
     public float pixelsPerByte() {

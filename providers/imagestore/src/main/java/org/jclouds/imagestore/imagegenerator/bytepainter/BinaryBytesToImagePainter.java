@@ -44,10 +44,17 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  */
 public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The image type to be used. */
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_BYTE_BINARY;
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 8;
+    
+    @Override
+    public int getImageType() {
+        return BUFFERED_IMAGE_TYPE;
+    }
 
     @Override
     public float pixelsPerByte() {

@@ -35,6 +35,8 @@ import java.awt.image.BufferedImage;
  */
 public interface IBytesToImagePainter {
     
+    int getImageType();
+    
     /**
      * Returns the number of pixels needed per byte.
      * 

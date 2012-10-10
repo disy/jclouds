@@ -44,6 +44,8 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  */
 public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The image type to be used. */
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 7;
     /** Pixels needed per Byte. */
@@ -55,6 +57,11 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
     private final Color[][] colors = HBytesToImagePainterHelper
         .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
+    @Override
+    public int getImageType() {
+        return BUFFERED_IMAGE_TYPE;
+    }
+    
     @Override
     public float pixelsPerByte() {
         return BYTES_PER_PIXEL;

@@ -39,6 +39,8 @@ public class ImageGenerator {
 
     /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
+    /** The image type for the given bytes to image painter. */
+    private final int imageType; 
     /** The byte array header offset. */
     private static final int HEADER_OFFSET = 4;
     /** The maximum image width for the specific image host. */
@@ -59,6 +61,7 @@ public class ImageGenerator {
     @Inject
     public ImageGenerator(final IBytesToImagePainter bytePainter, final int ihMaxWidth, final int ihMaxHeight) {
         bp = bytePainter;
+        imageType = bp.getImageType();
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
     }
@@ -73,7 +76,7 @@ public class ImageGenerator {
      * @return The created buffered image.
      */
     BufferedImage createBufferedImage(final int width, final int height) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, imageType);
         return img;
     }
 

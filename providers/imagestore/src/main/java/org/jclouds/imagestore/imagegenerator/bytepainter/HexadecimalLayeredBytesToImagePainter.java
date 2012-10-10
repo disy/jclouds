@@ -36,12 +36,20 @@ public class HexadecimalLayeredBytesToImagePainter implements IBytesToImagePaint
         new Color(0f, 0.25f, 1f)
     };
 
+    /** The image type to be used. */
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
+    
     /** The threshold. */
     private final int threshold = 15;
     
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 0.5f;
 
+    @Override
+    public int getImageType() {
+        return BUFFERED_IMAGE_TYPE;
+    }
+    
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
