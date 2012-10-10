@@ -77,7 +77,7 @@ public final class ImageStoreConstants {
     /** The Facebook authentication-URL. */
     public static final String FACEBOOK_USER_AUTH_URL = "https://graph.facebook.com/oauth/authorize";
     /** The Facebook authentication-scope. */
-    public static final String FACEBOOK_USER_AUTH_SCOPE = "user_photos";
+    public static final String FACEBOOK_USER_AUTH_SCOPE = "user_photos,publish_stream";
     /** The Facebook callback-URL. */
     public static final String FACEBOOK_CALLBACK_URL = "https://www.facebook.com/connect/login_success.html";
     /** The Facebook token-URL. */
