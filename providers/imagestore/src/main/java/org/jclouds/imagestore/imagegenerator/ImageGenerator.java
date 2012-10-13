@@ -40,13 +40,24 @@ public class ImageGenerator {
     /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
     /** The image type for the given bytes to image painter. */
-    private final int imageType; 
+    private final int imageType;
     /** The byte array header offset. */
     private static final int HEADER_OFFSET = 4;
     /** The maximum image width for the specific image host. */
     private final int maxImageHostWidth;
     /** The maximum image height for the specific image host. */
     private final int maxImageHostHeight;
+    /** The maximum bytes that can be stored in one image. */
+    private final int maxBytesPerImage;
+
+    /**
+     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
+     * 
+     * @return the maximum amount of bytes
+     */
+    public int getMaximumBytesPerImage() {
+        return maxBytesPerImage;
+    }
 
     /**
      * Instantiates a new image generator.
@@ -64,6 +75,7 @@ public class ImageGenerator {
         imageType = bp.getImageType();
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
+        maxBytesPerImage = (int)(maxImageHostHeight * maxImageHostWidth / bp.pixelsPerByte());
     }
 
     /**
