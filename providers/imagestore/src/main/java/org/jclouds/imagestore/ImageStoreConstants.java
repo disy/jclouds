@@ -73,6 +73,10 @@ public final class ImageStoreConstants {
     public static final String FACEBOOK_URL_PARAM_SCOPE = "scope";
     /** The Facebook URL-parameter redirect-URI. */
     public static final String FACEBOOK_URL_PARAM_REDIRECT_URI = "redirect_uri";
+    /** The Facebook URL-parameter grant_type. */
+    public static final String FACEBOOK_URL_PARAM_GRANT_TYPE = "grant_type";
+    /** The Facebook URL-parameter fb_exchange_token. */
+    public static final String FACEBOOK_URL_PARAM_FB_EXCHANGE_TOKEN = "fb_exchange_token";
 
     /** The Facebook authentication-URL. */
     public static final String FACEBOOK_USER_AUTH_URL = "https://graph.facebook.com/oauth/authorize";

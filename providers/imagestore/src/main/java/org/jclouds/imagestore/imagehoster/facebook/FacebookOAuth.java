@@ -15,6 +15,8 @@ import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_URL_PARAM_SCOP
 import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_USER_AUTH_SCOPE;
 import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_USER_AUTH_URL;
 import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_USER_URL;
+import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_URL_PARAM_GRANT_TYPE;
+import static org.jclouds.imagestore.ImageStoreConstants.FACEBOOK_URL_PARAM_FB_EXCHANGE_TOKEN;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -67,7 +69,7 @@ public final class FacebookOAuth {
      *             Signals that an I/O exception has occurred
      */
     static FacebookClient getNewFacebookClient() throws IOException, ParserConfigurationException {
-        FacebookOAuth foa = new FacebookOAuth();
+        final FacebookOAuth foa = new FacebookOAuth();
         return new DefaultFacebookClient(foa.authenticateAppAndGetAccessToken());
     }
 
@@ -96,8 +98,11 @@ public final class FacebookOAuth {
         System.out.println(generateUserAuthenticationURL());
         System.out.println("Now copy the URL of the visited Facebook site here:");
         final String verifier = readInVerifier();
-        fbAccessToken = getAccessToken(verifier);
-        saveAccessTokenToPropertiesFile(fbAccessToken);
+        final String tokenURL = generateTokenURL(verifier);
+        fbAccessToken = getAccessToken(tokenURL);
+        final String longLivedTokenURL = generateLongLivedAccessTokenURL(fbAccessToken);
+        final String fbLongLivedAccessToken = getAccessToken(longLivedTokenURL);
+        saveAccessTokenToPropertiesFile(fbLongLivedAccessToken);
         return fbAccessToken;
     }
 
@@ -119,14 +124,13 @@ public final class FacebookOAuth {
     /**
      * Fetches the access token from Facebook.
      * 
-     * @param verifier
-     *            The verifier string
+     * @param tokenURL
+     *            The token URL
      * @return The access token
      * @throws IOException
      *             Signals that an I/O exception has occurred
      */
-    private String getAccessToken(final String verifier) throws IOException {
-        final String tokenURL = generateTokenURL(verifier);
+    private String getAccessToken(final String tokenURL) throws IOException {
         final Response response = transport.executeGet(tokenURL);
         // String with response
         final String rs = response.getBody();
@@ -163,6 +167,23 @@ public final class FacebookOAuth {
         fp.setProperty(FACEBOOK_PROPKEY_TOKEN, token);
         File propFile = new File(FACEBOOK_PROP_FILE_URI);
         fp.store(new FileOutputStream(propFile), FACEBOOK_PROP_FILE_NAME);
+    }
+
+    /**
+     * Returns the Facebook long-lived access token URL.
+     * 
+     * @param shortLivedUserToken
+     *            The short-lived user access token
+     * @return The long-lived user access token.
+     */
+    private String generateLongLivedAccessTokenURL(final String shortLivedUserToken) {
+
+        // https://graph.facebook.com/oauth/access_token?client_id=APP_ID&client_secret=APP_SECRET&grant_type=fb_exchange_token
+        // &fb_exchange_token=EXISTING_ACCESS_TOKEN
+        return FACEBOOK_TOKEN_URL + "?" + FACEBOOK_URL_PARAM_CLIENT_ID + "=" + FACEBOOK_APP_ID + "&"
+            + FACEBOOK_URL_PARAM_CLIENT_SECRET + "=" + FACEBOOK_APP_SECRET + "&"
+            + FACEBOOK_URL_PARAM_GRANT_TYPE + "=" + FACEBOOK_URL_PARAM_FB_EXCHANGE_TOKEN + "&"
+            + FACEBOOK_URL_PARAM_FB_EXCHANGE_TOKEN + "=" + shortLivedUserToken;
     }
 
     /**
