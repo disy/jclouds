@@ -77,6 +77,15 @@ public class SyncImageBlobStore implements BlobStore {
     private BlobBuilder bb;
 
     /**
+     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
+     * 
+     * @return the maximum amount of bytes
+     */
+    public int getMaximumBytesPerImage() {
+        return ig.getMaximumBytesPerImage();
+    }
+
+    /**
      * ImageBlobStore constructor.
      * 
      * @param pImageHoster
@@ -90,15 +99,16 @@ public class SyncImageBlobStore implements BlobStore {
      * @throws NoSuchAlgorithmException
      */
     @Inject
-    public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) String pImageHoster,
-        @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) String pBytePainter,
-        @Named(FilesystemConstants.PROPERTY_BASEDIR) String pStorageParameter) {
+    public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) final String pImageHoster,
+        @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) final String pBytePainter,
+        @Named(FilesystemConstants.PROPERTY_BASEDIR) final String pStorageParameter) {
         Injector inj =
             Guice
                 .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));
         ih = inj.getInstance(IImageHost.class);
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
         ig = new ImageGenerator(painter, ih.getMaxImageWidth(), ih.getMaxImageHeight());
+
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
         } catch (NoSuchAlgorithmException e) {
