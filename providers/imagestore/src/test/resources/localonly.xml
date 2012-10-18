@@ -1,5 +1,5 @@
-<suite name="EntireSuite">
-	<test name="local">
+<suite name="localTests">
+	<test name="localTests">
 		<groups>
 			<run>
 				<exclude name="remoteTests" />
