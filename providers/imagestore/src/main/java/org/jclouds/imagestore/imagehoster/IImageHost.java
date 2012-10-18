@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage;
 /**
  * The ImageHoster interface.
  * 
- * @author Wolfgang Miller
+ * @author Wolfgang Miller, University of Konstanz
  */
 
 public interface IImageHost {

@@ -59,7 +59,7 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      * 
      */
-    @Test(dataProvider = "fileHost", groups = "localTests", enabled=false)
+    @Test(dataProvider = "fileHost", groups = "localTests")
     public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
         throws IOException {
         checkImage(clazz, pHandlers);
@@ -72,7 +72,7 @@ public class ImageHostTest {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    @Test(dataProvider = "remoteHosts", groups = "remoteTests", enabled=false)
+    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
     public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
         checkImage(clazz, pHandlers);
     }
@@ -90,28 +90,28 @@ public class ImageHostTest {
 
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
-            assertFalse(host.imageExists(SET1, IMAGE1));
-            assertFalse(host.imageSetExists(SET1));
-            assertTrue(host.createImageSet(SET1));
+            assertFalse(host.toString(),host.imageExists(SET1, IMAGE1));
+            assertFalse(host.toString(),host.imageSetExists(SET1));
+            assertTrue(host.toString(),host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, image);
-            assertTrue(host.imageExists(SET1, IMAGE1));
+            assertTrue(host.toString(),host.imageExists(SET1, IMAGE1));
             BufferedImage download = host.downloadImage(SET1, IMAGE1);
             compareImages(image, download);
             host.deleteImage(SET1, IMAGE1);
             assertFalse(host.imageExists(SET1, IMAGE1));
             host.uploadImage(SET1, IMAGE1, image);
             host.uploadImage(SET1, IMAGE2, image);
-            assertTrue(host.imageExists(SET1, IMAGE1));
-            assertTrue(host.imageExists(SET1, IMAGE2));
+            assertTrue(host.toString(),host.imageExists(SET1, IMAGE1));
+            assertTrue(host.toString(),host.imageExists(SET1, IMAGE2));
             host.clearImageSet(SET1);
-            assertFalse(host.imageExists(SET1, IMAGE1));
-            assertFalse(host.imageExists(SET1, IMAGE2));
+            assertFalse(host.toString(),host.imageExists(SET1, IMAGE1));
+            assertFalse(host.toString(),host.imageExists(SET1, IMAGE2));
             host.uploadImage(SET1, IMAGE1, image);
             host.uploadImage(SET1, IMAGE2, image);
-            assertTrue(host.imageExists(SET1, IMAGE1));
-            assertTrue(host.imageExists(SET1, IMAGE2));
+            assertTrue(host.toString(),host.imageExists(SET1, IMAGE1));
+            assertTrue(host.toString(),host.imageExists(SET1, IMAGE2));
             host.deleteImageSet(SET1);
-            assertFalse(host.imageSetExists(SET1));
+            assertFalse(host.toString(),host.imageSetExists(SET1));
         }
     }
 
@@ -171,11 +171,11 @@ public class ImageHostTest {
     private void check(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
-            assertFalse(host.imageSetExists(SET1));
-            assertTrue(host.createImageSet(SET1));
-            assertTrue(host.imageSetExists(SET1));
+            assertFalse(host.toString(), host.imageSetExists(SET1));
+            assertTrue(host.toString(), host.createImageSet(SET1));
+            assertTrue(host.toString(), host.imageSetExists(SET1));
             host.deleteImageSet(SET1);
-            assertFalse(host.imageSetExists(SET1));
+            assertFalse(host.toString(), host.imageSetExists(SET1));
         }
     }
 
