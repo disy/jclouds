@@ -27,12 +27,7 @@
 package org.jclouds.imagestore.imagehoster.flickr;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagehoster.HImageHostHelper;
 import org.xml.sax.SAXException;

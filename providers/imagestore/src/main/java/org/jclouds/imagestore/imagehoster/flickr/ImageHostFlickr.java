@@ -172,7 +172,7 @@ public class ImageHostFlickr implements IImageHost {
 
     @Override
     public boolean createImageSet(final String imageSetTitle) {
-        return createImageSetAndGetSet(imageSetTitle) == null;
+        return createImageSetAndGetSet(imageSetTitle) != null;
     }
 
     /**
