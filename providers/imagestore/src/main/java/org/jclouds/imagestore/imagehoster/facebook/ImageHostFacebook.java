@@ -147,8 +147,8 @@ public class ImageHostFacebook implements IImageHost {
      * @return The image id
      */
     private String getFacebookImageId(final String imageSetId, final String imageTitle) {
-        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle).get(0);
-        return fPh == null ? "" : fPh.object_id;
+        final List<FqlPhoto> fPhs = getFacebookImageFql(imageSetId, imageTitle);
+        return fPhs.isEmpty() ? "" : fPhs.get(0).object_id;
     }
 
     @Override
@@ -237,8 +237,7 @@ public class ImageHostFacebook implements IImageHost {
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         String imageSetId = getFacebookImageSetId(imageSetTitle);
         if (imageSetId.isEmpty()) {
-            imageSetId =
-                fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle)).getId();
+            createImageSet(imageSetTitle);
         }
 
         // upload image to facebook
