@@ -14,12 +14,18 @@ import org.jclouds.rest.Utils;
 
 public class ImagestoreContext implements BlobStoreContext {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public com.google.common.reflect.TypeToken<?> getBackendType() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C extends Context> C unwrap(com.google.common.reflect.TypeToken<C> type)
         throws IllegalArgumentException {
@@ -27,78 +33,117 @@ public class ImagestoreContext implements BlobStoreContext {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C extends Context> C unwrap(Class<C> clazz) throws IllegalArgumentException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C extends Context> C unwrap() throws ClassCastException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobRequestSigner getSigner() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStreamMap createInputStreamMap(String container, ListContainerOptions options) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStreamMap createInputStreamMap(String container) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobMap createBlobMap(String container, ListContainerOptions options) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobMap createBlobMap(String container) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AsyncBlobStore getAsyncBlobStore() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobStore getBlobStore() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConsistencyModel getConsistencyModel() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Utils getUtils() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Utils utils() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public
@@ -107,6 +152,9 @@ public class ImagestoreContext implements BlobStoreContext {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public
     void close() {

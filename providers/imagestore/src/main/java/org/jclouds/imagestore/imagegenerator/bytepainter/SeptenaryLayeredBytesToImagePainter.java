@@ -57,16 +57,25 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
     private final Color[][] colors = HBytesToImagePainterHelper
         .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return BYTES_PER_PIXEL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
 
@@ -132,6 +141,9 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
         return image;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
         final ArrayList<Byte> al = new ArrayList<Byte>();

@@ -170,6 +170,9 @@ public class ImageHostFlickr implements IImageHost {
         return ph == null ? "" : ph.getId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createImageSet(final String imageSetTitle) {
         return createImageSetAndGetSet(imageSetTitle) != null;
@@ -202,6 +205,9 @@ public class ImageHostFlickr implements IImageHost {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         String imageSetId = getFlickrImageSetId(imageSetTitle);
@@ -210,11 +216,17 @@ public class ImageHostFlickr implements IImageHost {
         return !getFlickrImageId(imageSetId, imageTitle).isEmpty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageSetExists(final String imageSetTitle) {
         return !getFlickrImageSetId(imageSetTitle).isEmpty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
@@ -230,6 +242,9 @@ public class ImageHostFlickr implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImageSet(final String imageSetTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
@@ -251,6 +266,9 @@ public class ImageHostFlickr implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
         final String imageId = uploadImage(imageTitle, img);
@@ -273,6 +291,9 @@ public class ImageHostFlickr implements IImageHost {
         return imageId;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
@@ -302,6 +323,9 @@ public class ImageHostFlickr implements IImageHost {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int countImagesInSet(final String imageSetTitle) {
         final Photoset ps = getFlickrImageSet(imageSetTitle);
@@ -310,6 +334,9 @@ public class ImageHostFlickr implements IImageHost {
         return ps.getPhotoCount();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
@@ -330,11 +357,17 @@ public class ImageHostFlickr implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageWidth() {
         return MAX_IMAGE_WIDTH;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageHeight() {
         return MAX_IMAGE_HEIGHT;

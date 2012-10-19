@@ -56,16 +56,25 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
     };
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
@@ -111,6 +120,9 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         return bi;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
 

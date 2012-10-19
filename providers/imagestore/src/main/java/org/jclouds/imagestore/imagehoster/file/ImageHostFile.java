@@ -35,21 +35,33 @@ public class ImageHostFile implements IImageHost {
         mFile = new File(baseDir);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageWidth() {
         return MAX_IMAGE_WIDTH;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageHeight() {
         return MAX_IMAGE_HEIGHT;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createImageSet(final String imageSetTitle) {
         return new File(mFile, imageSetTitle).mkdir();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
@@ -62,11 +74,17 @@ public class ImageHostFile implements IImageHost {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageSetExists(final String imageSetTitle) {
         return new File(mFile, imageSetTitle).exists();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
@@ -79,6 +97,9 @@ public class ImageHostFile implements IImageHost {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
@@ -90,6 +111,9 @@ public class ImageHostFile implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         final File set = new File(mFile, imageSetTitle);
@@ -107,6 +131,9 @@ public class ImageHostFile implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
@@ -121,12 +148,18 @@ public class ImageHostFile implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int countImagesInSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         return set.list().length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);

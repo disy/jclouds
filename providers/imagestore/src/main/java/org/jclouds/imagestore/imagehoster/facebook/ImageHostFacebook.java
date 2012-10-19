@@ -72,11 +72,17 @@ public class ImageHostFacebook implements IImageHost {
         String src_big;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageWidth() {
         return MAX_IMAGE_WIDTH;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getMaxImageHeight() {
         return MAX_IMAGE_HEIGHT;
@@ -151,6 +157,9 @@ public class ImageHostFacebook implements IImageHost {
         return fPhs.isEmpty() ? "" : fPhs.get(0).object_id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createImageSet(final String imageSetTitle) {
 
@@ -169,6 +178,9 @@ public class ImageHostFacebook implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -180,6 +192,9 @@ public class ImageHostFacebook implements IImageHost {
         return !getFacebookImageId(imageSetId, imageTitle).isEmpty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean imageSetExists(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -195,6 +210,9 @@ public class ImageHostFacebook implements IImageHost {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -212,6 +230,9 @@ public class ImageHostFacebook implements IImageHost {
         fbClient.deleteObject(imageId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -233,6 +254,9 @@ public class ImageHostFacebook implements IImageHost {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -251,6 +275,9 @@ public class ImageHostFacebook implements IImageHost {
         return "";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
@@ -277,6 +304,9 @@ public class ImageHostFacebook implements IImageHost {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int countImagesInSet(final String imageSetTitle) {
         FqlAlbum fAlbum = getFacebookImageSetFql(imageSetTitle);
@@ -289,6 +319,9 @@ public class ImageHostFacebook implements IImageHost {
         return fAlbum.photo_count;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
