@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class HexalLayeredByteToPixelPainter.
  */
@@ -26,15 +25,15 @@ public class HexadecimalLayeredBytesToImagePainter implements IBytesToImagePaint
         new Color(1f, 0, 0.5f)
     };
 
-    /** The blue colors. */
-    private final Color[] blueColors = new Color[] {
-        new Color(0f, 0f, 0f), new Color(0f, 0f, 0.125f), new Color(0f, 0f, 0.250f),
-        new Color(0f, 0f, 0.375f), new Color(0f, 0f, 0.5f), new Color(0f, 0f, 0.625f),
-        new Color(0f, 0f, 0.750f), new Color(0f, 0f, 0.875f), new Color(0f, 0f, 1f),
-        new Color(0f, 0.25f, 0.14f), new Color(0f, 0.25f, 0.285f), new Color(0f, 0.25f, 0.428f),
-        new Color(0f, 0.25f, 0.571f), new Color(0f, 0.25f, 0.714f), new Color(0f, 0.25f, 0.857f),
-        new Color(0f, 0.25f, 1f)
-    };
+//    /** The blue colors. */
+//    private final Color[] blueColors = new Color[] {
+//        new Color(0f, 0f, 0f), new Color(0f, 0f, 0.125f), new Color(0f, 0f, 0.250f),
+//        new Color(0f, 0f, 0.375f), new Color(0f, 0f, 0.5f), new Color(0f, 0f, 0.625f),
+//        new Color(0f, 0f, 0.750f), new Color(0f, 0f, 0.875f), new Color(0f, 0f, 1f),
+//        new Color(0f, 0.25f, 0.14f), new Color(0f, 0.25f, 0.285f), new Color(0f, 0.25f, 0.428f),
+//        new Color(0f, 0.25f, 0.571f), new Color(0f, 0.25f, 0.714f), new Color(0f, 0.25f, 0.857f),
+//        new Color(0f, 0.25f, 1f)
+//    };
 
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;

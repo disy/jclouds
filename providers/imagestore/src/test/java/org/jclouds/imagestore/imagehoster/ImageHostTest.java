@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.testng.annotations.DataProvider;
@@ -44,8 +45,6 @@ public class ImageHostTest {
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImage(java.lang.String, java.lang.String)}
      * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.lang.String, java.awt.image.BufferedImage)}
-     * and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#uploadImage(java.lang.String, java.awt.image.BufferedImage)}
      * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#downloadImage(java.lang.String, java.lang.String)}
      * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#countImagesInSet(java.lang.String)}
@@ -173,6 +172,7 @@ public class ImageHostTest {
             host.deleteImageSet(SET1);
             assertFalse(host.toString(), host.imageSetExists(SET1));
             assertTrue(host.toString(), host.createImageSet(SET1));
+            assertFalse(host.toString(), host.createImageSet(SET1));
             assertTrue(host.toString(), host.imageSetExists(SET1));
             host.deleteImageSet(SET1);
             assertFalse(host.toString(), host.imageSetExists(SET1));
@@ -209,7 +209,7 @@ public class ImageHostTest {
                 {
                     IImageHost.class,
                     new IImageHost[] {
-                        new ImageHostFlickr()
+                        new ImageHostFlickr(), new ImageHostFacebook()
                     }
                 }
             };

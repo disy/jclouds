@@ -112,18 +112,6 @@ public interface IImageHost {
     String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image);
 
     /**
-     * Upload image.
-     * 
-     * @param imageTitle
-     *            the image title
-     * @param image
-     *            the image
-     * @return the image id
-     * 
-     */
-    String uploadImage(final String imageTitle, final BufferedImage image);
-
-    /**
      * Download image.
      * 
      * @param imageSetTitle

@@ -25,9 +25,6 @@ public class ImageHostFile implements IImageHost {
     /** Location of this hoster. */
     private final File mFile;
 
-    /** Standard container for the file. */
-    private static final String STANDARDCONTAINER = "tmp";
-
     /**
      * Constructor.
      * 
@@ -108,11 +105,6 @@ public class ImageHostFile implements IImageHost {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String uploadImage(final String imageTitle, final BufferedImage image) {
-        return uploadImage(STANDARDCONTAINER, imageTitle, image);
     }
 
     @Override

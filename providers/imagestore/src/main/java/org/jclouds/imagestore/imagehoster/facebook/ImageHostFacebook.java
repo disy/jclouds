@@ -21,6 +21,11 @@ import com.restfb.types.FacebookType;
 
 public class ImageHostFacebook implements IImageHost {
 
+    /** Dummy Picture for marking deleted albums. */
+    private static final BufferedImage DUMMYIMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
+    /** Deleted set name. */
+    private static final String MARKERFORSET = "MARKER";
+
     /** The maximum image width. */
     private static final int MAX_IMAGE_WIDTH = 720;
     /** The maximum image height. */
@@ -44,59 +49,27 @@ public class ImageHostFacebook implements IImageHost {
     private static class FqlAlbum {
         /** The album id. */
         @Facebook
-        private String object_id;
+        String object_id;
 
         /** The photo count. */
         @Facebook
-        private int photo_count;
+        int photo_count;
 
-        /**
-         * Returns the album id.
-         * 
-         * @return The album id
-         */
-        String getAlbumId() {
-            return object_id;
-        }
-
-        /**
-         * Returns the photo count.
-         * 
-         * @return The photo count
-         */
-        int getPhotoCount() {
-            return photo_count;
-        }
     }
 
     private static class FqlPhoto {
+
+        /** Caption of picture. */
+        @Facebook
+        String caption;
+
         /** The photo id. */
         @Facebook
-        private String object_id;
+        String object_id;
 
         /** The big photo URL. */
         @Facebook
-        private String src_big;
-
-        /**
-         * Returns the big photo URL.
-         * 
-         * @return The photo URL
-         * @throws MalformedURLException
-         *             Signals that an MalformedURLException has occurred
-         */
-        URL getBigPhotoURL() throws MalformedURLException {
-            return new URL(src_big);
-        }
-
-        /**
-         * Returns the photo id.
-         * 
-         * @return The photo id
-         */
-        String getPhotoId() {
-            return object_id;
-        }
+        String src_big;
     }
 
     @Override
@@ -139,18 +112,17 @@ public class ImageHostFacebook implements IImageHost {
      *            The image title
      * @return The FqlPhoto object
      */
-    private FqlPhoto getFacebookImageFql(final String imageSetId, final String imageTitle) {
-        final String query =
-            "SELECT object_id, src_big FROM photo WHERE album_object_id = \"" + imageSetId
-                + "\" AND caption = \"" + imageTitle + "\" AND owner = me()";
-
-        final List<FqlPhoto> photos = fbClient.executeQuery(query, FqlPhoto.class);
-
-        if (photos.size() > 0) {
-            return photos.get(0);
+    private List<FqlPhoto> getFacebookImageFql(final String imageSetId, final String imageTitle) {
+        final StringBuilder builder =
+            new StringBuilder("SELECT object_id, src_big, caption FROM photo WHERE album_object_id = \"");
+        builder.append(imageSetId);
+        if (!imageTitle.isEmpty()) {
+            builder.append("\" AND caption = \"");
+            builder.append(imageTitle);
         }
+        builder.append("\" AND owner = me()");
 
-        return null;
+        return fbClient.executeQuery(builder.toString(), FqlPhoto.class);
     }
 
     /**
@@ -162,7 +134,7 @@ public class ImageHostFacebook implements IImageHost {
      */
     private String getFacebookImageSetId(final String imageSetTitle) {
         final FqlAlbum fAlbum = getFacebookImageSetFql(imageSetTitle);
-        return fAlbum == null ? "" : fAlbum.getAlbumId();
+        return fAlbum == null ? "" : fAlbum.object_id;
     }
 
     /**
@@ -175,17 +147,26 @@ public class ImageHostFacebook implements IImageHost {
      * @return The image id
      */
     private String getFacebookImageId(final String imageSetId, final String imageTitle) {
-        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle);
-        return fPh == null ? "" : fPh.getPhotoId();
+        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle).get(0);
+        return fPh == null ? "" : fPh.object_id;
     }
 
     @Override
     public boolean createImageSet(final String imageSetTitle) {
-        if (imageSetExists(imageSetTitle))
-            return false;
 
-        fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
-        return true;
+        FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
+        if (album == null) {
+            fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
+            uploadImage(imageSetTitle, MARKERFORSET, DUMMYIMAGE);
+            return true;
+        } else {
+            if (album.photo_count == 0) {
+                uploadImage(imageSetTitle, MARKERFORSET, DUMMYIMAGE);
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -193,7 +174,7 @@ public class ImageHostFacebook implements IImageHost {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty()) {
-            throwAlbumNotFoundException(imageSetTitle);
+            return false;
         }
 
         return !getFacebookImageId(imageSetId, imageTitle).isEmpty();
@@ -201,7 +182,17 @@ public class ImageHostFacebook implements IImageHost {
 
     @Override
     public boolean imageSetExists(final String imageSetTitle) {
-        return !getFacebookImageSetId(imageSetTitle).isEmpty();
+        final String imageSetId = getFacebookImageSetId(imageSetTitle);
+        if (imageSetId.isEmpty()) {
+            return false;
+        } else {
+            FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
+            if (album.photo_count >= 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -209,13 +200,13 @@ public class ImageHostFacebook implements IImageHost {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty()) {
-            throwAlbumNotFoundException(imageSetTitle);
+            return;
         }
 
         final String imageId = getFacebookImageId(imageSetId, imageTitle);
 
         if (imageId.isEmpty()) {
-            throwPhotoNotFoundException(imageSetTitle, imageTitle);
+            return;
         }
 
         fbClient.deleteObject(imageId);
@@ -225,10 +216,21 @@ public class ImageHostFacebook implements IImageHost {
     public void deleteImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
         if (imageSetId.isEmpty()) {
-            throwAlbumNotFoundException(imageSetTitle);
+            return;
         }
 
+        // NOT WORKING DUE TO BUG IN FACEBOOK GRAPH API, STORING DUMMY LIKEWISE
+        // https://developers.facebook.com/bugs/404510289586183
         // fbClient.deleteObject(imageSetId);
+
+        // Instead, uploading dummy as only picture in album
+        clearImageSet(imageSetTitle);
+
+        List<FqlPhoto> markerPhotos = getFacebookImageFql(imageSetId, MARKERFORSET);
+        if (!markerPhotos.isEmpty()) {
+            fbClient.deleteObject(markerPhotos.get(0).object_id);
+        }
+
     }
 
     @Override
@@ -251,31 +253,26 @@ public class ImageHostFacebook implements IImageHost {
     }
 
     @Override
-    public String uploadImage(final String imageTitle, final BufferedImage image) {
-        // "me" is the standard container on facebook
-        return uploadImage("me", imageTitle, image);
-    }
-
-    @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty()) {
-            throwAlbumNotFoundException(imageSetTitle);
+            throw new IllegalArgumentException("There is no facebook album with given title: \""
+                + imageSetTitle + "\"!");
         }
 
-        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle);
+        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle).get(0);
 
         if (fPh == null) {
-            throwPhotoNotFoundException(imageSetTitle, imageTitle);
+            throw new IllegalArgumentException("There is no image named \"" + imageTitle
+                + "\" in your facebook album \"" + imageSetTitle + "\"!");
         }
 
         try {
-            return ImageIO.read(fPh.getBigPhotoURL());
+            return ImageIO.read(new URL(fPh.src_big));
         } catch (MalformedURLException e) {
             new RuntimeException(e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             new RuntimeException(e);
         }
         return null;
@@ -286,10 +283,11 @@ public class ImageHostFacebook implements IImageHost {
         FqlAlbum fAlbum = getFacebookImageSetFql(imageSetTitle);
 
         if (fAlbum == null) {
-            throwAlbumNotFoundException(imageSetTitle);
+            throw new IllegalArgumentException("There is no facebook album with given title: \""
+                + imageSetTitle + "\"!");
         }
 
-        return fAlbum.getPhotoCount();
+        return fAlbum.photo_count;
     }
 
     @Override
@@ -298,44 +296,12 @@ public class ImageHostFacebook implements IImageHost {
         if (imageSetId.isEmpty())
             return;
 
-        final String query =
-            "SELECT object_id FROM photo WHERE album_object_id = \"" + imageSetId + "\" AND owner = me()";
-        final List<FqlPhoto> photos = fbClient.executeQuery(query, FqlPhoto.class);
+        final List<FqlPhoto> photos = getFacebookImageFql(imageSetId, "");
 
         for (FqlPhoto ph : photos) {
-            fbClient.deleteObject(ph.getPhotoId());
-        }
-    }
-
-    /**
-     * Throws an exception if an album with given title does not exist.
-     * 
-     * @param imageSetTitle
-     *            The title
-     */
-    private void throwAlbumNotFoundException(final String imageSetTitle) {
-        try {
-            throw new IllegalArgumentException("There is no facebook album with given title: \""
-                + imageSetTitle + "\"!");
-        } catch (IllegalArgumentException e) {
-            new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Throws an exception if no photo with the given title in the given set exists.
-     * 
-     * @param imageSetTitle
-     *            The set title
-     * @param imageTitle
-     *            The image title
-     */
-    private void throwPhotoNotFoundException(final String imageSetTitle, final String imageTitle) {
-        try {
-            throw new IllegalArgumentException("There is no image named \"" + imageTitle
-                + "\" in your facebook album \"" + imageSetTitle + "\"!");
-        } catch (IllegalArgumentException e) {
-            new RuntimeException(e);
+            if (!ph.caption.equals(MARKERFORSET)) {
+                fbClient.deleteObject(ph.object_id);
+            }
         }
     }
 }

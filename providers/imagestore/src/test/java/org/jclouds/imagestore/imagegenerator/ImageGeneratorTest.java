@@ -136,17 +136,6 @@ public class ImageGeneratorTest {
     }
 
     /**
-     * Deletes all created images and sets.
-     * 
-     * @param host
-     *            The image host.
-     */
-    public void clean(final IImageHost host) {
-        host.clearImageSet(CONTAINER);
-        host.deleteImageSet(CONTAINER);
-    }
-
-    /**
      * Returns an Object with file host and all byte painters.
      * 
      * @return Object with file host and all byte painters.
@@ -220,7 +209,7 @@ public class ImageGeneratorTest {
         ClassNotFoundException {
 
         for (IImageHost host : hosts) {
-            clean(host);
+            host.deleteImageSet(CONTAINER);
             for (IBytesToImagePainter pa : painters) {
                 final SyncImageBlobStore ib =
                     new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), Files
@@ -242,7 +231,7 @@ public class ImageGeneratorTest {
                 assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(" failed.")
                     .toString(), Arrays.equals(RAWFILEBYTES, bss));
             }
-            clean(host);
+            host.deleteImageSet(CONTAINER);
         }
     }
 

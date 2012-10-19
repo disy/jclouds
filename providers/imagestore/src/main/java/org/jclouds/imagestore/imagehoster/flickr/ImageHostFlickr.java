@@ -176,7 +176,8 @@ public class ImageHostFlickr implements IImageHost {
     }
 
     /**
-     * Creates a Photoset with the given image-title and returns it's id. Returns null if a Photoset with given name already exists.
+     * Creates a Photoset with the given image-title and returns it's id. Returns null if a Photoset with
+     * given name already exists.
      * 
      * @param imageSetTitle
      *            the set-title
@@ -255,7 +256,7 @@ public class ImageHostFlickr implements IImageHost {
         final String imageId = uploadImage(imageTitle, img);
 
         Photoset ps = createImageSetAndGetSet(imageSetTitle);
-        if(ps == null) {
+        if (ps == null) {
             ps = getFlickrImageSet(imageSetTitle);
         }
 
@@ -288,8 +289,7 @@ public class ImageHostFlickr implements IImageHost {
         return null;
     }
 
-    @Override
-    public String uploadImage(final String imageTitle, final BufferedImage image) {
+    private String uploadImage(final String imageTitle, final BufferedImage image) {
         try {
             return fup.uploadImage(imageTitle, image, meta);
         } catch (IOException e) {
