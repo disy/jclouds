@@ -82,10 +82,6 @@ public final class HYCbCrToRGB {
         int G = (int)(Y - 0.34414 * (cB - 128) - 0.71414 * (cR - 128)) & 0xFF;
         int B = (int)(Y + 1.772 * (cB - 128)) & 0xFF;
 
-        System.out.println(R + " " + Integer.toBinaryString(R));
-        System.out.println(G + " " + Integer.toBinaryString(G));
-        System.out.println(B + " " + Integer.toBinaryString(B));
-
         return new Color((int)R, (int)G, (int)B);
     }
 }
