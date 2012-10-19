@@ -61,6 +61,9 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         return BUFFERED_IMAGE_TYPE;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;

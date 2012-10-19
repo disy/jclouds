@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class OctalLayeredByteToPixelPainter.
  */
@@ -18,7 +17,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
-    
+
     /** The number system. */
     private final int numberSystem = 8;
 
@@ -28,7 +27,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
     /** Bytes needed per pixel. */
     public static final float BYTES_PER_PIXEL = 3;
-    
+
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
@@ -46,8 +45,6 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         final int h = bi.getHeight();
         final Graphics g = bi.getGraphics();
         final int sumPix = w * h;
-
-        int save = 0;
 
         ArrayList<Integer> cList = new ArrayList<Integer>(sumPix);
 
@@ -87,8 +84,6 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
                             final byte b = bs[bIdx++];
                             currByteColor = getColorFromByte(b, layer, bIdx % 2 == 0);
-                            // System.out.println(currByteColor.length);
-                            save += 3 - currByteColor.length;
                             cIdx = 0;
                         }
 
@@ -105,7 +100,6 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
                     }
 
                     if (cList.size() <= pix) {
-                        System.out.println("save:" + save / 3 + " bytes: " + bIdx);
                         return bi;
                     }
 
