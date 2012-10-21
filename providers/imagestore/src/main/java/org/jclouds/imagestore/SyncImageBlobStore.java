@@ -118,61 +118,94 @@ public class SyncImageBlobStore implements BlobStore {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long countBlobs(final String container) {
         return ih.countImagesInSet(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long countBlobs(final String container, final ListContainerOptions options) {
         return countBlobs(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobStoreContext getContext() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobBuilder blobBuilder(final String blobName) {
         return bb.name(blobName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<? extends Location> listAssignableLocations() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageSet<? extends StorageMetadata> list() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containerExists(final String container) {
         return ih.imageSetExists(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createContainerInLocation(@Nullable final Location location, final String container) {
         return ih.createImageSet(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createContainerInLocation(@Nullable final Location location, final String container,
         final CreateContainerOptions options) {
         return createContainerInLocation(null, container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageSet<? extends StorageMetadata> list(final String container) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageSet<? extends StorageMetadata>
         list(final String container, final ListContainerOptions options) {
@@ -180,43 +213,67 @@ public class SyncImageBlobStore implements BlobStore {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearContainer(final String container) {
         ih.clearImageSet(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearContainer(final String container, final ListContainerOptions options) {
         clearContainer(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteContainer(final String container) {
         ih.deleteImageSet(container);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean directoryExists(final String container, final String directory) {
         // TODO Directory??
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createDirectory(final String container, final String directory) {
         // TODO Directory??
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteDirectory(final String containerName, final String name) {
         // TODO Directory??
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean blobExists(final String container, final String name) {
         return ih.imageExists(container, name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String putBlob(final String container, final Blob blob) {
         final Payload pl = blob.getPayload();
@@ -237,17 +294,26 @@ public class SyncImageBlobStore implements BlobStore {
         return ih.uploadImage(container, blob.getMetadata().getName(), bi);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String putBlob(final String container, final Blob blob, final PutOptions options) {
         return putBlob(container, blob);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BlobMetadata blobMetadata(final String container, final String name) {
         // TODO Metadata??
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Blob getBlob(final String container, final String name) {
         BufferedImage bi = ih.downloadImage(container, name);
@@ -256,11 +322,17 @@ public class SyncImageBlobStore implements BlobStore {
         return bb.build();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Blob getBlob(final String container, final String name, final GetOptions options) {
         return getBlob(container, name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void removeBlob(final String container, final String name) {
         ih.deleteImage(container, name);

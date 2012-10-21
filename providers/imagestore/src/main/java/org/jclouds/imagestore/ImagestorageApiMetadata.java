@@ -15,6 +15,9 @@ public class ImagestorageApiMetadata extends BaseApiMetadata {
         return new Builder();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Builder toBuilder() {
         return Builder.class.cast(builder().fromApiMetadata(this));
@@ -38,6 +41,9 @@ public class ImagestorageApiMetadata extends BaseApiMetadata {
                     BlobStoreContext.class).defaultModule(ImagestoreContextModule.class);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public ImagestorageApiMetadata build() {
             return new ImagestorageApiMetadata(this);

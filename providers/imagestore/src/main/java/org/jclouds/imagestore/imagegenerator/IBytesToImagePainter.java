@@ -35,6 +35,11 @@ import java.awt.image.BufferedImage;
  */
 public interface IBytesToImagePainter {
     
+    /**
+     * Returns the image type needed for the specific painter.
+     * 
+     * @return the image type
+     */
     int getImageType();
     
     /**

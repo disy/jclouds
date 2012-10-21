@@ -16,6 +16,9 @@ import com.google.inject.AbstractModule;
  */
 public class ImagestoreContextModule extends AbstractModule {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void configure() {
         bind(BlobStore.class).to(SyncImageBlobStore.class);

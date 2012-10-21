@@ -57,16 +57,25 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
     private final Color[][] colors = HBytesToImagePainterHelper
         .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
 
@@ -117,6 +126,9 @@ public class QuaternaryLayeredBytesToImagePainter implements IBytesToImagePainte
         return image;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
 

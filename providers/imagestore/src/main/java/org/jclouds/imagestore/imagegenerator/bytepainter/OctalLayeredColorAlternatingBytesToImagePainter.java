@@ -27,17 +27,26 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
     /** Bytes needed per pixel. */
     public static final float BYTES_PER_PIXEL = 3;
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return BYTES_PER_PIXEL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
@@ -147,6 +156,9 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         return byteColors;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytesFromImage(BufferedImage img) {
 

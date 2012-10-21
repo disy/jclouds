@@ -50,17 +50,26 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 8;
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public float pixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
@@ -132,6 +141,9 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         return bw;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte[] getBytesFromImage(final BufferedImage img) {
 
