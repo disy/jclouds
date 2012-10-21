@@ -35,15 +35,17 @@ import org.perfidix.result.BenchmarkResult;
 public class ImageGeneratorBenchmark {
 
     static int SIZE = 4096;
-    static int RUNS = 25;
+    static int RUNS = 100;
 
+    static int BYTESIZE = 5;
+    
     byte[] data;
     BufferedImage image;
 
-    int i = 22;
+
 
     public void before() {
-        data = initializeData(i);
+        data = initializeData(BYTESIZE);
         // i++;
     }
 
@@ -127,7 +129,6 @@ public class ImageGeneratorBenchmark {
     public byte[] initializeData(int i) {
         Random ran = new Random();
         byte[] data = new byte[1 << i];
-        int j = data.length;
         ran.nextBytes(data);
         return data;
     }
