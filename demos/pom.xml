@@ -33,11 +33,9 @@
     <modules>
         <module>getpath</module>
         <module>googleappengine</module>
-        <module>perftest</module>
         <module>speedtest-azurequeue</module>
         <module>speedtest-sqs</module>
         <module>simpledb</module>
-        <module>tweetstore</module>
     </modules>
     <dependencies>
         <dependency>
