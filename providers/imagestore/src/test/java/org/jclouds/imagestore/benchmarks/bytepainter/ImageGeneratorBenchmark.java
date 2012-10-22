@@ -4,7 +4,12 @@
 package org.jclouds.imagestore.benchmarks.bytepainter;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
@@ -17,6 +22,8 @@ import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePa
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
+import org.perfidix.annotation.AfterEachRun;
+import org.perfidix.annotation.BeforeBenchClass;
 import org.perfidix.annotation.Bench;
 import org.perfidix.element.KindOfArrangement;
 import org.perfidix.meter.AbstractMeter;
@@ -34,26 +41,52 @@ import org.perfidix.result.BenchmarkResult;
  */
 public class ImageGeneratorBenchmark {
 
-    static int SIZE = 4096;
-    static int RUNS = 100;
+    static int SIZE = 128;
+    static int RUNS = 10;
 
-    static int BYTESIZE = 5;
-    
+    static int BYTESIZE = 9;
+    static File PICFOLDER = new File("/Users/sebi/Desktop/images");
+    static {
+        new File(PICFOLDER, new StringBuilder(BYTESIZE).toString()).mkdirs();
+    }
+
     byte[] data;
     BufferedImage image;
+    String methodJustBenched = "";
 
-
-
+    @BeforeBenchClass
     public void before() {
-        data = initializeData(BYTESIZE);
-        // i++;
+        Random ran = new Random();
+        data = new byte[1 << BYTESIZE];
+        ran.nextBytes(data);
+    }
+
+    @AfterEachRun
+    public void tearDown() {
+        final File toStore = new File(PICFOLDER, new StringBuilder(BYTESIZE).toString());
+        final File imageFile =
+            new File(toStore, new StringBuilder(methodJustBenched).append(".png").toString());
+        try {
+            if (imageFile.exists()) {
+                imageFile.delete();
+            }
+            imageFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            ImageIO.write(image, "png", fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
      * Colored, 8 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateBinary() {
+        methodJustBenched = "binary";
         IBytesToImagePainter painter = new BinaryBytesToImagePainter();
         store(painter);
     }
@@ -61,8 +94,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 2 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateHexadecimal() {
+        methodJustBenched = "hexadecimal";
         IBytesToImagePainter painter = new HexadecimalBytesToImagePainter();
         store(painter);
     }
@@ -70,7 +104,7 @@ public class ImageGeneratorBenchmark {
     // /**
     // * Colored, 1/2Pixel/1Byte, not working
     // */
-    // @Bench(beforeEachRun = "before")
+    // @Bench
     // public void generateHexadecimalLayered() {
     // IBytesToImagePainter painter = new HexadecimalLayeredBytesToImagePainter();
     // store(painter);
@@ -79,8 +113,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 1 Pixel/ 1Byte, only serializing working
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateOctalLayeredColorAlternating() {
+        methodJustBenched = "octalLayeredColorAlternating";
         IBytesToImagePainter painter = new OctalLayeredColorAlternatingBytesToImagePainter();
         store(painter);
     }
@@ -88,8 +123,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 4 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateQuaternary() {
+        methodJustBenched = "quaternary";
         IBytesToImagePainter painter = new QuaternaryBytesToImagePainter();
         store(painter);
     }
@@ -97,8 +133,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 4/3 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateQuaternaryLayered() {
+        methodJustBenched = "quaternaryLayered";
         IBytesToImagePainter painter = new QuaternaryLayeredBytesToImagePainter();
         store(painter);
     }
@@ -106,8 +143,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 3 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateSeptenary() {
+        methodJustBenched = "septenary";
         IBytesToImagePainter painter = new SeptenaryBytesToImagePainter();
         store(painter);
     }
@@ -115,8 +153,9 @@ public class ImageGeneratorBenchmark {
     /**
      * 1 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "before")
+    @Bench
     public void generateSeptenaryLayered() {
+        methodJustBenched = "septenaryLayered";
         IBytesToImagePainter painter = new SeptenaryLayeredBytesToImagePainter();
         store(painter);
     }
@@ -124,13 +163,6 @@ public class ImageGeneratorBenchmark {
     private void store(IBytesToImagePainter painter) {
         ImageGenerator generator = new ImageGenerator(painter, SIZE, SIZE);
         image = generator.createImageFromBytes(data);
-    }
-
-    public byte[] initializeData(int i) {
-        Random ran = new Random();
-        byte[] data = new byte[1 << i];
-        ran.nextBytes(data);
-        return data;
     }
 
     public static void main(String[] args) {
