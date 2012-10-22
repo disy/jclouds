@@ -77,6 +77,16 @@
             <artifactId>google-api-client</artifactId>
             <version>1.11.0-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson2</artifactId>
+            <version>1.11.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.11.0-beta</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

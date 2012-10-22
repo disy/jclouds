@@ -45,10 +45,10 @@ public class ImageGeneratorBenchmark {
     // size, determining width as well as height
     static int SIZE = 1024;
     // runs of this benchmark
-    static int RUNS = 1;
+    static int RUNS = 10;
 
     // size of input-data, is power of 2
-    static int BYTESIZE = 16;
+    static int BYTESIZE = 17;
     // path to store the pictures to
     static File PICFOLDER = new File("/Users/sebi/Desktop/images");
     static {
@@ -165,7 +165,7 @@ public class ImageGeneratorBenchmark {
     /**
      * Colored, 8 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setUpBinary", afterLastRun = "check")
+    @Bench(beforeEachRun = "setUpBinary", afterEachRun = "check")
     public void degenerateBinary() {
         methodJustBenched = "binary";
         painter = new BinaryBytesToImagePainter();
@@ -175,7 +175,7 @@ public class ImageGeneratorBenchmark {
     /**
      * 2 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setUpHexadecimal", afterLastRun = "check")
+    @Bench(beforeEachRun = "setUpHexadecimal", afterEachRun = "check")
     public void degenerateHexadecimal() {
         methodJustBenched = "hexadecimal";
         painter = new HexadecimalBytesToImagePainter();
@@ -185,7 +185,7 @@ public class ImageGeneratorBenchmark {
     /**
      * 4 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setupQuaternary", afterLastRun = "check")
+    @Bench(beforeEachRun = "setupQuaternary", afterEachRun = "check")
     public void degenerateQuaternary() {
         methodJustBenched = "quaternary";
         painter = new QuaternaryBytesToImagePainter();
@@ -195,7 +195,7 @@ public class ImageGeneratorBenchmark {
     /**
      * 4/3 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setupQuaternaryLayered", afterLastRun = "check")
+    @Bench(beforeEachRun = "setupQuaternaryLayered", afterEachRun = "check")
     public void degenerateQuaternaryLayered() {
         methodJustBenched = "quaternaryLayered";
         painter = new QuaternaryLayeredBytesToImagePainter();
@@ -205,7 +205,7 @@ public class ImageGeneratorBenchmark {
     /**
      * 3 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "generateSeptenary", afterLastRun = "check")
+    @Bench(beforeEachRun = "generateSeptenary", afterEachRun = "check")
     public void degenerateSeptenary() {
         methodJustBenched = "septenary";
         painter = new SeptenaryBytesToImagePainter();
