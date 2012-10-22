@@ -129,11 +129,11 @@ public class FlickrDownloader {
      */
     private InputStream getImageAsStream(final Photo ph) throws IOException, FlickrException, JSONException {
         final URL url = getBiggestSizedPhotoURL(ph);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         if (transport instanceof REST) {
-            if (((REST) transport).isProxyAuth()) {
+            if (((REST)transport).isProxyAuth()) {
                 conn.setRequestProperty("Proxy-Authorization", "Basic "
-                    + ((REST) transport).getProxyCredentials());
+                    + ((REST)transport).getProxyCredentials());
             }
         }
         conn.connect();

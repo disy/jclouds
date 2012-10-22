@@ -13,7 +13,8 @@ public final class HImageHostHelper {
     /**
      * Private constructor. Protects helper class from being instantiated.
      */
-    private HImageHostHelper() { };
+    private HImageHostHelper() {
+    };
 
     /**
      * Returns an InputStream from given BufferedImage.

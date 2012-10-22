@@ -64,7 +64,7 @@ public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
-    
+
     /**
      * {@inheritDoc}
      */

@@ -60,5 +60,4 @@ public class PixelMeter extends AbstractMeter {
         return true;
     }
 
-
 }

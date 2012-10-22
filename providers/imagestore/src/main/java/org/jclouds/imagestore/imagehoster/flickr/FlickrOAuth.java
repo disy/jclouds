@@ -37,7 +37,6 @@ import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_USER_ID;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_APP_KEY;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_SHARED_SECRET;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,7 +71,6 @@ public class FlickrOAuth {
     /** The Flickr properties. */
     private final Properties fp = new Properties();
 
-   
     /**
      * Constructs Flickr OAuth authentication.
      * 

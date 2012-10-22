@@ -63,7 +63,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
-    
+
     /**
      * {@inheritDoc}
      */

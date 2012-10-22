@@ -69,7 +69,8 @@ public class AsyncImageBlobStore implements AsyncBlobStore {
      * {@inheritDoc}
      */
     @Override
-    public ListenableFuture<Boolean> createContainerInLocation(@Nullable final Location location, final String container) {
+    public ListenableFuture<Boolean> createContainerInLocation(@Nullable final Location location,
+        final String container) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -78,8 +79,8 @@ public class AsyncImageBlobStore implements AsyncBlobStore {
      * {@inheritDoc}
      */
     @Override
-    public ListenableFuture<Boolean> createContainerInLocation(@Nullable final Location location, final String container,
-        final CreateContainerOptions options) {
+    public ListenableFuture<Boolean> createContainerInLocation(@Nullable final Location location,
+        final String container, final CreateContainerOptions options) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -179,7 +180,8 @@ public class AsyncImageBlobStore implements AsyncBlobStore {
      * {@inheritDoc}
      */
     @Override
-    public ListenableFuture<String> putBlob(final String container, final Blob blob, final PutOptions options) {
+    public ListenableFuture<String>
+        putBlob(final String container, final Blob blob, final PutOptions options) {
         // TODO Auto-generated method stub
         return null;
     }

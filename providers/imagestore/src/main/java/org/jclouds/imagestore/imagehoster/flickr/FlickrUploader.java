@@ -74,8 +74,8 @@ public class FlickrUploader {
      * @throws SAXException
      *             Signals that an SAX exception has occurred.
      */
-    public String uploadImage(final String imageTitle, final BufferedImage image,
-        final UploadMetaData meta) throws IOException, FlickrException, SAXException {
+    public String uploadImage(final String imageTitle, final BufferedImage image, final UploadMetaData meta)
+        throws IOException, FlickrException, SAXException {
         return up.upload(imageTitle, HImageHostHelper.getInputStreamFromImage(image), meta);
     }
 }

@@ -34,14 +34,14 @@ import java.awt.image.BufferedImage;
  * @author Wolfgang Miller, University of Konstanz
  */
 public interface IBytesToImagePainter {
-    
+
     /**
      * Returns the image type needed for the specific painter.
      * 
      * @return the image type
      */
     int getImageType();
-    
+
     /**
      * Returns the number of pixels needed per byte.
      * 
@@ -52,8 +52,10 @@ public interface IBytesToImagePainter {
     /**
      * Stores bytes in an image.
      * 
-     * @param bi the BufferedImage to store the bytes
-     * @param bs the bytes to be stored
+     * @param bi
+     *            the BufferedImage to store the bytes
+     * @param bs
+     *            the bytes to be stored
      * @return the image from the given bytes
      */
     BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs);
@@ -61,7 +63,8 @@ public interface IBytesToImagePainter {
     /**
      * Extracts bytes from given image.
      * 
-     * @param bi the image 
+     * @param bi
+     *            the image
      * @return the bytes from pixels
      */
     byte[] getBytesFromImage(BufferedImage bi);

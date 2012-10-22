@@ -17,7 +17,6 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
@@ -44,12 +43,12 @@ import org.perfidix.result.BenchmarkResult;
 public class ImageGeneratorBenchmark {
 
     // size, determining width as well as height
-    static int SIZE = 128;
+    static int SIZE = 1024;
     // runs of this benchmark
-    static int RUNS = 10;
+    static int RUNS = 1;
 
     // size of input-data, is power of 2
-    static int BYTESIZE = 9;
+    static int BYTESIZE = 16;
     // path to store the pictures to
     static File PICFOLDER = new File("/Users/sebi/Desktop/images");
     static {
@@ -58,6 +57,8 @@ public class ImageGeneratorBenchmark {
 
     // intermediate variables, needed for passing data between methods, just for convenience
     byte[] data;
+    byte[] deserializedData;
+    IBytesToImagePainter painter;
     BufferedImage image;
     String methodJustBenched = "";
 
@@ -117,25 +118,6 @@ public class ImageGeneratorBenchmark {
         image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
     }
 
-    // /**
-    // * Colored, 1/2Pixel/1Byte, not working
-    // */
-    // @Bench
-    // public void generateHexadecimalLayered() {
-    // IBytesToImagePainter painter = new HexadecimalLayeredBytesToImagePainter();
-    // store(painter);
-    // }
-
-    /**
-     * 1 Pixel/ 1Byte, only serializing working
-     */
-    @Bench
-    public void generateOctalLayeredColorAlternating() {
-        methodJustBenched = "octalLayeredColorAlternating";
-        IBytesToImagePainter painter = new OctalLayeredColorAlternatingBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
-    }
-
     /**
      * 4 Pixel/1Byte
      */
@@ -183,79 +165,51 @@ public class ImageGeneratorBenchmark {
     /**
      * Colored, 8 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setUpBinary")
+    @Bench(beforeFirstRun = "setUpBinary", afterLastRun = "check")
     public void degenerateBinary() {
         methodJustBenched = "binary";
-        IBytesToImagePainter painter = new BinaryBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        painter = new BinaryBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
      * 2 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setUpHexadecimal")
+    @Bench(beforeFirstRun = "setUpHexadecimal", afterLastRun = "check")
     public void degenerateHexadecimal() {
         methodJustBenched = "hexadecimal";
-        IBytesToImagePainter painter = new HexadecimalBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
-    }
-
-    // /**
-    // * Colored, 1/2Pixel/1Byte, not working
-    // */
-    // @Bench
-    // public void generateHexadecimalLayered() {
-    // IBytesToImagePainter painter = new HexadecimalLayeredBytesToImagePainter();
-    // store(painter);
-    // }
-
-    /**
-     * 1 Pixel/ 1Byte, only serializing working
-     */
-    @Bench(beforeFirstRun = "setupOctalLayeredColorAlternating")
-    public void degenerateOctalLayeredColorAlternating() {
-        methodJustBenched = "octalLayeredColorAlternating";
-        IBytesToImagePainter painter = new OctalLayeredColorAlternatingBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        painter = new HexadecimalBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
      * 4 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setupQuaternary")
+    @Bench(beforeFirstRun = "setupQuaternary", afterLastRun = "check")
     public void degenerateQuaternary() {
         methodJustBenched = "quaternary";
-        IBytesToImagePainter painter = new QuaternaryBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        painter = new QuaternaryBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
      * 4/3 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "setupQuaternaryLayered")
+    @Bench(beforeFirstRun = "setupQuaternaryLayered", afterLastRun = "check")
     public void degenerateQuaternaryLayered() {
         methodJustBenched = "quaternaryLayered";
-        IBytesToImagePainter painter = new QuaternaryLayeredBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        painter = new QuaternaryLayeredBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
      * 3 Pixel/1Byte
      */
-    @Bench(beforeFirstRun = "generateSeptenary")
+    @Bench(beforeFirstRun = "generateSeptenary", afterLastRun = "check")
     public void degenerateSeptenary() {
         methodJustBenched = "septenary";
-        IBytesToImagePainter painter = new SeptenaryBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
-    }
-
-    /**
-     * 1 Pixel/1Byte
-     */
-    @Bench(beforeFirstRun = "setupSeptenaryLayered")
-    public void degenerateSeptenaryLayered() {
-        IBytesToImagePainter painter = new SeptenaryLayeredBytesToImagePainter();
-        byte[] data = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        painter = new SeptenaryBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
     }
 
     // ////////////////////////////////////////
@@ -264,39 +218,34 @@ public class ImageGeneratorBenchmark {
 
     public void setUpBinary() {
         generateBinary();
+        tearDown();
         deserialize();
     }
-    
+
     public void setUpHexadecimal() {
         generateHexadecimal();
+        tearDown();
         deserialize();
     }
-    
-    public void setupOctalLayeredColorAlternating() {
-        generateOctalLayeredColorAlternating();
-        deserialize();
-    }
-    
+
     public void setupQuaternary() {
         generateQuaternary();
+        tearDown();
         deserialize();
     }
-    
+
     public void setupQuaternaryLayered() {
         generateQuaternaryLayered();
+        tearDown();
         deserialize();
     }
-    
+
     public void setupSeptenary() {
         generateSeptenary();
+        tearDown();
         deserialize();
     }
-    
-    public void setupSeptenaryLayered() {
-        degenerateSeptenaryLayered();
-        deserialize();
-    }
-    
+
     private void deserialize() {
         final File toStore = new File(PICFOLDER, new StringBuilder(BYTESIZE).toString());
         final File imageFile =
@@ -310,8 +259,8 @@ public class ImageGeneratorBenchmark {
         }
     }
 
-    private void check(final IBytesToImagePainter painter, byte[] toCheck) {
-        if (!Arrays.equals(data, toCheck)) {
+    public void check() {
+        if (!Arrays.equals(data, deserializedData)) {
             throw new RuntimeException(new StringBuilder("Arrays differ for painter ").append(
                 painter.toString()).toString());
         }

@@ -146,8 +146,7 @@ public class ImagestoreContext implements BlobStoreContext {
      */
     @Override
     @Deprecated
-    public
-    <S, A> RestContext<S, A> getProviderSpecificContext() {
+    public <S, A> RestContext<S, A> getProviderSpecificContext() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -156,10 +155,9 @@ public class ImagestoreContext implements BlobStoreContext {
      * {@inheritDoc}
      */
     @Override
-    public
-    void close() {
+    public void close() {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

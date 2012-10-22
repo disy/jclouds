@@ -88,7 +88,7 @@ public final class ImageStoreConstants {
     public static final String FACEBOOK_TOKEN_URL = "https://graph.facebook.com/oauth/access_token";
     /** The Facebook URL to users profile. */
     public static final String FACEBOOK_USER_URL = "https://graph.facebook.com/me";
-    
+
     /** The Facebook properties file name. */
     public static final String FACEBOOK_PROP_FILE_NAME = "facebook.properties";
     /** The path to Facebook properties file. */
