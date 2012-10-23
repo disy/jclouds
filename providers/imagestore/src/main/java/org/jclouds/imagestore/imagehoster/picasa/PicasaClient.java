@@ -28,12 +28,9 @@ import org.jclouds.imagestore.imagehoster.picasa.model.PhotoEntry;
 import org.jclouds.imagestore.imagehoster.picasa.model.UserFeed;
 
 import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.http.MultipartRelatedContent;
-import com.google.api.client.http.xml.atom.AtomContent;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
 /**
@@ -60,16 +57,11 @@ public final class PicasaClient extends GDataXmlClient {
         super.executeDelete(url, entry.etag);
     }
 
-    <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {
+    private <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {
         return super.executeGet(url, parseAsType);
     }
 
-    public <T extends Entry> T executePatchRelativeToOriginal(T original, T updated) throws IOException {
-        PicasaUrl url = new PicasaUrl(updated.getEditLink());
-        return super.executePatchRelativeToOriginal(url, original, updated, original.etag);
-    }
-
-    <T> T executePost(PicasaUrl url, T content) throws IOException {
+    private <T> T executePost(PicasaUrl url, T content) throws IOException {
         return super.executePost(url, content instanceof Feed, content);
     }
 
@@ -78,12 +70,8 @@ public final class PicasaClient extends GDataXmlClient {
         return executeGet(url, AlbumEntry.class);
     }
 
-    public <T extends Entry> T executeInsert(PicasaUrl url, T entry) throws IOException {
-        return executePost(url, entry);
-    }
-
     public <T extends Entry> T executeInsert(Feed feed, T entry) throws IOException {
-        return executeInsert(new PicasaUrl(feed.getPostLink()), entry);
+        return executePost(new PicasaUrl(feed.getPostLink()), entry);
     }
 
     public AlbumFeed executeGetAlbumFeed(PicasaUrl url) throws IOException {
@@ -107,11 +95,4 @@ public final class PicasaClient extends GDataXmlClient {
         return execute(request).parseAs(PhotoEntry.class);
     }
 
-    public PhotoEntry executeInsertPhotoEntryWithMetadata(PhotoEntry photo, PicasaUrl albumFeedUrl,
-        AbstractInputStreamContent content) throws IOException {
-        HttpRequest request = getRequestFactory().buildPostRequest(albumFeedUrl, null);
-        AtomContent atomContent = AtomContent.forEntry(DICTIONARY, photo);
-        new MultipartRelatedContent(atomContent, content).forRequest(request);
-        return execute(request).parseAs(PhotoEntry.class);
-    }
 }

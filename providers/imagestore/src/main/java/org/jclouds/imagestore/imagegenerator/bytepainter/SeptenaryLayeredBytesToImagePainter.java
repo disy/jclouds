@@ -34,9 +34,25 @@ import java.util.ArrayList;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
+ * 
+ * This Class offers a byte painter.
+ * <p/>
+ * Numeral System: Septenary <br/>
+ * Layers: 3 <br/>
+ * 1 Byte = 1 Pixel<br/>
+ * 343(7power3) colors <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Flickr</li>
+ * </ul>
+ * 
+ * @author Wolfgang Miller, University of Konstanz
+ */
+/**
  * This Class offers a byte painter.
  * 
- * Numeral System: Septenary
+ * 
  * Layers: 3
  * 1 Byte = 1 Pixel
  * 

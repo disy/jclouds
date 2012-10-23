@@ -35,10 +35,20 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * This Class offers a byte painter.
- * 
- * Numeral System: Quaternary
- * Layers: 3
- * 1 Byte = 4/3 Pixel
+ * <p/>
+ * Numeral System: Quaternary <br/>
+ * Layers: 3 <br/>
+ * 4 Pixel = 3 Byte (based on layers(RGB)) <br/>
+ * 64(4power3) colors pro Pixel <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Flickr</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
+ * </ul>
  * 
  * @author Wolfgang Miller
  */

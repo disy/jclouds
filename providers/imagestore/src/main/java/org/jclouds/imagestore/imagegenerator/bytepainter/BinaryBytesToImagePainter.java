@@ -33,14 +33,26 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
+
+
+
 /**
+ * 
+ * 
  * This Class offers a byte painter.
+ * <p/>
+ * Numeral System: Binary <br/>
+ * Layers: 1 <br/>
+ * 1 Byte = 8 Pixel <br/>
+ * 2 colors <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Flickr</li>
+ * <li>Facebook</li>
+ * </ul>
  * 
- * Numeral System: Binary
- * Layers: 1
- * 1 Byte = 8 Pixel
- * 
- * @author Wolfgang Miller
+ * @author Wolfgang Miller, University of Konstanz
  */
 public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 

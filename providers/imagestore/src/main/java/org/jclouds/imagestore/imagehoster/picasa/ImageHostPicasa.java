@@ -74,19 +74,24 @@ public class ImageHostPicasa implements IImageHost {
     @Override
     public boolean createImageSet(String imageSetTitle) {
         try {
-            // build URL for the default user feed of albums
-            PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
-            // execute GData request for the feed
-            UserFeed feed = client.executeGetUserFeed(url);
-            AlbumEntry newAlbum = new AlbumEntry();
-            newAlbum.access = "public";
-            newAlbum.title = imageSetTitle;
-            newAlbum.summary = imageSetTitle;
-            client.executeInsert(feed, newAlbum);
+            if (!imageSetExists(imageSetTitle)) {
+                // build URL for the default user feed of albums
+                PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
+                // execute GData request for the feed
+                UserFeed feed = client.executeGetUserFeed(url);
+                AlbumEntry newAlbum = new AlbumEntry();
+                newAlbum.access = "public";
+                newAlbum.title = imageSetTitle;
+                client.executeInsert(feed, newAlbum);
+                return true;
+            } else {
+                return false;
+            }
+
         } catch (final IOException exc) {
             throw new RuntimeException(exc);
         }
-        return true;
+
     }
 
     /**
@@ -94,7 +99,6 @@ public class ImageHostPicasa implements IImageHost {
      */
     @Override
     public boolean imageExists(String imageSetTitle, String imageTitle) {
-
         return false;
     }
 
@@ -103,9 +107,23 @@ public class ImageHostPicasa implements IImageHost {
      */
     @Override
     public boolean imageSetExists(String imageSetTitle) {
-        
-        
-        return false;
+        try {
+            // build URL for the default user feed of albums
+            PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
+            // execute GData request for the feed
+            UserFeed feed = client.executeGetUserFeed(url);
+            boolean found = false;
+            for (AlbumEntry entry : feed.albums) {
+                if (entry.title.equals(imageSetTitle)) {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
+        } catch (final IOException exc) {
+            throw new RuntimeException(exc);
+        }
+
     }
 
     /**

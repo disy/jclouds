@@ -35,12 +35,22 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * This Class offers a byte painter.
+ * <p/>
+ * Numeral System: Hexadecimal <br/>
+ * Layers: 1 <br/>
+ * 1 Byte = 2 Pixel <br/>
+ * 16 colors <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Flickr</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
+ * </ul>
  * 
- * Numeral System: Hexadecimal
- * Layers: 1
- * 1 Byte = 2 Pixel
- * 
- * @author Wolfgang Miller
+ * @author Wolfgang Miller, University of Konstanz
  */
 public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
 
@@ -51,7 +61,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 2;
 
-    /** The colors. */
+    /** The colors, 16 different ones */
     private final Color[] colors = new Color[] {
         new Color(1f, 1f, 1f), new Color(0f, 0f, 0.5f), new Color(0f, 0.5f, 0.5f), new Color(0.5f, 0f, 0.5f),
         new Color(0.5f, 0.5f, 0f), new Color(0.5f, 0.5f, 0.5f), new Color(0f, 0f, 1f),
