@@ -57,21 +57,16 @@ public final class PicasaClient extends GDataXmlClient {
         super.executeDelete(url, entry.etag);
     }
 
-    private <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {
-        return super.executeGet(url, parseAsType);
+    public PhotoEntry executeGetPhoto(PicasaUrl url) throws IOException {
+        return executeGet(url, PhotoEntry.class);
     }
 
-    private <T> T executePost(PicasaUrl url, T content) throws IOException {
-        return super.executePost(url, content instanceof Feed, content);
-    }
-
-    public AlbumEntry executeGetAlbum(String link) throws IOException {
-        PicasaUrl url = new PicasaUrl(link);
+    public AlbumEntry executeGetAlbum(PicasaUrl url) throws IOException {
         return executeGet(url, AlbumEntry.class);
     }
 
-    public <T extends Entry> T executeInsert(Feed feed, T entry) throws IOException {
-        return executePost(new PicasaUrl(feed.getPostLink()), entry);
+    public <T extends Entry> T executeInsert(PicasaUrl url, T entry) throws IOException {
+        return executePost(url, entry);
     }
 
     public AlbumFeed executeGetAlbumFeed(PicasaUrl url) throws IOException {
@@ -95,4 +90,11 @@ public final class PicasaClient extends GDataXmlClient {
         return execute(request).parseAs(PhotoEntry.class);
     }
 
+    private <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {
+        return super.executeGet(url, parseAsType);
+    }
+
+    private <T> T executePost(PicasaUrl url, T content) throws IOException {
+        return super.executePost(url, content instanceof Feed, content);
+    }
 }

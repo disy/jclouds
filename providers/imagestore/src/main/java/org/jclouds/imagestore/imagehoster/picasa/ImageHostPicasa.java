@@ -4,12 +4,22 @@
 package org.jclouds.imagestore.imagehoster.picasa;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
+
+import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.picasa.model.AlbumEntry;
+import org.jclouds.imagestore.imagehoster.picasa.model.AlbumFeed;
+import org.jclouds.imagestore.imagehoster.picasa.model.MediaContent;
+import org.jclouds.imagestore.imagehoster.picasa.model.PhotoEntry;
 import org.jclouds.imagestore.imagehoster.picasa.model.UserFeed;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -19,6 +29,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -82,7 +93,7 @@ public class ImageHostPicasa implements IImageHost {
                 AlbumEntry newAlbum = new AlbumEntry();
                 newAlbum.access = "public";
                 newAlbum.title = imageSetTitle;
-                client.executeInsert(feed, newAlbum);
+                client.executeInsert(new PicasaUrl(feed.getPostLink()), newAlbum);
                 return true;
             } else {
                 return false;
@@ -99,7 +110,8 @@ public class ImageHostPicasa implements IImageHost {
      */
     @Override
     public boolean imageExists(String imageSetTitle, String imageTitle) {
-        return false;
+        return getPhotoByName(imageSetTitle, imageTitle) != null;
+
     }
 
     /**
@@ -107,20 +119,82 @@ public class ImageHostPicasa implements IImageHost {
      */
     @Override
     public boolean imageSetExists(String imageSetTitle) {
+        return getAlbumByName(imageSetTitle) != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteImage(String imageSetTitle, String imageTitle) {
+        PhotoEntry entry = getPhotoByName(imageSetTitle, imageTitle);
         try {
-            // build URL for the default user feed of albums
-            PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
-            // execute GData request for the feed
-            UserFeed feed = client.executeGetUserFeed(url);
-            boolean found = false;
-            for (AlbumEntry entry : feed.albums) {
-                if (entry.title.equals(imageSetTitle)) {
-                    found = true;
-                    break;
-                }
-            }
-            return found;
+            client.executeGetPhoto(new PicasaUrl(entry.getSelfLink()));
+            client.executeDelete(entry);
         } catch (final IOException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteImageSet(String imageSetTitle) {
+        try {
+            AlbumEntry entry = getAlbumByName(imageSetTitle);
+            client.executeGetAlbum(new PicasaUrl(entry.getSelfLink()));
+            client.executeDelete(entry);
+        } catch (final IOException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearImageSet(String imageSetTitle) {
+        deleteImageSet(imageSetTitle);
+        createImageSet(imageSetTitle);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage image) {
+        AlbumEntry album = getAlbumByName(imageSetTitle);
+        if (album == null) {
+            createImageSet(imageSetTitle);
+            album = getAlbumByName(imageSetTitle);
+        }
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", os);
+            InputStream is = new ByteArrayInputStream(os.toByteArray());
+            InputStreamContent content = new InputStreamContent("image/jpeg", is);
+            PhotoEntry photo =
+                client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, imageTitle);
+            is.close();
+            return photo.title;
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
+        PhotoEntry entry = getPhotoByName(imageSetTitle, imageTitle);
+        MediaContent mediaContent = entry.mediaGroup.content;
+        try {
+            return ImageIO.read(new URL(mediaContent.url));
+        } catch (MalformedURLException exc) {
+            throw new RuntimeException(exc);
+        } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
 
@@ -130,54 +204,53 @@ public class ImageHostPicasa implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void deleteImage(String imageSetTitle, String imageTitle) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteImageSet(String imageSetTitle) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage image) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int countImagesInSet(String imageSetTitle) {
-        // TODO Auto-generated method stub
-        return 0;
+        AlbumEntry album = getAlbumByName(imageSetTitle);
+        if (album != null) {
+            return album.numPhotos;
+        } else {
+            return 0;
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void clearImageSet(String imageSetTitle) {
-        // TODO Auto-generated method stub
+    private PhotoEntry getPhotoByName(String imageSetTitle, String imageTitle) {
+        try {
+            AlbumEntry searchedSet = getAlbumByName(imageSetTitle);
+            PhotoEntry returnVal = null;
+            if (searchedSet != null) {
+                PicasaUrl url = new PicasaUrl(searchedSet.getFeedLink());
+                AlbumFeed albumFeed = client.executeGetAlbumFeed(url);
+                for (PhotoEntry photo : albumFeed.photos) {
+                    if (photo.title.equals(imageSetTitle)) {
+                        returnVal = photo;
+                        break;
+                    }
+                }
+            }
+            return returnVal;
+        } catch (final IOException exc) {
+            throw new RuntimeException(exc);
+        }
 
+    }
+
+    private AlbumEntry getAlbumByName(String imageSetTitle) {
+        try {
+            // build URL for the default user feed of albums
+            PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
+            // execute GData request for the feed
+            UserFeed feed = client.executeGetUserFeed(url);
+            AlbumEntry searchedSet = null;
+            for (AlbumEntry entry : feed.albums) {
+                if (entry.title.equals(imageSetTitle)) {
+                    searchedSet = entry;
+                    break;
+                }
+            }
+            return searchedSet;
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     /** Authorizes the installed application to access user's protected data. */

@@ -92,6 +92,7 @@ public class ImageHostTest {
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE1));
             assertFalse(host.toString(), host.imageSetExists(SET1));
             assertTrue(host.toString(), host.createImageSet(SET1));
+            assertFalse(host.toString(), host.createImageSet(SET1));
             host.uploadImage(SET1, IMAGE1, image);
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             BufferedImage download = host.downloadImage(SET1, IMAGE1);
