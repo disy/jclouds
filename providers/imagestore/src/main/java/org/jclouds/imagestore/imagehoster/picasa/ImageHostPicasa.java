@@ -143,8 +143,10 @@ public class ImageHostPicasa implements IImageHost {
     public void deleteImageSet(String imageSetTitle) {
         try {
             AlbumEntry entry = getAlbumByName(imageSetTitle);
-            client.executeGetAlbum(new PicasaUrl(entry.getSelfLink()));
-            client.executeDelete(entry);
+            if (entry != null) {
+                client.executeGetAlbum(new PicasaUrl(entry.getSelfLink()));
+                client.executeDelete(entry);
+            }
         } catch (final IOException exc) {
             throw new RuntimeException(exc);
         }
@@ -221,7 +223,7 @@ public class ImageHostPicasa implements IImageHost {
                 PicasaUrl url = new PicasaUrl(searchedSet.getFeedLink());
                 AlbumFeed albumFeed = client.executeGetAlbumFeed(url);
                 for (PhotoEntry photo : albumFeed.photos) {
-                    if (photo.title.equals(imageSetTitle)) {
+                    if (photo.title.equals(imageTitle)) {
                         returnVal = photo;
                         break;
                     }
@@ -241,10 +243,12 @@ public class ImageHostPicasa implements IImageHost {
             // execute GData request for the feed
             UserFeed feed = client.executeGetUserFeed(url);
             AlbumEntry searchedSet = null;
-            for (AlbumEntry entry : feed.albums) {
-                if (entry.title.equals(imageSetTitle)) {
-                    searchedSet = entry;
-                    break;
+            if (feed.albums != null) {
+                for (AlbumEntry entry : feed.albums) {
+                    if (entry.title.equals(imageSetTitle)) {
+                        searchedSet = entry;
+                        break;
+                    }
                 }
             }
             return searchedSet;
