@@ -222,10 +222,12 @@ public class ImageHostPicasa implements IImageHost {
             if (searchedSet != null) {
                 PicasaUrl url = new PicasaUrl(searchedSet.getFeedLink());
                 AlbumFeed albumFeed = client.executeGetAlbumFeed(url);
-                for (PhotoEntry photo : albumFeed.photos) {
-                    if (photo.title.equals(imageTitle)) {
-                        returnVal = photo;
-                        break;
+                if (albumFeed.photos != null) {
+                    for (PhotoEntry photo : albumFeed.photos) {
+                        if (photo.title.equals(imageTitle)) {
+                            returnVal = photo;
+                            break;
+                        }
                     }
                 }
             }

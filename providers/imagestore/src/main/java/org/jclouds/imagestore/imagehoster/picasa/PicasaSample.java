@@ -16,7 +16,6 @@ package org.jclouds.imagestore.imagehoster.picasa;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 
 import org.jclouds.imagestore.imagehoster.picasa.model.AlbumEntry;
@@ -31,7 +30,6 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -157,16 +155,16 @@ public class PicasaSample {
         return album;
     }
 
-    private static PhotoEntry postPhoto(PicasaClient client, AlbumEntry album) throws IOException {
-        String fileName = "picasaweblogo-en_US.gif";
-        String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
-        InputStreamContent content =
-            new InputStreamContent("image/jpeg", new URL(photoUrlString).openStream());
-        PhotoEntry photo =
-            client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, fileName);
-        System.out.println("Posted photo: " + photo.title);
-        return photo;
-    }
+//    private static PhotoEntry postPhoto(PicasaClient client, AlbumEntry album) throws IOException {
+//        String fileName = "picasaweblogo-en_US.gif";
+//        String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
+//        InputStreamContent content =
+//            new InputStreamContent("image/jpeg", new URL(photoUrlString).openStream());
+//        PhotoEntry photo =
+//            client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, fileName);
+//        System.out.println("Posted photo: " + photo.title);
+//        return photo;
+//    }
 
     private static AlbumEntry getUpdatedAlbum(PicasaClient client, AlbumEntry album) throws IOException {
         album = client.executeGetAlbum(new PicasaUrl(album.getSelfLink()));

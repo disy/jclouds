@@ -31,6 +31,9 @@ public class PicasaUrl extends GoogleUrl {
 
     public static final String ROOT_URL = "https://picasaweb.google.com/data/";
 
+    @Key
+    public Integer imgmax;
+    
     @Key("max-results")
     public Integer maxResults;
 

@@ -49,7 +49,10 @@ public class ImageHostTest {
      * and
      * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#downloadImage(java.lang.String, java.lang.String)}
      * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#countImagesInSet(java.lang.String)}
-     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#clearImageSet(java.lang.String)}.
+     * and {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#clearImageSet(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#createImageSet(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageSetExists(java.lang.String)} and
+     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
      * 
      * @param clazz
      *            to be tested with
@@ -59,11 +62,11 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      * 
      */
-//    @Test(dataProvider = "fileHost", groups = "localTests")
-//    public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
-//        throws IOException {
-//        checkImage(clazz, pHandlers);
-//    }
+    @Test(dataProvider = "fileHost", groups = "localTests")
+    public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
+        throws IOException {
+        check(clazz, pHandlers);
+    }
 
     /**
      * 
@@ -73,8 +76,8 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      */
     @Test(dataProvider = "remoteHosts", groups = "remoteTests")
-    public void testImageRemote(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
-        checkImage(clazz, pHandlers);
+    public void test(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
+        check(clazz, pHandlers);
     }
 
     /**
@@ -85,7 +88,7 @@ public class ImageHostTest {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    private void checkImage(final Class<IImageHost> clazz, final IImageHost[] pHandlers) throws IOException {
+    private void check(final Class<IImageHost> clazz, final IImageHost[] pHandlers) throws IOException {
         BufferedImage image = createBufferedImage();
 
         for (IImageHost host : pHandlers) {
@@ -138,50 +141,6 @@ public class ImageHostTest {
     }
 
     /**
-     * Set method for
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#createImageSet(java.lang.String)} and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#imageSetExists(java.lang.String)} and
-     * {@link org.jclouds.imagestore.imagehoster.blobstore.IImageHost#deleteImageSet(java.lang.String)}.
-     * 
-     * @param clazz
-     *            to be tested with
-     * @param pHandlers
-     *            to be tested with
-     */
-//    @Test(dataProvider = "fileHost", groups = "localTests")
-//    public void testImageHostSetsLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
-//        check(clazz, pHandlers);
-//    }
-
-    /**
-     * 
-     * @param clazz
-     * @param pHandlers
-     */
-    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
-    public void testImageHostSetsRemote(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
-        check(clazz, pHandlers);
-    }
-
-    /**
-     * The host checks.
-     * 
-     * @param clazz
-     * @param pHandlers
-     */
-    private void check(final Class<IImageHost> clazz, final IImageHost[] pHandlers) {
-        for (IImageHost host : pHandlers) {
-            host.deleteImageSet(SET1);
-            assertFalse(host.toString(), host.imageSetExists(SET1));
-            assertTrue(host.toString(), host.createImageSet(SET1));
-            assertFalse(host.toString(), host.createImageSet(SET1));
-            assertTrue(host.toString(), host.imageSetExists(SET1));
-            host.deleteImageSet(SET1);
-            assertFalse(host.toString(), host.imageSetExists(SET1));
-        }
-    }
-
-    /**
      * Return an Object with the local host.
      * 
      * @return Object with the local host.
@@ -209,7 +168,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    /*new ImageHostFlickr(), new ImageHostFacebook(), */new ImageHostPicasa()
+                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostPicasa()
                 }
             }
         };

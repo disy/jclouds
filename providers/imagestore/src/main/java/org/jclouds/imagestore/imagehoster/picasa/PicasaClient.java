@@ -72,6 +72,7 @@ public final class PicasaClient extends GDataXmlClient {
     public AlbumFeed executeGetAlbumFeed(PicasaUrl url) throws IOException {
         url.kinds = "photo";
         url.maxResults = 5;
+        url.imgmax = 1600;
         return executeGet(url, AlbumFeed.class);
     }
 
