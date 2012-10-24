@@ -36,7 +36,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 /**
  * This Class offers a byte painter.
  * <p/>
- * Numeral System: Quaternary <br/>
+ * Numeral System: Binary <br/>
  * Layers: 3 <br/>
  * 4 Pixel = 3 Byte (based on layers(RGB)) <br/>
  * 64(4power3) colors pro Pixel <br/>
@@ -52,20 +52,17 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * 
  * @author Wolfgang Miller
  */
-public class QuaternaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
+
+public class BinaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
 
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */
-    private static final int NUMERAL_SYSTEM = 4;
+    private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed per Byte in one layer. */
-    private static final int PIXELS_PER_BYTE_PER_LAYER = 4;
+    private static final int PIXELS_PER_BYTE_PER_LAYER = 8;
     
-    /**
-     * Constructor. Invokes AAbstractLayeredBytesToImagePainter with given numeral system and the amount of
-     * pixels needed to store one byte in the image.
-     */
-    public QuaternaryLayeredBytesToImagePainter() {
+    public BinaryLayeredBytesToImagePainter() {
         super(NUMERAL_SYSTEM, PIXELS_PER_BYTE_PER_LAYER);
     }
     
@@ -76,4 +73,6 @@ public class QuaternaryLayeredBytesToImagePainter extends AAbstractLayeredBytesT
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
+
+   
 }

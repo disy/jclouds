@@ -58,144 +58,26 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * 
  * @author Wolfgang Miller
  */
-public class SeptenaryLayeredBytesToImagePainter implements IBytesToImagePainter {
+public class SeptenaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
 
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 7;
-    /** Pixels needed per Byte. */
-    private static final float BYTES_PER_PIXEL = 1;
     /** Pixels needed per Byte in one layer. */
-    private static final int BYTES_PER_PIXEL_PER_LAYER = 3;
-
-    /** The different pixel colors. */
-    private final Color[][] colors = HBytesToImagePainterHelper
-        .generateLayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
+    private static final int PIXELS_PER_BYTE = 3;
 
     /**
-     * {@inheritDoc}
+     * Constructor. Invokes AAbstractLayeredBytesToImagePainter with given numeral system and the amount of
+     * pixels needed to store one byte in the image.
      */
+    public SeptenaryLayeredBytesToImagePainter() {
+        super(NUMERAL_SYSTEM, PIXELS_PER_BYTE);
+    }
+
     @Override
     public int getImageType() {
         return BUFFERED_IMAGE_TYPE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float pixelsPerByte() {
-        return BYTES_PER_PIXEL;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
-
-        final int w = image.getWidth();
-        final int h = image.getHeight();
-        final Graphics g = image.getGraphics();
-
-        int[] currByteColor = null;
-        int len = bs.length;
-
-        for (int y = 0; y < h; y++) {
-
-            final int hpix = w * y;
-
-            for (int x = 0; x < w; x++) {
-
-                final int pix = hpix + x;
-                final int pos = pix % 3;
-
-                if (pos == 0) {
-
-                    currByteColor = null;
-
-                    for (int layer = 0; layer < 3; layer++) {
-
-                        final int bsPos = pix + layer;
-
-                        /* if picture is too small for next bytes return */
-                        if ((y == h - 1) && (x + 3 > w))
-                            return image;
-
-                        if (bsPos >= len) {
-                            if (layer == 0)
-                                return image;
-                            else
-                                break;
-                        }
-
-                        byte currB = bs[bsPos];
-
-                        int[] bc =
-                            HBytesToImagePainterHelper.getLayeredColorsFromByte(colors, currB, layer,
-                                NUMERAL_SYSTEM, BYTES_PER_PIXEL_PER_LAYER);
-
-                        if (currByteColor == null) {
-                            currByteColor = bc;
-                            continue;
-                        }
-
-                        for (int c = 0; c < 3; c++) {
-                            currByteColor[c] = currByteColor[c] + bc[c];
-                        }
-                    }
-                }
-
-                Color nc = new Color(currByteColor[pos]);
-                g.setColor(nc);
-
-                g.drawLine(x, y, x, y);
-
-            }
-        }
-        return image;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
-        final ArrayList<Byte> al = new ArrayList<Byte>();
-
-        final int w = img.getWidth();
-        final int h = img.getHeight();
-
-        String[] septs = new String[] {
-            "", "", ""
-        };
-
-        for (int y = 0; y < h; y++) {
-
-            final int hpix = w * y;
-
-            for (int x = 0; x < w; x++) {
-
-                final int pix = hpix + x;
-
-                HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y),
-                    NUMERAL_SYSTEM, septs);
-
-                if (pix % 3 == 2) {
-
-                    for (int layer = 0; layer < 3; layer++) {
-                        byte b = (byte)Integer.parseInt(septs[layer], NUMERAL_SYSTEM);
-                        al.add(b);
-                    }
-
-                    septs = new String[] {
-                        "", "", ""
-                    };
-                }
-            }
-        }
-
-        return HBytesToImagePainterHelper.arrayListToByteArray(al);
-    }
 }

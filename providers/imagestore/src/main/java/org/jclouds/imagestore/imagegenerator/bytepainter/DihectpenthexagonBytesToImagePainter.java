@@ -11,7 +11,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * @author Wolfgang Miller, University of Konstanz
  *
  */
-public class Dihectpenthexagon implements IBytesToImagePainter{
+public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainter{
 
     /**
      * {@inheritDoc}
