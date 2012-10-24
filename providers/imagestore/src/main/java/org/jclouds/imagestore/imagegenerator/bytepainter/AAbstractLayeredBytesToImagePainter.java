@@ -82,7 +82,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
                     currByteColor = null;
 
-                    for (int layer = 0; layer < 3; layer++) {
+                    for (int layer = 0; layer < LAYERS; layer++) {
 
                         if (bp >= len) {
                             // if layer == 0 no bytes to be drawn, else break the loop and draw the bytes of
@@ -214,7 +214,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
         final int green = c.getGreen();
         final int blue = c.getBlue();
 
-        for (int l = 0; l < 3; l++) {
+        for (int l = 0; l < LAYERS; l++) {
             int dist = -1;
             int idx = -1;
 
