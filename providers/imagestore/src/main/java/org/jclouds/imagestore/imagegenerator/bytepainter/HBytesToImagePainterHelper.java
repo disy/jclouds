@@ -147,70 +147,7 @@ public final class HBytesToImagePainterHelper {
         return byteColors;
     }
 
-    /**
-     * Extracts the numerical value from current pixel's RGB-value.
-     * 
-     * @param colors
-     *            The colors used
-     * @param rgb
-     *            The RGB-value of the current pixel
-     * @param numeralSystem
-     *            The numeral system used
-     * @param numericalValues
-     *            Array to be filled with the numerical values of the current pixel
-     */
-    static void getLayeredNumericalValueFromPixelColor(final Color[][] colors, final int rgb,
-        final int numeralSystem, final String[] numericalValues) {
-
-        final Color c = new Color(rgb);
-        final int red = c.getRed();
-        final int green = c.getGreen();
-        final int blue = c.getBlue();
-
-        for (int l = 0; l < 3; l++) {
-            int dist = -1;
-            int idx = -1;
-
-            if (l == 0) {
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
-
-                    int currDist = Math.abs(cred - red);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else if (l == 1) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
-
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-
-                    int currDist = Math.abs(cblue - blue);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-            numericalValues[l] += Integer.toString(idx, numeralSystem);
-        }
-    }
-
+    
     /**
      * Returns a 2-dimensional array with 3 layers of colors. The first dimension stands for each layer, the
      * second for the color of the layer.
@@ -224,7 +161,7 @@ public final class HBytesToImagePainterHelper {
         final Color[][] caa = new Color[3][numColors];
         final int len = numColors;
 
-        for (int i = 0; i < caa.length; i++) {
+        for (int i = 0; i < 3; i++) {
             Color[] ca = caa[i];
             int sum = 0;
             final float ratio = 255f / (len - 1);
@@ -244,6 +181,8 @@ public final class HBytesToImagePainterHelper {
         }
         return caa;
     }
+
+   
 
     /**
      * Converts ArrayList<Byte> to byte[].
