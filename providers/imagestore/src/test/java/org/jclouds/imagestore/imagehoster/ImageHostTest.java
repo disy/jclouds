@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostPicasa;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleApiPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -168,7 +168,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostPicasa()
+                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostGoogleApiPicasa()
                 }
             }
         };

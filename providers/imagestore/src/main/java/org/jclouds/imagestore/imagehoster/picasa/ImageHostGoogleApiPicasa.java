@@ -37,7 +37,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
  * @author Sebastian Graf, University of Konstanz
  * 
  */
-public class ImageHostPicasa implements IImageHost {
+public class ImageHostGoogleApiPicasa implements IImageHost {
 
     /** The maximum image width. */
     private static final int MAX_IMAGE_WIDTH = 2048;
@@ -50,12 +50,12 @@ public class ImageHostPicasa implements IImageHost {
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    private PicasaClient client;
+    private PicasaGoogleApiClient client;
 
-    public ImageHostPicasa() {
+    public ImageHostGoogleApiPicasa() {
         try {
             Credential credential = authorize();
-            client = new PicasaClient(HTTP_TRANSPORT.createRequestFactory(credential));
+            client = new PicasaGoogleApiClient(HTTP_TRANSPORT.createRequestFactory(credential));
             client.setApplicationName("JClouds-ImageHoster");
         } catch (Exception e) {
             throw new RuntimeException(e);

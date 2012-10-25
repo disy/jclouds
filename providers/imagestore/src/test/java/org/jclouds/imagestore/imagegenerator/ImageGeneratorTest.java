@@ -52,7 +52,7 @@ import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesTo
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostPicasa;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleApiPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -186,7 +186,7 @@ public class ImageGeneratorTest {
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
                     }, IImageHost.class, new IImageHost[] {
-                        new ImageHostPicasa()
+                        new ImageHostGoogleApiPicasa()
                     }
                 }
             };

@@ -72,7 +72,7 @@ public class PicasaSample {
     public static void main(String[] args) {
         try {
             Credential credential = authorize();
-            PicasaClient client = new PicasaClient(HTTP_TRANSPORT.createRequestFactory(credential));
+            PicasaGoogleApiClient client = new PicasaGoogleApiClient(HTTP_TRANSPORT.createRequestFactory(credential));
             client.setApplicationName("Google-PicasaSample/1.0");
             try {
                 run(client);
@@ -91,7 +91,7 @@ public class PicasaSample {
         }
     }
 
-    public static void run(PicasaClient client) throws IOException, InterruptedException {
+    public static void run(PicasaGoogleApiClient client) throws IOException, InterruptedException {
         UserFeed feed = showAlbums(client);
         AlbumEntry album = postAlbum(client, feed);
         // postPhoto(client, album);
@@ -104,7 +104,7 @@ public class PicasaSample {
         deleteAlbum(client, album);
     }
 
-    private static UserFeed showAlbums(PicasaClient client) throws IOException {
+    private static UserFeed showAlbums(PicasaGoogleApiClient client) throws IOException {
         // build URL for the default user feed of albums
         PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/default");
         // execute GData request for the feed
@@ -120,7 +120,7 @@ public class PicasaSample {
         return feed;
     }
 
-    private static void showAlbum(PicasaClient client, AlbumEntry album) throws IOException {
+    private static void showAlbum(PicasaGoogleApiClient client, AlbumEntry album) throws IOException {
         System.out.println();
         System.out.println("-----------------------------------------------");
         System.out.println("Album title: " + album.title);
@@ -145,7 +145,7 @@ public class PicasaSample {
         }
     }
 
-    private static AlbumEntry postAlbum(PicasaClient client, UserFeed feed) throws IOException {
+    private static AlbumEntry postAlbum(PicasaGoogleApiClient client, UserFeed feed) throws IOException {
         System.out.println();
         AlbumEntry newAlbum = new AlbumEntry();
         newAlbum.access = "public";
@@ -155,7 +155,7 @@ public class PicasaSample {
         return album;
     }
 
-//    private static PhotoEntry postPhoto(PicasaClient client, AlbumEntry album) throws IOException {
+//    private static PhotoEntry postPhoto(PicasaGoogleApiClient client, AlbumEntry album) throws IOException {
 //        String fileName = "picasaweblogo-en_US.gif";
 //        String photoUrlString = "http://www.google.com/accounts/lh2/" + fileName;
 //        InputStreamContent content =
@@ -166,13 +166,13 @@ public class PicasaSample {
 //        return photo;
 //    }
 
-    private static AlbumEntry getUpdatedAlbum(PicasaClient client, AlbumEntry album) throws IOException {
+    private static AlbumEntry getUpdatedAlbum(PicasaGoogleApiClient client, AlbumEntry album) throws IOException {
         album = client.executeGetAlbum(new PicasaUrl(album.getSelfLink()));
         showAlbum(client, album);
         return album;
     }
 
-    private static void deleteAlbum(PicasaClient client, AlbumEntry album) throws IOException {
+    private static void deleteAlbum(PicasaGoogleApiClient client, AlbumEntry album) throws IOException {
         client.executeDelete(album);
         System.out.println();
         System.out.println("Album deleted.");

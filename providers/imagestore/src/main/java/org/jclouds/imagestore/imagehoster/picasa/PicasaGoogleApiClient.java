@@ -38,7 +38,7 @@ import com.google.api.client.xml.XmlNamespaceDictionary;
  * 
  * @author Yaniv Inbar
  */
-public final class PicasaClient extends GDataXmlClient {
+public final class PicasaGoogleApiClient extends GDataXmlClient {
 
     static final XmlNamespaceDictionary DICTIONARY = new XmlNamespaceDictionary().set("",
         "http://www.w3.org/2005/Atom").set("exif", "http://schemas.google.com/photos/exif/2007").set("gd",
@@ -48,7 +48,7 @@ public final class PicasaClient extends GDataXmlClient {
         "openSearch", "http://a9.com/-/spec/opensearch/1.1/").set("xml",
         "http://www.w3.org/XML/1998/namespace");
 
-    public PicasaClient(HttpRequestFactory requestFactory) {
+    public PicasaGoogleApiClient(HttpRequestFactory requestFactory) {
         super("2", requestFactory, DICTIONARY);
     }
 
