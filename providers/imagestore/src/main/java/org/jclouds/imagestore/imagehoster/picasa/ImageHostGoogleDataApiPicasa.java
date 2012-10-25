@@ -158,28 +158,29 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     @Override
     public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage image) {
         AlbumEntry entry = getAlbumByName(imageSetTitle);
-        if (entry != null) {
-            PhotoEntry myPhoto = new PhotoEntry();
-            myPhoto.setTitle(new PlainTextConstruct(imageTitle));
-            try {
-                URL toPost = new URL(entry.getFeedLink().getHref());
-
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", os);
-
-                MediaByteArraySource myMedia = new MediaByteArraySource(os.toByteArray(), "image/png");
-                myPhoto.setMediaSource(myMedia);
-
-                service.insert(toPost, myPhoto);
-                return imageTitle;
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            } catch (ServiceException exc) {
-                throw new RuntimeException(exc);
-            }
-        } else {
-            throw new IllegalArgumentException("Set with title " + imageSetTitle + " not existing.");
+        if (entry == null) {
+            createImageSet(imageSetTitle);
+            entry = getAlbumByName(imageSetTitle);
         }
+        PhotoEntry myPhoto = new PhotoEntry();
+        myPhoto.setTitle(new PlainTextConstruct(imageTitle));
+        try {
+            URL toPost = new URL(entry.getFeedLink().getHref());
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", os);
+
+            MediaByteArraySource myMedia = new MediaByteArraySource(os.toByteArray(), "image/png");
+            myPhoto.setMediaSource(myMedia);
+
+            service.insert(toPost, myPhoto);
+            return imageTitle;
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        } catch (ServiceException exc) {
+            throw new RuntimeException(exc);
+        }
+
     }
 
     /**
@@ -187,11 +188,10 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
-        AlbumEntry myAlbum = getAlbumByName(imageSetTitle);
-        PhotoEntry myPhoto = getPhotoByName(myAlbum, imageTitle);
+        PhotoEntry myPhoto = getPhotoByName(imageSetTitle, imageTitle);
         try {
-            MediaContent source = myPhoto.getMediaContents().get(0);
-            return ImageIO.read(new URL(source.getUrl()+"?imgmax=1600"));
+            String source = myPhoto.getMediaContents().get(0).getUrl();
+            return ImageIO.read(new URL(source));
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }
@@ -231,7 +231,8 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
     private final PhotoEntry getPhotoByName(AlbumEntry entry, String imageTitle) {
         try {
-            AlbumFeed feed = entry.getFeed("photo");
+            URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
+            AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
             for (PhotoEntry photo : feed.getPhotoEntries()) {
                 if (photo.getTitle().getPlainText().equals(imageTitle)) {
                     return photo;
