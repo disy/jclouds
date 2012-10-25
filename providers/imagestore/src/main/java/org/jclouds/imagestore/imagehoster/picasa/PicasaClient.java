@@ -88,7 +88,7 @@ public final class PicasaClient extends GDataXmlClient {
         GoogleHeaders headers = new GoogleHeaders();
         headers.setSlugFromFileName(fileName);
         request.setHeaders(headers);
-        execute(request).parseAs(PhotoEntry.class);
+        execute(request);
     }
 
     private <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {
