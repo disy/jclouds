@@ -10,11 +10,11 @@ A list of the different byte-painters:
 
 ###Normal(1Layer):
 	
-* BinaryBytesToImagePainter
+* ####BinaryBytesToImagePainter
 This byte-painter uses two colors to map the binary representation of the input bytes into an image. Because only two Colors are needed (e.g. black&white), a BufferedImage of the type TYPE_BYTE_BINARY can be used: 
 >1Byte needs 8Pixels. (Fl), (FB)
 
-* QuaternaryBytesToImagePainter
+* **QuaternaryBytesToImagePainter**
 This byte-painter uses four colors to map the quaternary representation of the input bytes into an image. Because not more than four colors are needed, a BufferedImage of the type TYPE_BYTE_GREY can be used.
 >1Byte needs 4Pixels.	(Fl), (FB)
 
