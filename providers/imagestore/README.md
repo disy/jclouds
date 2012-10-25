@@ -4,54 +4,53 @@
 This project uses image hosting providers like flickr, picasa and facebook as cloud data storage. The main issue in exploiting image hosts as cloud storage, is that most providers use jpeg-compression on uploaded images. Because of that, it is important to chose a encoding that is resistant to this compression and can be decoded even the image was compressed.
 This implementation comes with different byte encodings for the image-generation. In the normal case, BufferedImages of type TYPE_INT_RGB are used to store the input bytes. Some implementations can use more primitive image types which has some influnce on the output image size.
 
-##Flickr (Fl), Facebook (FB)
+##A list of the different byte-painters:
+>######Flickr (Fl), Facebook (FB)
 
-A list of the different byte-painters:
-
-###Normal(1Layer):
+###Normal (1layer):
 	
-* ####BinaryBytesToImagePainter
+* #####BinaryBytesToImagePainter
 This byte-painter uses two colors to map the binary representation of the input bytes into an image. Because only two Colors are needed (e.g. black&white), a BufferedImage of the type TYPE_BYTE_BINARY can be used: 
 >1Byte needs 8Pixels. (Fl), (FB)
 
-* **QuaternaryBytesToImagePainter**
+* #####QuaternaryBytesToImagePainter
 This byte-painter uses four colors to map the quaternary representation of the input bytes into an image. Because not more than four colors are needed, a BufferedImage of the type TYPE_BYTE_GREY can be used.
 >1Byte needs 4Pixels.	(Fl), (FB)
 
-* SeptenaryBytesToImagePainter
+* #####SeptenaryBytesToImagePainter
 This byte-painter uses seven colors to map the septenary representation of the input bytes into an image.
 >1Byte needs 3Pixels. (Fl), (FB-)
 
-* HexadecimalBytesToImagePainter
+* #####HexadecimalBytesToImagePainter
 This byte-painter uses sixteen colors to map the hexadecimal representation of the input bytes into an image.
 >1Byte needs 2Pixels. (Fl), (FB-)
 		
 
-###Layered:
+###Layered (3layers):
 
-* BinaryLayeredByteToImagePainter
+* #####BinaryLayeredByteToImagePainter
 This byte-painter uses three layers with two different colors for each layer to map the binary representation of the input bytes into an image.
 >1Byte needs 8/3Pixels. (FL+), (FB-)
 	
-* QuaternaryLayeredBytesToImagePainter
+* #####QuaternaryLayeredBytesToImagePainter
 This byte-painter uses three layers with four different colors for each layer to map the quaternary representation of the input bytes into an image. 
 >1Byte needs 4/3Pixels. (Fl+), (FB-)
 
-* SeptenaryLayeredBytesToImagePainter 
+* #####SeptenaryLayeredBytesToImagePainter 
 This byte-painter uses three layers with seven different colors for each layer to map the septenary representation of the input bytes into an image.
 >1Byte needs 1Pixel. (Fl+), (FB-)
 
-* OctalLayeredBytesToImagePainter 
+* #####OctalLayeredBytesToImagePainter 
 This byte-painter uses three layers with eight different colors for each layer to map the septenary representation of the input bytes into an image.
 >1Byte needs 1Pixel. (Fl-), (FB-)
 
-* HexadecimalLayeredBytesToImagePainter
+* #####HexadecimalLayeredBytesToImagePainter
 This byte-painter uses three layers with sixteen different colors for each layer to map the hexadecimal representation of the input bytes into an image.
 >1Byte needs 1/2Pixel (Fl-), (FB-)
 		
-##Layered & Color Alternation
+###Layered (3layers) & Color Alternation
 		
-* OctalLayeredColorAlternatingBytesToImagePainter
+#####OctalLayeredColorAlternatingBytesToImagePainter
 This byte-painter uses three layers with eight different colors for each layer to map the octal representation of the input bytes into an image. Also alternating colors are used to mark the length of each byte in the image. This makes it possible to use the pixels in the image more efficient. The gain of this technique strongly depends on the input bytes.
 >1Byte needs < 1Pixel. (Fl-), (FB-)
 		
