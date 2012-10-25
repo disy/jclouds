@@ -104,7 +104,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests")
     public void testByteRepresentationRemoteHosts(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -133,7 +133,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "fileHostAllPainters", groups = "localTests")
+    @Test(dataProvider = "fileHostAllPainters", groups = "localTests",enabled = false)
     public void testByteRepresentationOnFileHost(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
