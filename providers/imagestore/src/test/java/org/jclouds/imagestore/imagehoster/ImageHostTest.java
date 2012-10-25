@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleApiPicasa;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -62,7 +62,7 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      * 
      */
-    @Test(dataProvider = "fileHost", groups = "localTests", enabled=false)
+    @Test(dataProvider = "fileHost", groups = "localTests")
     public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
         throws IOException {
         check(clazz, pHandlers);
@@ -168,7 +168,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostGoogleApiPicasa()
+                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostGoogleDataApiPicasa()
                 }
             }
         };

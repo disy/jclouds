@@ -40,9 +40,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 public class ImageHostGoogleApiPicasa implements IImageHost {
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 2048;
+    private static final int MAX_IMAGE_WIDTH = 1600;
     /** The maximum image height. */
-    private static final int MAX_IMAGE_HEIGHT = 2048;
+    private static final int MAX_IMAGE_HEIGHT = 1600;
 
     /** Global instance of the HTTP transport. */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
