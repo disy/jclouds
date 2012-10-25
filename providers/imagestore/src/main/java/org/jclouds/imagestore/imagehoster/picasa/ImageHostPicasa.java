@@ -4,11 +4,9 @@
 package org.jclouds.imagestore.imagehoster.picasa;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -28,8 +26,9 @@ import com.google.api.client.extensions.java6.auth.oauth2.FileCredentialStore;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.http.AbstractInputStreamContent;
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -174,12 +173,9 @@ public class ImageHostPicasa implements IImageHost {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "png", os);
-            InputStream is = new ByteArrayInputStream(os.toByteArray());
-            InputStreamContent content = new InputStreamContent("image/png", is);
-            PhotoEntry photo =
-                client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, imageTitle);
-            is.close();
-            return photo.title;
+            AbstractInputStreamContent content = new ByteArrayContent("image/png", os.toByteArray());
+            client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, imageTitle);
+            return imageTitle;
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }

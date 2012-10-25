@@ -28,9 +28,9 @@ import org.jclouds.imagestore.imagehoster.picasa.model.PhotoEntry;
 import org.jclouds.imagestore.imagehoster.picasa.model.UserFeed;
 
 import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
 /**
@@ -82,16 +82,13 @@ public final class PicasaClient extends GDataXmlClient {
         return executeGet(url, UserFeed.class);
     }
 
-    public PhotoEntry executeInsertPhotoEntry(PicasaUrl albumFeedUrl, InputStreamContent content,
+    public void executeInsertPhotoEntry(PicasaUrl albumFeedUrl, AbstractInputStreamContent content,
         String fileName) throws IOException {
         HttpRequest request = getRequestFactory().buildPostRequest(albumFeedUrl, content);
         GoogleHeaders headers = new GoogleHeaders();
         headers.setSlugFromFileName(fileName);
         request.setHeaders(headers);
-        
-        
-        
-        return execute(request).parseAs(PhotoEntry.class);
+        execute(request).parseAs(PhotoEntry.class);
     }
 
     private <T> T executeGet(PicasaUrl url, Class<T> parseAsType) throws IOException {

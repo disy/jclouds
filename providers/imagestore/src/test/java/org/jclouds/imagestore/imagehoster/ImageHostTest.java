@@ -62,7 +62,7 @@ public class ImageHostTest {
      *             Signals that an I/O exception has occurred.
      * 
      */
-    @Test(dataProvider = "fileHost", groups = "localTests")
+    @Test(dataProvider = "fileHost", groups = "localTests", enabled=false)
     public void testImageLocal(final Class<IImageHost> clazz, final IImageHost[] pHandlers)
         throws IOException {
         check(clazz, pHandlers);
