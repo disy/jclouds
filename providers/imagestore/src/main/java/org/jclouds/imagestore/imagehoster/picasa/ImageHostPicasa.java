@@ -175,7 +175,7 @@ public class ImageHostPicasa implements IImageHost {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "png", os);
             InputStream is = new ByteArrayInputStream(os.toByteArray());
-            InputStreamContent content = new InputStreamContent("image/jpeg", is);
+            InputStreamContent content = new InputStreamContent("image/png", is);
             PhotoEntry photo =
                 client.executeInsertPhotoEntry(new PicasaUrl(album.getFeedLink()), content, imageTitle);
             is.close();

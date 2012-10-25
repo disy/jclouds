@@ -40,13 +40,19 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -98,7 +104,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests")
+    @Test(dataProvider = "remoteHostsAllPainters", groups = "remoteTests", enabled = false)
     public void testByteRepresentationRemoteHosts(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IImageHost> hostClazz, final IImageHost[] hosts)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -148,9 +154,14 @@ public class ImageGeneratorTest {
                 {
                     IBytesToImagePainter.class,
                     new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
-                        new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new QuaternaryLayeredBytesToImagePainter()
+                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
+                        new HexadecimalBytesToImagePainter(),
+                        new HexadecimalLayeredBytesToImagePainter(),
+                        new OctalLayeredBytesToImagePainter(),// new
+                                                              // OctalLayeredColorAlternatingBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter()
+
                     }, IImageHost.class, new IImageHost[] {
                         new ImageHostFile(Files.createTempDir().getAbsolutePath())
                     }
@@ -175,7 +186,7 @@ public class ImageGeneratorTest {
                         new SeptenaryLayeredBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new QuaternaryLayeredBytesToImagePainter()
                     }, IImageHost.class, new IImageHost[] {
-                        new ImageHostFlickr()
+                        new ImageHostPicasa()
                     }
                 }
             };
