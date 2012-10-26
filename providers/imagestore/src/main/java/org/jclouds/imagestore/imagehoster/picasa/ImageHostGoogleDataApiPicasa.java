@@ -28,7 +28,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gdata.client.photos.PicasawebService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.media.MediaByteArraySource;
-import com.google.gdata.data.media.mediarss.MediaContent;
 import com.google.gdata.data.photos.AlbumEntry;
 import com.google.gdata.data.photos.AlbumFeed;
 import com.google.gdata.data.photos.PhotoEntry;
@@ -106,7 +105,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public boolean imageExists(String imageSetTitle, String imageTitle) {
-        return getPhotoByName(imageSetTitle, imageTitle) != null;
+        return getPhotoByNameNormal(imageSetTitle, imageTitle) != null;
 
     }
 
@@ -123,7 +122,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public void deleteImage(String imageSetTitle, String imageTitle) {
-        PhotoEntry entry = getPhotoByName(imageSetTitle, imageTitle);
+        PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
         if (entry != null) {
             try {
                 entry.delete();
@@ -188,7 +187,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
-        PhotoEntry myPhoto = getPhotoByName(imageSetTitle, imageTitle);
+        PhotoEntry myPhoto = getPhotoByNameForDownload(imageSetTitle, imageTitle);
         try {
             String source = myPhoto.getMediaContents().get(0).getUrl();
             return ImageIO.read(new URL(source));
@@ -219,32 +218,49 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         createImageSet(imageSetTitle);
     }
 
-    private final PhotoEntry getPhotoByName(String albumTitle, String imageTitle) {
+    private final PhotoEntry getPhotoByNameNormal(String albumTitle, String imageTitle) {
         AlbumEntry entry = getAlbumByName(albumTitle);
         if (entry != null) {
-            return getPhotoByName(entry, imageTitle);
+            try {
+                AlbumFeed feed = entry.getFeed("photo");
+                for (PhotoEntry photo : feed.getPhotoEntries()) {
+                    if (photo.getTitle().getPlainText().equals(imageTitle)) {
+                        return photo;
+                    }
+                }
+                return null;
+            } catch (IOException exc) {
+                throw new RuntimeException(exc);
+            } catch (ServiceException exc) {
+                throw new RuntimeException(exc);
+            }
         } else {
             return null;
         }
 
     }
 
-    private final PhotoEntry getPhotoByName(AlbumEntry entry, String imageTitle) {
-        try {
-            URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
-            AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
-            for (PhotoEntry photo : feed.getPhotoEntries()) {
-                if (photo.getTitle().getPlainText().equals(imageTitle)) {
-                    return photo;
+    private final PhotoEntry getPhotoByNameForDownload(String albumTitle, String imageTitle) {
+        AlbumEntry entry = getAlbumByName(albumTitle);
+        if (entry != null) {
+            try {
+                URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
+                AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
+                for (PhotoEntry photo : feed.getPhotoEntries()) {
+                    if (photo.getTitle().getPlainText().equals(imageTitle)) {
+                        return photo;
+                    }
                 }
+                return null;
+            } catch (IOException exc) {
+                throw new RuntimeException(exc);
+            } catch (ServiceException exc) {
+                throw new RuntimeException(exc);
             }
+        } else {
             return null;
-
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (ServiceException exc) {
-            throw new RuntimeException(exc);
         }
+
     }
 
     private final AlbumEntry getAlbumByName(String albumTitle) {

@@ -87,6 +87,11 @@
             <artifactId>google-oauth-client-jetty</artifactId>
             <version>1.11.0-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.gdata</groupId>
+            <artifactId>core</artifactId>
+            <version>1.47.1</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

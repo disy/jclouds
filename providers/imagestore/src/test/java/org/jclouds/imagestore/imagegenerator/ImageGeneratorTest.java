@@ -44,15 +44,12 @@ import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToIma
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleApiPicasa;
 import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
