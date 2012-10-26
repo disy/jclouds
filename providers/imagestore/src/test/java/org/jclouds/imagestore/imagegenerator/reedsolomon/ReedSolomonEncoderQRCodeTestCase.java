@@ -30,11 +30,11 @@ public final class ReedSolomonEncoderQRCodeTestCase extends AbstractReedSolomonT
   @Test
   public void testISO18004Example() {
     int[] dataBytes = {
-      0x10, 0x20, 0x0C, 0x56, 0x61, 0x80, 0xEC, 0x11,
-      0xEC, 0x11, 0xEC, 0x11, 0xEC, 0x11, 0xEC, 0x11 };
+      16, 32, 12, 86, 97, 128, 236, 17,
+      236, 17, 236, 17, 236, 17, 236, 17};
     int[] expectedECBytes = {
-      0xA5, 0x24, 0xD4, 0xC1, 0xED, 0x36, 0xC7, 0x87,
-      0x2C, 0x55 };
+      165, 36, 212, 193, 237, 54, 199, 135,
+      44, 85 };
     doTestQRCodeEncoding(dataBytes, expectedECBytes);
   }
 

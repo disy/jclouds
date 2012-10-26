@@ -30,12 +30,12 @@ public final class ReedSolomonDecoderQRCodeTestCase extends AbstractReedSolomonT
 
   /** See ISO 18004, Appendix I, from which this example is taken. */
   private static final int[] QR_CODE_TEST =
-      { 0x10, 0x20, 0x0C, 0x56, 0x61, 0x80, 0xEC, 0x11, 0xEC,
-        0x11, 0xEC, 0x11, 0xEC, 0x11, 0xEC, 0x11 };
+      { 16, 32, 12, 86, 97, 128, 236, 17, 236,
+        17, 236, 17, 236, 17, 236, 17 };
   private static final int[] QR_CODE_TEST_WITH_EC =
-      { 0x10, 0x20, 0x0C, 0x56, 0x61, 0x80, 0xEC, 0x11, 0xEC,
-        0x11, 0xEC, 0x11, 0xEC, 0x11, 0xEC, 0x11, 0xA5, 0x24,
-        0xD4, 0xC1, 0xED, 0x36, 0xC7, 0x87, 0x2C, 0x55 };
+      { 16, 32, 12, 86, 97, 128, 236, 17, 236,
+        17, 236, 17, 236, 17, 236, 17, 165, 36,
+        212, 193, 237, 54, 199, 135, 44, 85 };
   private static final int QR_CODE_ECC_BYTES = QR_CODE_TEST_WITH_EC.length - QR_CODE_TEST.length;
   private static final int QR_CODE_CORRECTABLE = QR_CODE_ECC_BYTES / 2;
 
