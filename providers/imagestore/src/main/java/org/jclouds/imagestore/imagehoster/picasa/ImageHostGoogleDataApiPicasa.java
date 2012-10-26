@@ -41,9 +41,9 @@ import com.google.gdata.util.ServiceException;
 public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 1600;
+    private static final int MAX_IMAGE_WIDTH = 2048;
     /** The maximum image height. */
-    private static final int MAX_IMAGE_HEIGHT = 1600;
+    private static final int MAX_IMAGE_HEIGHT = 2048;
 
     private static String ROOTURL = "https://picasaweb.google.com/data/feed/api/user/default";
 
@@ -55,7 +55,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         try {
             credential = authorize();
             service = new PicasawebService("imageuploader");
-            
+            service.setOAuth2Credentials(credential);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -294,7 +294,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     private static Credential authorize() throws Exception {
         // load client secrets
         GoogleClientSecrets clientSecrets =
-            GoogleClientSecrets.load(JSON_FACTORY, PicasaSample.class
+            GoogleClientSecrets.load(JSON_FACTORY, ImageHostGoogleDataApiPicasa.class
                 .getResourceAsStream("/client_secrets.json"));
         if (clientSecrets.getDetails().getClientId().startsWith("Enter")
             || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
