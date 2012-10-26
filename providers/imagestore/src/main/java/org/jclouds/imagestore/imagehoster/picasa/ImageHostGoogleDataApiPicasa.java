@@ -309,7 +309,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         // set up authorization code flow
         GoogleAuthorizationCodeFlow flow =
             new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, Collections
-                .singleton(PicasaUrl.ROOT_URL)).setCredentialStore(credentialStore).build();
+                .singleton("https://picasaweb.google.com/data/")).setCredentialStore(credentialStore).build();
         // authorize
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
