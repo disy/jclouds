@@ -35,7 +35,7 @@ abstract class AbstractReedSolomonTestCase {
         j--;
       } else {
         corrupted.set(location);
-        received[location] = (received[location] + 1 + random.nextInt(255)) & 0xFF;
+        received[location] = (received[location] + 1 + random.nextInt(255)) & 255;
       }
     }
   }
