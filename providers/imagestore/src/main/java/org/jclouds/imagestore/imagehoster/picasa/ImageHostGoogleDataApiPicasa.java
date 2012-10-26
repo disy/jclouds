@@ -54,6 +54,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     public ImageHostGoogleDataApiPicasa() {
         try {
             credential = authorize();
+            credential.getRefreshToken();
             service = new PicasawebService("imageuploader");
             service.setOAuth2Credentials(credential);
         } catch (Exception exc) {
