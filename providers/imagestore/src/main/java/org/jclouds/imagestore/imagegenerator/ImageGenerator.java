@@ -174,8 +174,14 @@ public class ImageGenerator {
         final int b3 = (int)bs[2] & 0xFF;
         final int b4 = (int)bs[3] & 0xFF;
         final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
-        byte[] bss = new byte[oLength];
-        System.arraycopy(bs, HEADER_OFFSET, bss, 0, oLength);
+        byte[] bss;
+        if (oLength > 0) {
+            bss = new byte[oLength];
+            System.arraycopy(bs, HEADER_OFFSET, bss, 0, oLength);
+        } else {
+            bss = new byte[0];
+        }
         return bss;
+
     }
 }

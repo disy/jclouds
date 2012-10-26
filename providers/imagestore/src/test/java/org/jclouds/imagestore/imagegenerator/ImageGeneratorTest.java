@@ -295,7 +295,6 @@ public class ImageGeneratorTest {
                     System.out.println("Arrays differ for host " + host.toString() + " and painter "
                         + pa.toString());
                 } else {
-
                     assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
                         " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
                 }

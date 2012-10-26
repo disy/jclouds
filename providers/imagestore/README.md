@@ -68,3 +68,9 @@ Here is a simple example: Say we have a byte b = 86 and we want this byte to be 
 	
 * Where does the naming of the byte-painters come from?
 http://en.wikipedia.org/wiki/List_of_numeral_systems
+
+* What painters are working and where?
+Painters not working:
+ImageHostFlickr: OctalLayeredBytesToImagePainter
+ImageHostFlickr: HexadecimalLayeredBytesToImagePainter
+ImageHostFacebook: BinaryBytesToImagePainter
