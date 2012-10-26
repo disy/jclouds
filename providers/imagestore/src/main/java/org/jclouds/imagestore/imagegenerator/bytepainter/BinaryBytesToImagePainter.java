@@ -33,12 +33,7 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
-
-
-
 /**
- * 
- * 
  * This Class offers a byte painter.
  * <p/>
  * Numeral System: Binary <br/>
@@ -48,8 +43,9 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * <p/>
  * Working with
  * <ul>
- * <li>Flickr</li>
  * <li>Facebook</li>
+ * <li>Flickr</li>
+ * <li>Picasa</li>
  * </ul>
  * 
  * @author Wolfgang Miller, University of Konstanz

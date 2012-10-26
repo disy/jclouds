@@ -9,8 +9,6 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 
 /**
- * 
- * 
  * This Class offers a byte painter.
  * <p/>
  * Numeral System: Septenary <br/>
@@ -21,11 +19,15 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * Working with
  * <ul>
  * <li>Flickr</li>
+ * <li>Picasa</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
  * </ul>
  * 
  * @author Wolfgang Miller, University of Konstanz
  */
-
 public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The image type to be used. */

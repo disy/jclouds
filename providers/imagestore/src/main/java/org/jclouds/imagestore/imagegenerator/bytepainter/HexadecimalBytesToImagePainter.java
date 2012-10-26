@@ -44,6 +44,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * Working with
  * <ul>
  * <li>Flickr</li>
+ * <li>Picasa</li>
  * </ul>
  * Not working with
  * <ul>

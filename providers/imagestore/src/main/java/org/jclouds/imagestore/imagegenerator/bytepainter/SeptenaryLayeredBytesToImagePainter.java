@@ -26,15 +26,9 @@
  */
 package org.jclouds.imagestore.imagegenerator.bytepainter;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
- * 
  * This Class offers a byte painter.
  * <p/>
  * Numeral System: Septenary <br/>
@@ -45,18 +39,14 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * Working with
  * <ul>
  * <li>Flickr</li>
+ * <li>Picasa</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
  * </ul>
  * 
  * @author Wolfgang Miller, University of Konstanz
- */
-/**
- * This Class offers a byte painter.
- * 
- * 
- * Layers: 3
- * 1 Byte = 1 Pixel
- * 
- * @author Wolfgang Miller
  */
 public class SeptenaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
 

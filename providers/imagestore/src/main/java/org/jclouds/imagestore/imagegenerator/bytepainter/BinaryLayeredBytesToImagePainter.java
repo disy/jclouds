@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
  * Working with
  * <ul>
  * <li>Flickr</li>
+ * <li>Picasa</li>
  * </ul>
  * Not working with
  * <ul>

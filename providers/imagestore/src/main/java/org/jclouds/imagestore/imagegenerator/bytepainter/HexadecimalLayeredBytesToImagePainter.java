@@ -6,7 +6,24 @@ package org.jclouds.imagestore.imagegenerator.bytepainter;
 import java.awt.image.BufferedImage;
 
 /**
- * The Class HexalLayeredByteToPixelPainter.
+ * This Class offers a byte painter.
+ * <p/>
+ * Numeral System: Hexadecimal <br/>
+ * Layers: 3 <br/>
+ * 1 Byte = 2/3 Pixel <br/>
+ * 16^3 colors <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Flickr</li>
+ * <li>Picasa</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
+ * </ul>
+ * 
+ * @author Wolfgang Miller, University of Konstanz
  */
 public class HexadecimalLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
 

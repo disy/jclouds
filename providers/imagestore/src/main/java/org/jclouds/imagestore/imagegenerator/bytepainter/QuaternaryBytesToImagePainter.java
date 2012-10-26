@@ -33,12 +33,10 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
-
 /**
- * 
  * This Class offers a byte painter.
  * <p/>
- *Numeral System: Quaternary <br/>
+ * Numeral System: Quaternary <br/>
  * Layers: 1 <br/>
  * 1 Byte = 4 Pixel<br/>
  * 4 colors <br/>
@@ -47,6 +45,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  * <ul>
  * <li>Flickr</li>
  * <li>Facebook (only if ImmageType is RGB, GREY not working on Facebook)</li>
+ * <li>Picasa</li>
  * </ul>
  * 
  * @author Wolfgang Miller, University of Konstanz

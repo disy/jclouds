@@ -26,24 +26,20 @@
  */
 package org.jclouds.imagestore.imagegenerator.bytepainter;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * This Class offers a byte painter.
  * <p/>
  * Numeral System: Quaternary <br/>
  * Layers: 3 <br/>
- * 4 Pixel = 3 Byte (based on layers(RGB)) <br/>
- * 64(4power3) colors pro Pixel <br/>
+ * 1Byte = 4/3 pixels <br/>
+ * 64(4power3) colors pro pixel <br/>
  * <p/>
  * Working with
  * <ul>
  * <li>Flickr</li>
+ * <li>Picasa</li>
  * </ul>
  * Not working with
  * <ul>
