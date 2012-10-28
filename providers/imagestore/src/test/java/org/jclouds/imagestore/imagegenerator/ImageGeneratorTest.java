@@ -286,20 +286,20 @@ public class ImageGeneratorTest {
                 ib.putBlob(CONTAINER, testBlob);
                 final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                reTestBlob.getPayload().writeTo(bos);
-                byte[] bss = bos.toByteArray();
-                bos.close();
-
-                if (!Arrays.equals(RAWFILEBYTES, bss)) {
-                    System.out.println("Arrays differ for host " + host.toString() + " and painter "
-                        + pa.toString());
-                } else {
-                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
-                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
-                }
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                reTestBlob.getPayload().writeTo(bos);
+//                byte[] bss = bos.toByteArray();
+//                bos.close();
+//
+//                if (!Arrays.equals(RAWFILEBYTES, bss)) {
+//                    System.out.println("Arrays differ for host " + host.toString() + " and painter "
+//                        + pa.toString());
+//                } else {
+//                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
+//                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
+//                }
             }
-            host.deleteImageSet(CONTAINER);
+//            host.deleteImageSet(CONTAINER);
         }
     }
 

@@ -262,6 +262,7 @@ public class ImageHostFacebook implements IImageHost {
         String imageSetId = getFacebookImageSetId(imageSetTitle);
         if (imageSetId.isEmpty()) {
             createImageSet(imageSetTitle);
+            imageSetId = getFacebookImageSetId(imageSetTitle);
         }
 
         // upload image to facebook
