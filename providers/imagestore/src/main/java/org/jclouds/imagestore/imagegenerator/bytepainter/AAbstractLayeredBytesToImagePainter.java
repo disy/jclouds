@@ -66,6 +66,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
         int[] currByteColor = null;
         int len = bs.length;
 
+        // postion in byte-array
         int bp = 0;
         for (int y = 0; y < h; y++) {
 
@@ -73,7 +74,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
             for (int x = 0; x < w; x++) {
 
-                // amount of all pixels till now
+                // amount of used pixels
                 final int pix = hpix + x;
                 // if pos == 0 the new byte buckets start
                 final int pos = pix % pixelsPerBytePerLayer;
@@ -127,7 +128,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
         final int w = img.getWidth();
         final int h = img.getHeight();
 
-        String[] septs = new String[] {
+        String[] bytesInNumSys = new String[] {
             "", "", ""
         };
 
@@ -139,16 +140,16 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
                 final int pix = hpix + x;
 
-                getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y), numeralSystem, septs);
+                getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y), numeralSystem, bytesInNumSys);
 
                 if (pix % pixelsPerBytePerLayer == pixelsPerBytePerLayer - 1) {
 
                     for (int layer = 0; layer < LAYERS; layer++) {
-                        byte b = (byte)Integer.parseInt(septs[layer], numeralSystem);
+                        byte b = (byte)Integer.parseInt(bytesInNumSys[layer], numeralSystem);
                         al.add(b);
                     }
 
-                    septs = new String[] {
+                    bytesInNumSys = new String[] {
                         "", "", ""
                     };
                 }
