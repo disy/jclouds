@@ -83,124 +83,124 @@ public class ImageGeneratorTest {
         }
     }
 
-//    /**
-//     * Invokes tests for all byte painters local.
-//     * 
-//     * @param painters
-//     *            The different byte painter instances.
-//     * @param hosts
-//     *            The local host instances.
-//     * @throws NoSuchAlgorithmException
-//     *             Signals that a NoSuchAlgorithm exception has occurred.
-//     * @throws CertificateException
-//     *             Signals that a certificate exception has occurred.
-//     * @throws IOException
-//     *             Signals that an I/O exception has occurred.
-//     * @throws ClassNotFoundException
-//     * @throws IllegalAccessException
-//     * @throws InstantiationException
-//     */
-//    @Test(dataProvider = "allPainters", groups = "localTests")
-//    public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
-//        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-//        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-//        check(painters, new ImageHostFile(Files.createTempDir().getAbsolutePath()));
-//    }
-//
-//    /**
-//     * Invokes tests for all byte painters on Picasa.
-//     * 
-//     * @param painters
-//     *            The different byte painter instances.
-//     * @param hosts
-//     *            The local host instances.
-//     * @throws NoSuchAlgorithmException
-//     *             Signals that a NoSuchAlgorithm exception has occurred.
-//     * @throws CertificateException
-//     *             Signals that a certificate exception has occurred.
-//     * @throws IOException
-//     *             Signals that an I/O exception has occurred.
-//     * @throws ClassNotFoundException
-//     * @throws IllegalAccessException
-//     * @throws InstantiationException
-//     */
-//    @Test(dataProvider = "allPainters", groups = "remoteTests")
-//    public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
-//        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-//        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-//        check(painters, new ImageHostGoogleDataApiPicasa());
-//    }
-//
-//    /**
-//     * Returns an Object with byte painters.
-//     * 
-//     * @return Object withall byte painters.
-//     */
-//    @DataProvider(name = "allPainters")
-//    public Object[][] allPainters() {
-//        Object[][] returnVal =
-//            {
-//                {
-//                    IBytesToImagePainter.class,
-//                    new IBytesToImagePainter[] {
-//                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-//                        new OctalLayeredBytesToImagePainter(),// new
-//                        // OctalLayeredColorAlternatingBytesToImagePainter(),
-//                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-//                    }
-//                }
-//            };
-//        return returnVal;
-//    }
-//
-//    /**
-//     * Invokes tests for all byte painters on Picasa.
-//     * 
-//     * @param painters
-//     *            The different byte painter instances.
-//     * @param hosts
-//     *            The local host instances.
-//     * @throws NoSuchAlgorithmException
-//     *             Signals that a NoSuchAlgorithm exception has occurred.
-//     * @throws CertificateException
-//     *             Signals that a certificate exception has occurred.
-//     * @throws IOException
-//     *             Signals that an I/O exception has occurred.
-//     * @throws ClassNotFoundException
-//     * @throws IllegalAccessException
-//     * @throws InstantiationException
-//     */
-//    @Test(dataProvider = "flickrPainters", groups = "remoteTests")
-//    public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
-//        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-//        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-//        check(painters, new ImageHostFlickr());
-//    }
-//
-//    /**
-//     * Returns an Object with all remote hosts and all byte painters.
-//     * 
-//     * @return Object with all remote hosts and all byte painters.
-//     */
-//    @DataProvider(name = "flickrPainters")
-//    public Object[][] flickrPainters() {
-//        Object[][] returnVal =
-//            {
-//                {
-//                    IBytesToImagePainter.class,
-//                    new IBytesToImagePainter[] {
-//                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-//                        // new OctalLayeredColorAlternatingBytesToImagePainter(),
-//                        new HexadecimalBytesToImagePainter()
-//                    }
-//                }
-//            };
-//        return returnVal;
-//    }
+    /**
+     * Invokes tests for all byte painters local.
+     * 
+     * @param painters
+     *            The different byte painter instances.
+     * @param hosts
+     *            The local host instances.
+     * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
+     * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @Test(dataProvider = "allPainters", groups = "localTests", enabled = false)
+    public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
+        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
+        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        check(painters, new ImageHostFile(Files.createTempDir().getAbsolutePath()));
+    }
+
+    /**
+     * Invokes tests for all byte painters on Picasa.
+     * 
+     * @param painters
+     *            The different byte painter instances.
+     * @param hosts
+     *            The local host instances.
+     * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
+     * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
+    public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
+        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
+        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        check(painters, new ImageHostGoogleDataApiPicasa());
+    }
+
+    /**
+     * Returns an Object with byte painters.
+     * 
+     * @return Object withall byte painters.
+     */
+    @DataProvider(name = "allPainters")
+    public Object[][] allPainters() {
+        Object[][] returnVal =
+            {
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
+                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                        new OctalLayeredBytesToImagePainter(),// new
+                        // OctalLayeredColorAlternatingBytesToImagePainter(),
+                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+                    }
+                }
+            };
+        return returnVal;
+    }
+
+    /**
+     * Invokes tests for all byte painters on Picasa.
+     * 
+     * @param painters
+     *            The different byte painter instances.
+     * @param hosts
+     *            The local host instances.
+     * @throws NoSuchAlgorithmException
+     *             Signals that a NoSuchAlgorithm exception has occurred.
+     * @throws CertificateException
+     *             Signals that a certificate exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
+    public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
+        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
+        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        check(painters, new ImageHostFlickr());
+    }
+
+    /**
+     * Returns an Object with all remote hosts and all byte painters.
+     * 
+     * @return Object with all remote hosts and all byte painters.
+     */
+    @DataProvider(name = "flickrPainters")
+    public Object[][] flickrPainters() {
+        Object[][] returnVal =
+            {
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
+                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                        // new OctalLayeredColorAlternatingBytesToImagePainter(),
+                        new HexadecimalBytesToImagePainter()
+                    }
+                }
+            };
+        return returnVal;
+    }
 
     /**
      * Invokes tests for all byte painters on Picasa.
@@ -239,11 +239,11 @@ public class ImageGeneratorTest {
                     IBytesToImagePainter.class,
                     new IBytesToImagePainter[] {
                         new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                        new OctalLayeredBytesToImagePainter(),// new
+//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+//                        new OctalLayeredBytesToImagePainter(),// new
                         // OctalLayeredColorAlternatingBytesToImagePainter(),
-                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+//                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                     }
                 }
             };
@@ -286,20 +286,20 @@ public class ImageGeneratorTest {
                 ib.putBlob(CONTAINER, testBlob);
                 final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
 
-//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//                reTestBlob.getPayload().writeTo(bos);
-//                byte[] bss = bos.toByteArray();
-//                bos.close();
-//
-//                if (!Arrays.equals(RAWFILEBYTES, bss)) {
-//                    System.out.println("Arrays differ for host " + host.toString() + " and painter "
-//                        + pa.toString());
-//                } else {
-//                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
-//                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
-//                }
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                reTestBlob.getPayload().writeTo(bos);
+                byte[] bss = bos.toByteArray();
+                bos.close();
+
+                if (!Arrays.equals(RAWFILEBYTES, bss)) {
+                    System.out.println("Arrays differ for host " + host.toString() + " and painter "
+                        + pa.toString());
+                } else {
+                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
+                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
+                }
             }
-//            host.deleteImageSet(CONTAINER);
+            host.deleteImageSet(CONTAINER);
         }
     }
 

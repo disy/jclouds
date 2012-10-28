@@ -162,19 +162,31 @@ public class ImageHostFacebook implements IImageHost {
      */
     @Override
     public boolean createImageSet(final String imageSetTitle) {
-
-        FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
-        if (album == null) {
-            fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
-            uploadImage(imageSetTitle, MARKERFORSET, DUMMYIMAGE);
-            return true;
-        } else {
-            if (album.photo_count == 0) {
-                uploadImage(imageSetTitle, MARKERFORSET, DUMMYIMAGE);
+        try {
+            FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
+            if (album == null) {
+                fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
+                album = getFacebookImageSetFql(imageSetTitle);
+                fbClient.publish(album.object_id + "/photos", FacebookType.class, BinaryAttachment.with(
+                    MARKERFORSET + ".png", HImageHostHelper.getInputStreamFromImage(DUMMYIMAGE)), Parameter
+                    .with("name", MARKERFORSET));
                 return true;
             } else {
-                return false;
+                if (album.photo_count == 0) {
+                    String imageSetId = getFacebookImageSetId(imageSetTitle);
+                    return fbClient.publish(
+                        imageSetId + "/photos",
+                        FacebookType.class,
+                        BinaryAttachment.with(MARKERFORSET + ".png", HImageHostHelper
+                            .getInputStreamFromImage(DUMMYIMAGE)), Parameter.with("name", MARKERFORSET))
+                        .getId() != null;
+
+                } else {
+                    return false;
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -259,11 +271,10 @@ public class ImageHostFacebook implements IImageHost {
      */
     @Override
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
-        String imageSetId = getFacebookImageSetId(imageSetTitle);
-        if (imageSetId.isEmpty()) {
+        if (!imageSetExists(imageSetTitle)) {
             createImageSet(imageSetTitle);
-            imageSetId = getFacebookImageSetId(imageSetTitle);
         }
+        String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         // upload image to facebook
         try {
