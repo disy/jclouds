@@ -79,4 +79,12 @@ public final class ReedSolomonEncoder {
         System.arraycopy(coefficients, 0, toEncode, dataBytes + numZeroCoefficients, coefficients.length);
     }
 
+    public static int[] castToInt(final byte[] pInt) {
+        int[] returnVal = new int[pInt.length];
+        for (int i = 0; i < pInt.length; i++) {
+            returnVal[i] = pInt[i];
+        }
+        return returnVal;
+    }
+
 }

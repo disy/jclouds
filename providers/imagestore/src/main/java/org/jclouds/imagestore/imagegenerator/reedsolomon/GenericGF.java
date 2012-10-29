@@ -32,14 +32,14 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
  */
 public final class GenericGF {
 
-    public static final GenericGF AZTEC_DATA_12 = new GenericGF(4201, 4096); // x^12 + x^6 + x^5 + x^3 + 1
-    public static final GenericGF AZTEC_DATA_10 = new GenericGF(1033, 1024); // x^10 + x^3 + 1
-    public static final GenericGF AZTEC_DATA_6 = new GenericGF(67, 64); // x^6 + x + 1
-    public static final GenericGF AZTEC_PARAM = new GenericGF(19, 16); // x^4 + x + 1
+    // public static final GenericGF AZTEC_DATA_12 = new GenericGF(4201, 4096); // x^12 + x^6 + x^5 + x^3 + 1
+    // public static final GenericGF AZTEC_DATA_10 = new GenericGF(1033, 1024); // x^10 + x^3 + 1
+    // public static final GenericGF AZTEC_DATA_6 = new GenericGF(67, 64); // x^6 + x + 1
+    // public static final GenericGF AZTEC_PARAM = new GenericGF(19, 16); // x^4 + x + 1
     public static final GenericGF QR_CODE_FIELD_256 = new GenericGF(285, 256); // x^8 + x^4 + x^3 + x^2 + 1
-    public static final GenericGF DATA_MATRIX_FIELD_256 = new GenericGF(301, 256); // x^8 + x^5 + x^3 + x^2 + 1
-    public static final GenericGF AZTEC_DATA_8 = DATA_MATRIX_FIELD_256;
-    public static final GenericGF MAXICODE_FIELD_64 = AZTEC_DATA_6;
+    public static final GenericGF DATA_MATRIX_FIELD_256 = new GenericGF(301, 256); // x^8 + x^5 + x^3 + x^2+1
+    // public static final GenericGF AZTEC_DATA_8 = DATA_MATRIX_FIELD_256;
+    // public static final GenericGF MAXICODE_FIELD_64 = AZTEC_DATA_6;
 
     private static final int INITIALIZATION_THRESHOLD = 0;
 
@@ -184,6 +184,22 @@ public final class GenericGF {
 
     public int getSize() {
         return size;
+    }
+
+    public int getPrimitive() {
+        return primitive;
+    }
+
+    public static GenericGF generateMinimal(final int pBits) {
+        int size = 1 << pBits;
+        int primitive = (1 << pBits) + 2;
+        return new GenericGF(primitive, size);
+    }
+
+    public static GenericGF generateMaximal(final int pBits) {
+        int size = 1 << pBits;
+        int primitive = (1 << (pBits + 1)) - 1;
+        return new GenericGF(primitive, size);
     }
 
 }
