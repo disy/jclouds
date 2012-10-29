@@ -76,7 +76,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements
 				Color nc = getPixelColorFromBytes(bs, len, bp);
 				g.setColor(nc);
 				g.drawLine(x, y, x, y);
-				bp += 3;
+				bp += LAYERS;
 			}
 		}
 		return image;
@@ -94,7 +94,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements
 			final int bp) {
 
 		int c = 0;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < LAYERS; i++) {
 			final int pos = bp + i;
 
 			if (pos >= len)
@@ -132,7 +132,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements
 				final int rgb = image.getRGB(x, y);
 				final byte [] bs = getBytesFromPixel(rgb);
 
-				for (int layer = 0; layer < 3; layer++) {
+				for (int layer = 0; layer < LAYERS; layer++) {
 					al.add(bs[layer]);
 				}
 

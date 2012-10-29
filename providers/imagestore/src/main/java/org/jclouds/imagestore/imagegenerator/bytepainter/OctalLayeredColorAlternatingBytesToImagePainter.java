@@ -7,255 +7,244 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * The Class OctalLayeredByteToPixelPainter.
  */
-public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesToImagePainter {
+public class OctalLayeredColorAlternatingBytesToImagePainter implements
+		IBytesToImagePainter {
 
-    /** The image type to be used. */
-    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
+	/** The image type to be used. */
+	private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
-    /** The number system. */
-    private final int numberSystem = 8;
+	/** The amount of layers. */
+	private static final int LAYERS = 3;
 
-    /** The colors. */
-    private final Color[][] colors = HBytesToImagePainterHelper
-        .generateLayeredUniformlyDistributedColors(numberSystem);
+	/** The number system. */
+	private final int numberSystem = 8;
 
-    /** Bytes needed per pixel. */
-    public static final float BYTES_PER_PIXEL = 3;
+	/** The colors. */
+	private final Color[][] colors = HBytesToImagePainterHelper
+			.generateLayeredUniformlyDistributedColors(numberSystem);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getImageType() {
-        return BUFFERED_IMAGE_TYPE;
-    }
+	/** Bytes needed per pixel. */
+	public static final float BYTES_PER_PIXEL = 3;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float pixelsPerByte() {
-        return BYTES_PER_PIXEL;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getImageType() {
+		return BUFFERED_IMAGE_TYPE;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public float pixelsPerByte() {
+		return BYTES_PER_PIXEL;
+	}
 
-        final int w = bi.getWidth();
-        final int h = bi.getHeight();
-        final Graphics g = bi.getGraphics();
-        final int sumPix = w * h;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BufferedImage storeBytesInImage(BufferedImage bi, final byte[] bs) {
 
-        ArrayList<Integer> cList = new ArrayList<Integer>(sumPix);
+		bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+		final int w = bi.getWidth();
+		final int h = bi.getHeight();
+		final Graphics g = bi.getGraphics();
+		final int sumPix = w * h;
 
-        int[] currByteColor = new int[0];
+		ArrayList<Integer> cList = new ArrayList<Integer>(sumPix);
 
-        /* byte index */
-        int bIdx = 0;
-        /* color index */
-        int cIdx = 0;
-        int len = bs.length;
-        boolean moreBytes = true;
+		int[] currByteColor = new int[0];
 
-        for (int layer = 0; layer < 3; layer++) {
+		/* color index */
+		int cIdx = 0;
+		int len = bs.length;
+		boolean moreBytes = true;
 
-            for (int y = 0; y < h; y++) {
+		// the current position in the color-array
+		int cp = 0;
+		// the current index position in the byte-array
+		int bp = 0;
 
-                final int hpix = w * y;
+		// the image's amount of pixels
+		final int ps = w * h;
+		// the color index
+		int[] ci;
 
-                for (int x = 0; x < w; x++) {
+		FirstTwoLayersFinished: while (bp < len) {
+			final byte b = bs[bp++];
+			ci = getColorFromByte(b, bp % 2 == 0);
 
-                    final int pix = hpix + x;
+			final int cLen = ci.length;
+			for (int i = 0; i < cLen; i++) {
+				cList.add(ci[i]);
 
-                    if (moreBytes) {
+				// break if first two layers are full
+				if (cList.size() / ps >= 2) {
+					// copy overflow for third layer
+					if (i < cLen)
+						ci = Arrays.copyOfRange(ci, i, cLen);
+					break FirstTwoLayersFinished;
+				}
+			}
+		}
 
-                        if (cIdx >= currByteColor.length) {
+		for (int y = 0; y < h; y++) {
 
-                            if (bIdx >= len) {
-                                moreBytes = false;
+			// amount of used pixels
+			final int hpix = w * y;
 
-                                if (layer < 2) {
-                                    layer = 2;
-                                    x = 0;
-                                    y = 0;
-                                }
-                                continue;
-                            }
+			for (int x = 0; x < w; x++) {
 
-                            final byte b = bs[bIdx++];
-                            currByteColor = getColorFromByte(b, layer, bIdx % 2 == 0);
-                            cIdx = 0;
-                        }
+				final int pix = hpix + x;
 
-                        if (layer == 0) {
-                            cList.add(currByteColor[cIdx++]);
-                            continue;
-                        }
+				if (bp < len) {
 
-                        int cc = cList.get(pix);
-                        cList.set(pix, currByteColor[cIdx++] + cc);
-                        if (layer == 1)
-                            continue;
+					final byte b = bs[bp++];
 
-                    }
+				}
+			}
 
-                    if (cList.size() <= pix) {
-                        return bi;
-                    }
+		}
+		return bi;
+	}
 
-                    int ccc = cList.get(pix);
+	/**
+	 * Gets the color from byte.
+	 * 
+	 * @param b
+	 *            the b
+	 * @param layer
+	 *            the layer
+	 * @param even
+	 *            the even
+	 * @return the color from byte
+	 */
+	private int[] getColorFromByte(final byte b, final boolean even) {
 
-                    Color nc = new Color(ccc);
-                    g.setColor(nc);
-                    g.drawLine(x, y, x, y);
-                }
+		// if even convert byte to integer, if uneven, add Byte.MAX_VALUE to
+		// byte and convert to integer. This is done to alternate the colors.
+		// colors1: between 0 and 255, colors2: between 256 and 511
+		int it = even ? b & 0xFF : (b & 0xFF) + Byte.MAX_VALUE;
 
-            }
-        }
-        return bi;
-    }
+		String octs = Integer.toString(it, numberSystem);
+		final int len = octs.length();
+		int[] dc = new int[len];
 
-    /**
-     * Gets the color from byte.
-     * 
-     * @param b
-     *            the b
-     * @param layer
-     *            the layer
-     * @param even
-     *            the even
-     * @return the color from byte
-     */
-    private int[] getColorFromByte(final byte b, final int layer, final boolean even) {
-        int it = b & 0xFF;
-        if (!even)
-            it += 256;
+		for (int i = 0; i < len; i++) {
 
-        String hept = Integer.toString(it, numberSystem);
-        final int l = hept.length();
-        int[] byteColors = new int[l];
+			String val = octs.substring(i, i + 1);
 
-        for (int i = 0; i < l; i++) {
+			dc[i] = Integer.parseInt(val, numberSystem);
+		}
+		return dc;
+	}
 
-            String val = hept.substring(i, i + 1);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] getBytesFromImage(BufferedImage img) {
 
-            int dc = Integer.parseInt(val, numberSystem);
+		final ArrayList<Byte> li = new ArrayList<Byte>();
 
-            byteColors[i] = colors[layer][dc].getRGB();
+		final int w = img.getWidth();
+		final int h = img.getHeight();
 
-        }
-        return byteColors;
-    }
+		String[] hepts = new String[] { "", "", "" };
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+		for (int y = 0; y < h; y++) {
 
-        final ArrayList<Byte> li = new ArrayList<Byte>();
+			final int hpix = w * y;
 
-        final int w = img.getWidth();
-        final int h = img.getHeight();
+			for (int x = 0; x < w; x++) {
 
-        String[] hepts = new String[] {
-            "", "", ""
-        };
+				final int pix = hpix + x;
 
-        for (int y = 0; y < h; y++) {
+				getHeptsFromPixel(img.getRGB(x, y), hepts);
 
-            final int hpix = w * y;
+				if (pix % 3 == 2) {
 
-            for (int x = 0; x < w; x++) {
+					for (int i = 0; i < 3; i++) {
+						byte b = (byte) Integer.parseInt(hepts[i], 7);
+						li.add(b);
+					}
 
-                final int pix = hpix + x;
+					hepts = new String[] { "", "", "" };
+				}
+			}
+		}
+		return HBytesToImagePainterHelper.arrayListToByteArray(li);
+	}
 
-                getHeptsFromPixel(img.getRGB(x, y), hepts);
+	/**
+	 * Gets the hepts from pixel.
+	 * 
+	 * @param pix
+	 *            the pix
+	 * @param hepts
+	 *            the hepts
+	 * @return the hepts from pixel
+	 */
+	private void getHeptsFromPixel(final int pix, String[] hepts) {
 
-                if (pix % 3 == 2) {
+		Color c = new Color(pix);
+		int red = c.getRed();
+		int green = c.getGreen();
+		int blue = c.getBlue();
 
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(hepts[i], 7);
-                        li.add(b);
-                    }
+		for (int l = 0; l < 3; l++) {
+			int dist = -1;
+			int idx = -1;
 
-                    hepts = new String[] {
-                        "", "", ""
-                    };
-                }
-            }
-        }
-        return HBytesToImagePainterHelper.arrayListToByteArray(li);
-    }
+			if (l == 0) {
 
-    /**
-     * Gets the hepts from pixel.
-     * 
-     * @param pix
-     *            the pix
-     * @param hepts
-     *            the hepts
-     * @return the hepts from pixel
-     */
-    private void getHeptsFromPixel(final int pix, String[] hepts) {
+				for (int i = 0; i < colors[l].length; i++) {
+					int cred = colors[l][i].getRed();
 
-        Color c = new Color(pix);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
+					int currDist = Math.abs(cred - red);
 
-        for (int l = 0; l < 3; l++) {
-            int dist = -1;
-            int idx = -1;
+					if (dist == -1 || currDist < dist) {
+						dist = currDist;
+						idx = i;
+					}
+				}
 
-            if (l == 0) {
+			} else if (l == 1) {
 
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
+				for (int i = 0; i < colors[l].length; i++) {
+					int cgreen = colors[l][i].getGreen();
 
-                    int currDist = Math.abs(cred - red);
+					int currDist = Math.abs(cgreen - green);
 
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
+					if (dist == -1 || currDist < dist) {
+						dist = currDist;
+						idx = i;
+					}
+				}
+			} else {
 
-            } else if (l == 1) {
+				for (int i = 0; i < colors[l].length; i++) {
+					int cblue = colors[l][i].getBlue();
 
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
+					int currDist = Math.abs(cblue - blue);
 
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-
-                    int currDist = Math.abs(cblue - blue);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-            hepts[l] += Integer.toString(idx, 7);
-        }
-    }
+					if (dist == -1 || currDist < dist) {
+						dist = currDist;
+						idx = i;
+					}
+				}
+			}
+			hepts[l] += Integer.toString(idx, 7);
+		}
+	}
 }
