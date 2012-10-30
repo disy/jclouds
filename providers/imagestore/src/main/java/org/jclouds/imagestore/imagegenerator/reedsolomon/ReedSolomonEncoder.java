@@ -82,7 +82,7 @@ public final class ReedSolomonEncoder {
     public static int[] castToInt(final byte[] pInt) {
         int[] returnVal = new int[pInt.length];
         for (int i = 0; i < pInt.length; i++) {
-            returnVal[i] = pInt[i];
+            returnVal[i] = pInt[i] & 0xFF;
         }
         return returnVal;
     }

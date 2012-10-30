@@ -67,7 +67,7 @@ public final class ReedSolomonDecoder {
     public void decode(int[] received, int twoS) throws ReedSolomonException {
         GenericGFPoly poly = new GenericGFPoly(field, received);
         int[] syndromeCoefficients = new int[twoS];
-        boolean dataMatrix = field.equals(GenericGF.DATA_MATRIX_FIELD_256);
+        boolean dataMatrix = field.equals(GenericGF.GenericGFs.AZTEC_DATA_8.mGf);
         boolean noError = true;
         for (int i = 0; i < twoS; i++) {
             // Thanks to sanfordsquires for this fix:

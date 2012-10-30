@@ -38,7 +38,8 @@ public final class ReedSolomonDecoderDataMatrixTestCase extends AbstractReedSolo
     private static final int DM_CODE_ECC_BYTES = DM_CODE_TEST_WITH_EC.length - DM_CODE_TEST.length;
     private static final int DM_CODE_CORRECTABLE = DM_CODE_ECC_BYTES / 2;
 
-    private final ReedSolomonDecoder dmRSDecoder = new ReedSolomonDecoder(GenericGF.DATA_MATRIX_FIELD_256);
+    private final ReedSolomonDecoder dmRSDecoder = new ReedSolomonDecoder(
+        GenericGF.GenericGFs.AZTEC_DATA_8.mGf);
 
     @Test
     public void testNoError() throws ReedSolomonException {

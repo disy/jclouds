@@ -42,8 +42,8 @@ public final class ReedSolomonEncoderQRCodeTestCase extends AbstractReedSolomonT
     @Test
     public void testQRCodeVersusDecoder() throws Exception {
         Random random = getRandom();
-        ReedSolomonEncoder encoder = new ReedSolomonEncoder(GenericGF.QR_CODE_FIELD_256);
-        ReedSolomonDecoder decoder = new ReedSolomonDecoder(GenericGF.QR_CODE_FIELD_256);
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
         for (int i = 0; i < 100; i++) {
             int size = 2 + random.nextInt(254);
             int[] toEncode = new int[size];

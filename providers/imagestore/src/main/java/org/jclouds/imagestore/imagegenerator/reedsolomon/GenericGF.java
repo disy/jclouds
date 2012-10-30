@@ -32,17 +32,21 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
  */
 public final class GenericGF {
 
-    public static final GenericGF AZTEC_DATA_12 = new GenericGF(4201, 4096); // x^12 + x^6 + x^5 + x^3 + 1,
-                                                                             // 1.0256
-    public static final GenericGF AZTEC_DATA_10 = new GenericGF(1033, 1024); // x^10 + x^3 + 1, 1,0088
-    public static final GenericGF AZTEC_DATA_6 = new GenericGF(67, 64); // x^6 + x + 1, 1,1758
-    public static final GenericGF AZTEC_PARAM = new GenericGF(19, 16); // x^4 + x + 1, 1,1133
-    public static final GenericGF QR_CODE_FIELD_256 = new GenericGF(285, 256); // x^8 + x^4 + x^3 + x^2 + 1,
-                                                                               // 1,0469
-    public static final GenericGF DATA_MATRIX_FIELD_256 = new GenericGF(301, 256); // x^8 + x^5 + x^3 + x^2+1,
-                                                                                   // 1,1875
-    public static final GenericGF AZTEC_DATA_8 = DATA_MATRIX_FIELD_256;
-    public static final GenericGF MAXICODE_FIELD_64 = AZTEC_DATA_6;
+    public enum GenericGFs {
+        AZTEC_DATA_12(new GenericGF(4201, 4096)), // x^12 + x^6 + x^5 + x^3 + 1,1.0256
+        AZTEC_DATA_10(new GenericGF(1033, 1024)), // x^10 + x^3 + 1, 1,0088
+        AZTEC_DATA_8(new GenericGF(301, 256)), // x^8 + x^5 + x^3 + x^2+1,1,1875
+        AZTEC_DATA_6(new GenericGF(67, 64)), // x^6 + x + 1, 1,1758
+        AZTEC_DATA_4(new GenericGF(19, 16)), // x^4 + x + 1, 1,1133
+        QR_CODE_FIELD_256(new GenericGF(285, 256)); // x^8 + x^4 + x^3 + x^2 + 1,1,0469
+
+        final GenericGF mGf;
+
+        GenericGFs(final GenericGF gf) {
+            mGf = gf;
+        }
+
+    }
 
     private static final int INITIALIZATION_THRESHOLD = 0;
 
@@ -182,8 +186,11 @@ public final class GenericGF {
         if (a == 0 || b == 0) {
             return 0;
         }
-        return expTable[(logTable[a] + logTable[b]) % (size - 1)];
-
+        try {
+            return expTable[(logTable[a] + logTable[b]) % (size - 1)];
+        } catch (ArrayIndexOutOfBoundsException exc) {
+            throw exc;
+        }
     }
 
     public int getSize() {

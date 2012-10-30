@@ -39,7 +39,7 @@ public final class ReedSolomonDecoderQRCodeTestCase extends AbstractReedSolomonT
     private static final int QR_CODE_ECC_BYTES = QR_CODE_TEST_WITH_EC.length - QR_CODE_TEST.length;
     private static final int QR_CODE_CORRECTABLE = QR_CODE_ECC_BYTES / 2;
 
-    private final ReedSolomonDecoder qrRSDecoder = new ReedSolomonDecoder(GenericGF.QR_CODE_FIELD_256);
+    private final ReedSolomonDecoder qrRSDecoder = new ReedSolomonDecoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
 
     @Test
     public void testNoError() throws ReedSolomonException {

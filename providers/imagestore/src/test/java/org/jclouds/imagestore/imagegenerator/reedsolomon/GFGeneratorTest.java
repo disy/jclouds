@@ -26,10 +26,8 @@ public final class GFGeneratorTest {
             random.nextBytes(original);
 
             // Getting encoders with either minimal GaloisField or maximalGaloisFields
-            // GenericGF minField = GenericGF.generateMinimal(i);
-            // GenericGF maxField = GenericGF.generateMaximal(i);
-            GenericGF minField = GenericGF.AZTEC_DATA_12;
-            GenericGF maxField = GenericGF.DATA_MATRIX_FIELD_256;
+            GenericGF minField = GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf;
+            GenericGF maxField = GenericGF.GenericGFs.AZTEC_DATA_8.mGf;
             ReedSolomonEncoder minimalEncoder = new ReedSolomonEncoder(minField);
             ReedSolomonEncoder maximalEncoder = new ReedSolomonEncoder(maxField);
 
