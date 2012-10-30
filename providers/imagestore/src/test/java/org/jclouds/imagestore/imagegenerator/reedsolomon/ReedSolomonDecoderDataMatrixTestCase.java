@@ -29,32 +29,32 @@ import org.testng.annotations.Test;
  */
 public final class ReedSolomonDecoderDataMatrixTestCase extends AbstractReedSolomonTestCase {
 
-    private static final int[] DM_CODE_TEST = {
+    private static final int[] test = {
         142, 164, 186
     };
-    private static final int[] DM_CODE_TEST_WITH_EC = {
+    private static final int[] testWithECC = {
         142, 164, 186, 114, 25, 5, 88, 102
     };
-    private static final int DM_CODE_ECC_BYTES = DM_CODE_TEST_WITH_EC.length - DM_CODE_TEST.length;
-    private static final int DM_CODE_CORRECTABLE = DM_CODE_ECC_BYTES / 2;
+    private static final int numberOfECCBytes = testWithECC.length - test.length;
+    private static final int maxCorrectable = numberOfECCBytes / 2;
 
     private final ReedSolomonDecoder dmRSDecoder = new ReedSolomonDecoder(
         GenericGF.GenericGFs.AZTEC_DATA_8.mGf);
 
     @Test
     public void testNoError() throws ReedSolomonException {
-        int[] received = new int[DM_CODE_TEST_WITH_EC.length];
-        System.arraycopy(DM_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+        int[] received = new int[testWithECC.length];
+        System.arraycopy(testWithECC, 0, received, 0, received.length);
         // no errors
         checkQRRSDecode(received);
     }
 
     @Test
     public void testOneError() throws ReedSolomonException {
-        int[] received = new int[DM_CODE_TEST_WITH_EC.length];
+        int[] received = new int[testWithECC.length];
         Random random = getRandom();
         for (int i = 0; i < received.length; i++) {
-            System.arraycopy(DM_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+            System.arraycopy(testWithECC, 0, received, 0, received.length);
             received[i] = random.nextInt(256);
             checkQRRSDecode(received);
         }
@@ -62,21 +62,21 @@ public final class ReedSolomonDecoderDataMatrixTestCase extends AbstractReedSolo
 
     @Test
     public void testMaxErrors() throws ReedSolomonException {
-        int[] received = new int[DM_CODE_TEST_WITH_EC.length];
+        int[] received = new int[testWithECC.length];
         Random random = getRandom();
-        for (int test : DM_CODE_TEST) { // # iterations is kind of arbitrary
-            System.arraycopy(DM_CODE_TEST_WITH_EC, 0, received, 0, received.length);
-            corrupt(received, DM_CODE_CORRECTABLE, random);
+        for (int i = 0; i < test.length; i++) { // # iterations is kind of arbitrary
+            System.arraycopy(testWithECC, 0, received, 0, received.length);
+            corrupt(received, maxCorrectable, random);
             checkQRRSDecode(received);
         }
     }
 
     @Test
     public void testTooManyErrors() {
-        int[] received = new int[DM_CODE_TEST_WITH_EC.length];
-        System.arraycopy(DM_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+        int[] received = new int[testWithECC.length];
+        System.arraycopy(testWithECC, 0, received, 0, received.length);
         Random random = getRandom();
-        corrupt(received, DM_CODE_CORRECTABLE + 1, random);
+        corrupt(received, maxCorrectable + 1, random);
         try {
             checkQRRSDecode(received);
             fail("Should not have decoded");
@@ -86,9 +86,9 @@ public final class ReedSolomonDecoderDataMatrixTestCase extends AbstractReedSolo
     }
 
     private void checkQRRSDecode(int[] received) throws ReedSolomonException {
-        dmRSDecoder.decode(received, DM_CODE_ECC_BYTES);
-        for (int i = 0; i < DM_CODE_TEST.length; i++) {
-            assertEquals(received[i], DM_CODE_TEST[i]);
+        dmRSDecoder.decode(received, numberOfECCBytes);
+        for (int i = 0; i < test.length; i++) {
+            assertEquals(received[i], test[i]);
         }
     }
 

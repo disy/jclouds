@@ -29,32 +29,33 @@ import org.testng.annotations.Test;
 public final class ReedSolomonDecoderQRCodeTestCase extends AbstractReedSolomonTestCase {
 
     /** See ISO 18004, Appendix I, from which this example is taken. */
-    private static final int[] QR_CODE_TEST = {
+    private static final int[] test = {
         16, 32, 12, 86, 97, 128, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17
     };
-    private static final int[] QR_CODE_TEST_WITH_EC = {
+    private static final int[] testWithECC = {
         16, 32, 12, 86, 97, 128, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 165, 36, 212, 193, 237, 54,
         199, 135, 44, 85
     };
-    private static final int QR_CODE_ECC_BYTES = QR_CODE_TEST_WITH_EC.length - QR_CODE_TEST.length;
-    private static final int QR_CODE_CORRECTABLE = QR_CODE_ECC_BYTES / 2;
+    private static final int numberOfECCBytes = testWithECC.length - test.length;
+    private static final int maxCorrectable = numberOfECCBytes / 2;
 
-    private final ReedSolomonDecoder qrRSDecoder = new ReedSolomonDecoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
+    private final ReedSolomonDecoder qrRSDecoder = new ReedSolomonDecoder(
+        GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
 
     @Test
     public void testNoError() throws ReedSolomonException {
-        int[] received = new int[QR_CODE_TEST_WITH_EC.length];
-        System.arraycopy(QR_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+        int[] received = new int[testWithECC.length];
+        System.arraycopy(testWithECC, 0, received, 0, received.length);
         // no errors
         checkQRRSDecode(received);
     }
 
     @Test
     public void testOneError() throws ReedSolomonException {
-        int[] received = new int[QR_CODE_TEST_WITH_EC.length];
+        int[] received = new int[testWithECC.length];
         Random random = getRandom();
         for (int i = 0; i < received.length; i++) {
-            System.arraycopy(QR_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+            System.arraycopy(testWithECC, 0, received, 0, received.length);
             received[i] = random.nextInt(256);
             checkQRRSDecode(received);
         }
@@ -62,21 +63,21 @@ public final class ReedSolomonDecoderQRCodeTestCase extends AbstractReedSolomonT
 
     @Test
     public void testMaxErrors() throws ReedSolomonException {
-        int[] received = new int[QR_CODE_TEST_WITH_EC.length];
+        int[] received = new int[testWithECC.length];
         Random random = getRandom();
-        for (int test : QR_CODE_TEST) { // # iterations is kind of arbitrary
-            System.arraycopy(QR_CODE_TEST_WITH_EC, 0, received, 0, received.length);
-            corrupt(received, QR_CODE_CORRECTABLE, random);
+        for (int i = 0; i < test.length; i++) { // # iterations is kind of arbitrary
+            System.arraycopy(testWithECC, 0, received, 0, received.length);
+            corrupt(received, maxCorrectable, random);
             checkQRRSDecode(received);
         }
     }
 
     @Test
     public void testTooManyErrors() {
-        int[] received = new int[QR_CODE_TEST_WITH_EC.length];
-        System.arraycopy(QR_CODE_TEST_WITH_EC, 0, received, 0, received.length);
+        int[] received = new int[testWithECC.length];
+        System.arraycopy(testWithECC, 0, received, 0, received.length);
         Random random = getRandom();
-        corrupt(received, QR_CODE_CORRECTABLE + 1, random);
+        corrupt(received, maxCorrectable + 1, random);
         try {
             checkQRRSDecode(received);
             fail("Should not have decoded");
@@ -86,9 +87,9 @@ public final class ReedSolomonDecoderQRCodeTestCase extends AbstractReedSolomonT
     }
 
     private void checkQRRSDecode(int[] received) throws ReedSolomonException {
-        qrRSDecoder.decode(received, QR_CODE_ECC_BYTES);
-        for (int i = 0; i < QR_CODE_TEST.length; i++) {
-            assertEquals(received[i], QR_CODE_TEST[i]);
+        qrRSDecoder.decode(received, numberOfECCBytes);
+        for (int i = 0; i < test.length; i++) {
+            assertEquals(received[i], test[i]);
         }
     }
 
