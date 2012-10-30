@@ -145,11 +145,8 @@ public final class GenericGF {
      */
     int exp(int a) {
         checkInit();
-        try {
-            return expTable[a];
-        } catch (ArrayIndexOutOfBoundsException exc) {
-            throw new RuntimeException(exc);
-        }
+        return expTable[a];
+
     }
 
     /**
@@ -185,11 +182,8 @@ public final class GenericGF {
         if (a == 0 || b == 0) {
             return 0;
         }
-        try {
-            return expTable[(logTable[a] + logTable[b]) % (size - 1)];
-        } catch (ArrayIndexOutOfBoundsException exc) {
-            return 0;
-        }
+        return expTable[(logTable[a] + logTable[b]) % (size - 1)];
+
     }
 
     public int getSize() {
