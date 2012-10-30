@@ -40,7 +40,7 @@ public final class GenericGF {
             // AZTEC_DATA_4(new GenericGF(19, 4)), // x^4 + x + 1, 1,1133
             QR_CODE_FIELD_256(new GenericGF(285, 8)); // x^8 + x^4 + x^3 + x^2 + 1, 1,0469
 
-        final GenericGF mGf;
+        public final GenericGF mGf;
 
         GenericGFs(final GenericGF gf) {
             mGf = gf;

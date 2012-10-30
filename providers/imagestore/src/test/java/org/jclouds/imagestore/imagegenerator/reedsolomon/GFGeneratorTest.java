@@ -30,9 +30,9 @@ public final class GFGeneratorTest {
             ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
             ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
 
-            for (int i = 2; i < field.getFieldSize() - 1; i++) {
-                int size = Math.max(4, ran.nextInt(1 << i));
-                int ecBytes = Math.max(2, ran.nextInt(Math.max(1, Math.round(size / i))));
+            for (int i = 2; i <= field.getFieldSize(); i++) {
+                int size = Math.max(i+1, ran.nextInt(1 << i));
+                int ecBytes = Math.max(i, ran.nextInt(Math.max(1, Math.round(size / i))));
                 int dataBytes = size - ecBytes;
                 int[] input = dataSetup(size, dataBytes);
                 int[] original = new int[dataBytes];
@@ -62,7 +62,10 @@ public final class GFGeneratorTest {
 
         Object[][] returnVal = {
             {
-                GenericGFs.class, GenericGFs.values()
+                GenericGFs.class, new GenericGFs[] {
+                    GenericGFs.AZTEC_DATA_12, GenericGFs.AZTEC_DATA_10, GenericGFs.QR_CODE_FIELD_256
+                // GenericGFs.AZTEC_DATA_8
+                }
             }
         };
         return returnVal;
