@@ -43,7 +43,8 @@ abstract class AbstractReedSolomonTestCase {
     static void doTestQRCodeEncoding(int[] dataBytes, int[] expectedECBytes) {
         int[] toEncode = new int[dataBytes.length + expectedECBytes.length];
         System.arraycopy(dataBytes, 0, toEncode, 0, dataBytes.length);
-        new ReedSolomonEncoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf).encode(toEncode, expectedECBytes.length);
+        new ReedSolomonEncoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf).encode(toEncode,
+            expectedECBytes.length);
         assertArraysEqual(dataBytes, 0, toEncode, 0, dataBytes.length);
         assertArraysEqual(expectedECBytes, 0, toEncode, dataBytes.length, expectedECBytes.length);
     }
@@ -57,7 +58,12 @@ abstract class AbstractReedSolomonTestCase {
     static void assertArraysEqual(int[] expected, int expectedOffset, int[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
-            assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
+            if (expected[expectedOffset + i] == actual[actualOffset + i]) {
+                assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
+            } else {
+                System.out.println("bla");
+            }
+
         }
     }
 
