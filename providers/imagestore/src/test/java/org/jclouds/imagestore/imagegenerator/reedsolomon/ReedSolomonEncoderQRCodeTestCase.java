@@ -18,6 +18,7 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
 
 import java.util.Random;
 
+import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
 import org.testng.annotations.Test;
 
 /**
@@ -42,18 +43,19 @@ public final class ReedSolomonEncoderQRCodeTestCase extends AbstractReedSolomonT
     @Test
     public void testQRCodeVersusDecoder() throws Exception {
         Random random = getRandom();
-        ReedSolomonEncoder encoder = new ReedSolomonEncoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
-        ReedSolomonDecoder decoder = new ReedSolomonDecoder(GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf);
+        GenericGF field = GenericGF.GenericGFs.QR_CODE_FIELD_256.mGf;
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
         for (int i = 0; i < 100; i++) {
             int size = 2 + random.nextInt(254);
             int[] toEncode = new int[size];
-            int ecBytes = 1 + random.nextInt(2 * (1 + size / 8));
+            int ecBytes = 1 + random.nextInt(2 * (1 + size / field.getFieldSize()));
             ecBytes = Math.min(ecBytes, size - 1);
             int dataBytes = size - ecBytes;
             for (int j = 0; j < dataBytes; j++) {
                 toEncode[j] = random.nextInt(256);
             }
-            int[] original = new int[dataBytes]; 
+            int[] original = new int[dataBytes];
             System.arraycopy(toEncode, 0, original, 0, dataBytes);
             encoder.encode(toEncode, ecBytes);
             corrupt(toEncode, ecBytes / 2, random);
