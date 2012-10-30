@@ -33,12 +33,12 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
 public final class GenericGF {
 
     public enum GenericGFs {
-        AZTEC_DATA_12(new GenericGF(4201, 4096)), // x^12 + x^6 + x^5 + x^3 + 1,1.0256
-        AZTEC_DATA_10(new GenericGF(1033, 1024)), // x^10 + x^3 + 1, 1,0088
-        AZTEC_DATA_8(new GenericGF(301, 256)), // x^8 + x^5 + x^3 + x^2+1,1,1875
-        //AZTEC_DATA_6(new GenericGF(67, 64)), // x^6 + x + 1, 1,1758
-        //AZTEC_DATA_4(new GenericGF(19, 16)), // x^4 + x + 1, 1,1133
-        QR_CODE_FIELD_256(new GenericGF(285, 256)); // x^8 + x^4 + x^3 + x^2 + 1,1,0469
+        AZTEC_DATA_12(new GenericGF(4201, 12)), // x^12 + x^6 + x^5 + x^3 + 1, 1.0256
+            AZTEC_DATA_10(new GenericGF(1033, 10)), // x^10 + x^3 + 1, 1,0088
+            AZTEC_DATA_8(new GenericGF(301, 8)), // x^8 + x^5 + x^3 + x^2+1, 1,1875
+            // AZTEC_DATA_6(new GenericGF(67, 6)), // x^6 + x + 1, 1,1758
+            // AZTEC_DATA_4(new GenericGF(19, 4)), // x^4 + x + 1, 1,1133
+            QR_CODE_FIELD_256(new GenericGF(285, 8)); // x^8 + x^4 + x^3 + x^2 + 1, 1,0469
 
         final GenericGF mGf;
 
@@ -57,18 +57,22 @@ public final class GenericGF {
     private final int size;
     private final int primitive;
     private boolean initialized = false;
+    private final int fieldSize;
 
     /**
      * Create a representation of GF(size) using the given primitive polynomial.
      * 
+     * @param size
+     *            the size as exponent of the Galois Field
      * @param primitive
      *            irreducible polynomial whose coefficients are represented by
      *            the bits of an int, where the least-significant bit represents the constant
      *            coefficient
      */
-    private GenericGF(int primitive, int size) {
+    private GenericGF(int primitive, int fieldSize) {
         this.primitive = primitive;
-        this.size = size;
+        this.size = 1 << fieldSize;
+        this.fieldSize = fieldSize;
 
         if (size <= INITIALIZATION_THRESHOLD) {
             initialize();
@@ -201,16 +205,8 @@ public final class GenericGF {
         return primitive;
     }
 
-    public static GenericGF generateMinimal(final int pBits) {
-        int size = 1 << pBits;
-        int primitive = (1 << pBits) + 2;
-        return new GenericGF(primitive, size);
-    }
-
-    public static GenericGF generateMaximal(final int pBits) {
-        int size = 1 << pBits;
-        int primitive = (1 << (pBits + 1)) - 1;
-        return new GenericGF(primitive, size);
+    public int getFieldSize() {
+        return fieldSize;
     }
 
 }

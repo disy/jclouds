@@ -53,7 +53,7 @@ public final class ReedSolomonEncoderQRCodeTestCase extends AbstractReedSolomonT
             for (int j = 0; j < dataBytes; j++) {
                 toEncode[j] = random.nextInt(256);
             }
-            int[] original = new int[dataBytes];
+            int[] original = new int[dataBytes]; 
             System.arraycopy(toEncode, 0, original, 0, dataBytes);
             encoder.encode(toEncode, ecBytes);
             corrupt(toEncode, ecBytes / 2, random);
