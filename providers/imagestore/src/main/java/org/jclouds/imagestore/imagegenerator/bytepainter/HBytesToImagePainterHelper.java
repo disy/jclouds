@@ -147,7 +147,6 @@ public final class HBytesToImagePainterHelper {
         return byteColors;
     }
 
-    
     /**
      * Returns a 2-dimensional array with 3 layers of colors. The first dimension stands for each layer, the
      * second for the color of the layer.
@@ -181,8 +180,6 @@ public final class HBytesToImagePainterHelper {
         }
         return caa;
     }
-
-   
 
     /**
      * Converts ArrayList<Byte> to byte[].

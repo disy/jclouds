@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
  */
 public final class GFGeneratorTest {
 
-    @Test(enabled = false)
+    @Test
     public void testFlexibleGenerator() {
         Random random = AbstractReedSolomonTestCase.getRandom();
 
@@ -26,8 +26,10 @@ public final class GFGeneratorTest {
             random.nextBytes(original);
 
             // Getting encoders with either minimal GaloisField or maximalGaloisFields
-            GenericGF minField = GenericGF.generateMinimal(i);
-            GenericGF maxField = GenericGF.generateMaximal(i);
+            // GenericGF minField = GenericGF.generateMinimal(i);
+            // GenericGF maxField = GenericGF.generateMaximal(i);
+            GenericGF minField = GenericGF.AZTEC_DATA_12;
+            GenericGF maxField = GenericGF.DATA_MATRIX_FIELD_256;
             ReedSolomonEncoder minimalEncoder = new ReedSolomonEncoder(minField);
             ReedSolomonEncoder maximalEncoder = new ReedSolomonEncoder(maxField);
 
@@ -37,8 +39,14 @@ public final class GFGeneratorTest {
             System.arraycopy(original, 0, minInput, 0, original.length);
             System.arraycopy(original, 0, maxInput, 0, original.length);
 
-            minimalEncoder.encode(ReedSolomonEncoder.castToInt(minInput), minInput.length - original.length);
-            maximalEncoder.encode(ReedSolomonEncoder.castToInt(maxInput), maxInput.length - original.length);
+            int[] minIntInput = ReedSolomonEncoder.castToInt(minInput);
+            int[] maxIntInput = ReedSolomonEncoder.castToInt(maxInput);
+
+            minimalEncoder.encode(minIntInput, minInput.length - original.length);
+            maximalEncoder.encode(maxIntInput, maxInput.length - original.length);
+
+            AbstractReedSolomonTestCase.corrupt(minIntInput, 1, random);
+            AbstractReedSolomonTestCase.corrupt(maxIntInput, 1, random);
 
         }
 

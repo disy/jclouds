@@ -56,7 +56,7 @@ public class QuaternaryLayeredBytesToImagePainter extends AAbstractLayeredBytesT
     private static final int NUMERAL_SYSTEM = 4;
     /** Pixels needed per Byte in one layer. */
     private static final int PIXELS_PER_BYTE_PER_LAYER = 4;
-    
+
     /**
      * Constructor. Invokes AAbstractLayeredBytesToImagePainter with given numeral system and the amount of
      * pixels needed to store one byte in the image.
@@ -64,7 +64,7 @@ public class QuaternaryLayeredBytesToImagePainter extends AAbstractLayeredBytesT
     public QuaternaryLayeredBytesToImagePainter() {
         super(NUMERAL_SYSTEM, PIXELS_PER_BYTE_PER_LAYER);
     }
-    
+
     /**
      * {@inheritDoc}
      */

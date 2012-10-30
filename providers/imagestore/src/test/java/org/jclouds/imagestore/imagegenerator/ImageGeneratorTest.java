@@ -233,20 +233,18 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "facebookPainters")
     public Object[][] facebookPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-//                        new OctalLayeredBytesToImagePainter(),// new
-                        // OctalLayeredColorAlternatingBytesToImagePainter(),
-//                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                    }
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
+                // new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+                // new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                // new OctalLayeredBytesToImagePainter(),// new
+                // OctalLayeredColorAlternatingBytesToImagePainter(),
+                // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                 }
-            };
+            }
+        };
         return returnVal;
     }
 

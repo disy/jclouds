@@ -9,9 +9,9 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
  * @author Wolfgang Miller, University of Konstanz
- *
+ * 
  */
-public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainter{
+public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainter {
 
     /**
      * {@inheritDoc}
@@ -49,5 +49,4 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
         return null;
     }
 
-    
 }

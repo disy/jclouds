@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
-
 /**
  * This Class offers a byte painter.
  * <p/>
