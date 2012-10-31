@@ -77,24 +77,33 @@ public class ImageGeneratorTest {
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
-    static {
-        try {
-            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    // static {
+    // try {
+    // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+    // } catch (IOException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
 
     // static {
     // RAWFILEBYTES = new byte[300];
     // new Random().nextBytes(RAWFILEBYTES);
     // }
 
-//    static {
-//        RAWFILEBYTES = new byte[256];
-//        
-//        
-//    }
+    static {
+        int runs = 15;
+        RAWFILEBYTES = new byte[runs * 256];
+        int i = 0;
+        for (int u = 0; u < runs; u++) {
+            byte toStore = Byte.MIN_VALUE;
+            while (toStore < Byte.MAX_VALUE) {
+                RAWFILEBYTES[i] = toStore;
+                toStore++;
+                i++;
+            }
+            RAWFILEBYTES[i] = toStore;
+        }
+    }
 
     /**
      * Invokes tests for all byte painters local.
@@ -138,7 +147,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled= false)
+    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -165,8 +174,7 @@ public class ImageGeneratorTest {
                         // OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
-                         new IEncoder.DummyEncoder()
-//                        new ReedSolomon()
+                        new IEncoder.DummyEncoder(), new ReedSolomon()
 
                     }
                 }
