@@ -91,7 +91,7 @@ public class ImageGeneratorTest {
     // }
 
     static {
-        int runs = 15;
+        int runs = 100;
         RAWFILEBYTES = new byte[runs * 256];
         int i = 0;
         for (int u = 0; u < runs; u++) {
