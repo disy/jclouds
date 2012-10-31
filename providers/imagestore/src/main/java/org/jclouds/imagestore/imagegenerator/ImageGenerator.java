@@ -50,14 +50,6 @@ public class ImageGenerator {
     /** The maximum bytes that can be stored in one image. */
     private final int maxBytesPerImage;
 
-    /**
-     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
-     * 
-     * @return the maximum amount of bytes
-     */
-    public int getMaximumBytesPerImage() {
-        return maxBytesPerImage;
-    }
 
     /**
      * Instantiates a new image generator.
@@ -142,6 +134,16 @@ public class ImageGenerator {
         return getOriginalArray(bp.getBytesFromImage(image));
     }
 
+    /**
+     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
+     * 
+     * @return the maximum amount of bytes
+     */
+    public int getMaximumBytesPerImage() {
+        return maxBytesPerImage;
+    }
+
+    
     /**
      * Saves the array length in the first 4 bytes of the array.
      * 

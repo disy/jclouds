@@ -7,7 +7,6 @@ import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomonDecoder;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomonEncoder;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomonException;
-import org.mortbay.util.ajax.JSON.ReaderSource;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
 import org.perfidix.ouput.TabularSummaryOutput;
@@ -21,7 +20,7 @@ public class ReedSolomonBenchmark {
     static final int[][] onlyData = new int[size][];
     static {
         Random ran = new Random();
-        for (int i = 0; i < onlyData.length; i++) {
+        for (int i = 0; i < size; i++) {
             byte[] data = new byte[1 << i + 3];
             ran.nextBytes(data);
             onlyData[i] = ReedSolomonEncoder.castToInt(data);
@@ -30,7 +29,7 @@ public class ReedSolomonBenchmark {
 
         }
     }
-    static GenericGF field = GenericGFs.QR_CODE_FIELD_256.mGf;
+    static GenericGF field = GenericGFs.AZTEC_DATA_12.mGf;
 
     @Bench
     public void aztec12encode8() {
@@ -113,6 +112,62 @@ public class ReedSolomonBenchmark {
     @Bench
     public void aztec12decode256() throws ReedSolomonException {
         int index = 5;
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
+        decoder.decode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+    
+    @Bench
+    public void aztec12encode512() {
+        int index = 6;
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
+        encoder.encode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+
+    @Bench
+    public void aztec12decode512() throws ReedSolomonException {
+        int index = 6;
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
+        decoder.decode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+    
+    @Bench
+    public void aztec12encode1024() {
+        int index = 7;
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
+        encoder.encode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+
+    @Bench
+    public void aztec12decode1024() throws ReedSolomonException {
+        int index = 7;
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
+        decoder.decode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+    
+    @Bench
+    public void aztec12encode2048() {
+        int index = 8;
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
+        encoder.encode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+
+    @Bench
+    public void aztec12decode2048() throws ReedSolomonException {
+        int index = 8;
+        ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
+        decoder.decode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+    
+    @Bench
+    public void aztec12encode4096() {
+        int index = 9;
+        ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
+        encoder.encode(completeData[index], completeData[index].length - onlyData[index].length);
+    }
+
+    @Bench
+    public void aztec12decode4096() throws ReedSolomonException {
+        int index = 9;
         ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
         decoder.decode(completeData[index], completeData[index].length - onlyData[index].length);
     }
