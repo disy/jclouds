@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
@@ -30,7 +31,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         .generateLayeredUniformlyDistributedColors(numberSystem);
 
     /** Bytes needed per pixel. */
-    public static final float BYTES_PER_PIXEL = 3;
+    public static final float BYTES_PER_PIXEL = 1;
 
     /**
      * {@inheritDoc}
@@ -54,67 +55,98 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
     @Override
     public BufferedImage storeBytesInImage(BufferedImage bi, final byte[] bs) {
 
-        bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+        bi = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
         final int w = bi.getWidth();
         final int h = bi.getHeight();
         final Graphics g = bi.getGraphics();
-        final int sumPix = w * h;
 
-        ArrayList<Integer> cList = new ArrayList<Integer>(sumPix);
+        // ArrayList with the RGB-values of the first two layers
+        ArrayList<Integer> ciList = new ArrayList<Integer>();
 
-        int[] currByteColor = new int[0];
-
-        /* color index */
-        int cIdx = 0;
-        int len = bs.length;
-        boolean moreBytes = true;
-
-        // the current position in the color-array
-        int cp = 0;
+        // the length of the byte-array
+        final int len = bs.length;
         // the current index position in the byte-array
         int bp = 0;
 
         // the image's amount of pixels
         final int ps = w * h;
+        // the current pixel
+        int pix = 0;
+        // the layer
+        int layer = 0;
         // the color index
-        int[] ci;
+        int[] ci = null;
 
         FirstTwoLayersFinished: while (bp < len) {
             final byte b = bs[bp++];
-            ci = getColorFromByte(b, bp % 2 == 0);
+            ci = getColorIndexFromByte(b, bp % 2 == 0);
 
             final int cLen = ci.length;
             for (int i = 0; i < cLen; i++) {
-                cList.add(ci[i]);
 
-                // break if first two layers are full
-                if (cList.size() / ps >= 2) {
-                    // copy overflow for third layer
-                    if (i < cLen)
+                if (pix / ps >= 1) {
+                    ++layer;
+                    pix = 0;
+
+                    // break if first two layers are full
+                    if (layer == 2) {
                         ci = Arrays.copyOfRange(ci, i, cLen);
-                    break FirstTwoLayersFinished;
+                        break FirstTwoLayersFinished;
+                    }
                 }
+
+                final int idx = ci[i];
+                final int rgb = removeTransparencyFromRGB(colors[layer][idx].getRGB());
+
+                // if second layer, add RGB-value to RGB-value of layer 1
+                if (layer == 1) {
+                    final int oldRGB = ciList.get(pix);
+                    ciList.set(pix, rgb + oldRGB);
+                } else {
+                    ciList.add(rgb);
+                }
+
+                ++pix;
             }
         }
 
-        for (int y = 0; y < h; y++) {
+        final Iterator<Integer> ciListIt = ciList.iterator();
 
-            // amount of used pixels
-            final int hpix = w * y;
+        // the position in the position color-index array
+        int cip = 0;
+        for (int y = 0; y < h; y++) {
 
             for (int x = 0; x < w; x++) {
 
-                final int pix = hpix + x;
+                if (!ciListIt.hasNext())
+                    return bi;
 
-                if (bp < len) {
+                final boolean ciHasNext = cip < ci.length;
+                int rgb = ciListIt.next();
 
+                if (bp < len && !ciHasNext) {
                     final byte b = bs[bp++];
-
+                    ci = getColorIndexFromByte(b, bp % 2 == 0);
+                    cip = 0;
                 }
+
+                if (ciHasNext) {
+                    final int idx = ci[cip++];
+                    rgb += removeTransparencyFromRGB(colors[layer][idx].getRGB());
+                }
+
+                final Color cc = new Color(rgb);
+                g.setColor(cc);
+                g.drawLine(x, y, x, y);
             }
 
         }
+        System.out.println(bp);
         return bi;
+    }
+
+    private int removeTransparencyFromRGB(int rgb) {
+        return ((rgb << 8) >> 8);
     }
 
     /**
@@ -128,7 +160,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      *            the even
      * @return the color from byte
      */
-    private int[] getColorFromByte(final byte b, final boolean even) {
+    private int[] getColorIndexFromByte(final byte b, final boolean even) {
 
         // if even convert byte to integer, if uneven, add Byte.MAX_VALUE to
         // byte and convert to integer. This is done to alternate the colors.
@@ -240,6 +272,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
                     int cblue = colors[l][i].getBlue();
 
                     int currDist = Math.abs(cblue - blue);
+
 
                     if (dist == -1 || currDist < dist) {
                         dist = currDist;
