@@ -124,8 +124,8 @@ public class ImageGenerator {
      */
 
     public BufferedImage createImageFromBytes(final byte[] bs) {
-        int[] dim = getImageWidthAndHeight(bs.length);
         byte[] toStore = enc.encode(bs);
+        int[] dim = getImageWidthAndHeight(toStore.length);
         return bp.storeBytesInImage(createBufferedImage(dim[0], dim[1]),
             saveArrayLengthInFirst4Bytes(toStore));
     }
