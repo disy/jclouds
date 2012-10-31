@@ -33,9 +33,9 @@ public final class ReedSolomonEncoder {
     private final List<GenericGFPoly> cachedGenerators;
 
     public ReedSolomonEncoder(GenericGF field) {
-        if (!GenericGF.QR_CODE_FIELD_256.equals(field)) {
-            throw new IllegalArgumentException("Only QR Code is supported at this time");
-        }
+        // if (!GenericGF.QR_CODE_FIELD_256.equals(field)) {
+        // throw new IllegalArgumentException("Only QR Code is supported at this time");
+        // }
         this.field = field;
         this.cachedGenerators = new ArrayList<GenericGFPoly>();
         cachedGenerators.add(new GenericGFPoly(field, new int[] {
@@ -78,5 +78,7 @@ public final class ReedSolomonEncoder {
         }
         System.arraycopy(coefficients, 0, toEncode, dataBytes + numZeroCoefficients, coefficients.length);
     }
+
+ 
 
 }

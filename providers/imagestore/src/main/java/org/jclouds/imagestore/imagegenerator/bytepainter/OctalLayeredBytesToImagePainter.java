@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
  * @author Wolfgang Miller, University of Konstanz
  */
 public class OctalLayeredBytesToImagePainter extends AAbstractLayeredBytesToImagePainter {
-	
+
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */

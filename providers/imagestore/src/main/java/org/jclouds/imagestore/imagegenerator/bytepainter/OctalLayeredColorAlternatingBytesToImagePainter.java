@@ -273,6 +273,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
                     int currDist = Math.abs(cblue - blue);
 
+
                     if (dist == -1 || currDist < dist) {
                         dist = currDist;
                         idx = i;

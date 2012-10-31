@@ -57,11 +57,11 @@ public class BinaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToIma
     private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed per Byte in one layer. */
     private static final int PIXELS_PER_BYTE_PER_LAYER = 8;
-    
+
     public BinaryLayeredBytesToImagePainter() {
         super(NUMERAL_SYSTEM, PIXELS_PER_BYTE_PER_LAYER);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -70,5 +70,4 @@ public class BinaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToIma
         return BUFFERED_IMAGE_TYPE;
     }
 
-   
 }

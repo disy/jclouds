@@ -23,6 +23,8 @@ public final class ImageStoreConstants {
     public static final String PROPERTY_IMAGEHOSTER = "jclouds.imagestore.imagehoster";
     /** Fully qualified name of imagepainter. */
     public static final String PROPERTY_BYTEPAINTER = "jclouds.imagestore.imagegenerator";
+    /** Fully qualified name of encoder. */
+    public static final String PROPERTY_ENCODER = "jclouds.imagestore.encoder";
 
     /**
      * Image host Flickr.
