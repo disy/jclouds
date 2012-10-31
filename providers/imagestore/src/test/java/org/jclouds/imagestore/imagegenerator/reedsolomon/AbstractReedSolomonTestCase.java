@@ -40,6 +40,12 @@ abstract class AbstractReedSolomonTestCase {
         }
     }
 
+    static byte[] corrupt(byte[] received, int howMany, Random random) {
+        int[] input = ReedSolomon.castToInt(received);
+        corrupt(input, howMany, random);
+        return ReedSolomon.castToByte(input);
+    }
+
     static void doTestQRCodeEncoding(int[] dataBytes, int[] expectedECBytes) {
         int[] toEncode = new int[dataBytes.length + expectedECBytes.length];
         System.arraycopy(dataBytes, 0, toEncode, 0, dataBytes.length);
@@ -58,11 +64,15 @@ abstract class AbstractReedSolomonTestCase {
     static void assertArraysEqual(int[] expected, int expectedOffset, int[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
-            if (expected[expectedOffset + i] == actual[actualOffset + i]) {
-                assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
-            } else {
-                System.out.println("bla");
-            }
+            assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
+
+        }
+    }
+
+    static void assertArraysEqual(byte[] expected, int expectedOffset, byte[] actual, int actualOffset,
+        int length) {
+        for (int i = 0; i < length; i++) {
+            assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
 
         }
     }

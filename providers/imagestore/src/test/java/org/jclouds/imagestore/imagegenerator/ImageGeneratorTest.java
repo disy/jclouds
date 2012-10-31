@@ -77,18 +77,18 @@ public class ImageGeneratorTest {
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
-    static {
-        try {
-            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 //    static {
-//        RAWFILEBYTES = new byte[10000];
-//        new Random().nextBytes(RAWFILEBYTES);
+//        try {
+//            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 //    }
+
+    static {
+        RAWFILEBYTES = new byte[10000];
+        new Random().nextBytes(RAWFILEBYTES);
+    }
 
 //    static {
 //        int runs = 2;
