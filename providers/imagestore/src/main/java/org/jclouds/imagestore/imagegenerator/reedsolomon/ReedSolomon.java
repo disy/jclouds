@@ -3,6 +3,8 @@
  */
 package org.jclouds.imagestore.imagegenerator.reedsolomon;
 
+import java.math.BigDecimal;
+
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
 
@@ -12,11 +14,14 @@ import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
  */
 public class ReedSolomon implements IEncoder {
 
-    private final static GenericGF field = GenericGFs.AZTEC_DATA_12.mGf;
-    private final float ratio = field.getPrimitive() / field.getSize();
+    private final static GenericGF field = GenericGFs.QR_CODE_FIELD_256.mGf;
 
     private final static ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
     private final static ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
+    static final BigDecimal ratio;
+    static {
+        ratio = new BigDecimal(field.getPrimitive()).divide(new BigDecimal(field.getSize()));
+    }
 
     /**
      * {@inheritDoc}
@@ -26,7 +31,7 @@ public class ReedSolomon implements IEncoder {
         if (param.length > field.getSize()) {
             throw new IllegalArgumentException("Max bytes permitted: " + field.getSize());
         }
-        int entireSize = Math.round(param.length * ratio);
+        int entireSize = Math.round(param.length * ratio.floatValue());
         int[] convertedInt = castToInt(param);
         int[] convertedWithECC = new int[entireSize];
         System.arraycopy(convertedInt, 0, convertedWithECC, 0, convertedInt.length);
@@ -42,7 +47,7 @@ public class ReedSolomon implements IEncoder {
         if (param.length > field.getPrimitive()) {
             throw new IllegalArgumentException("Max bytes permitted: " + field.getPrimitive());
         }
-        int datasize = Math.round(param.length / ratio);
+        int datasize = Math.round(param.length / ratio.floatValue());
         int[] convertedInt = castToInt(param);
         try {
             decoder.decode(convertedInt, param.length - datasize);

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
@@ -77,11 +78,13 @@ public class ImageGeneratorTest {
     private static final byte[] RAWFILEBYTES;
 
     static {
-        try {
-            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+        RAWFILEBYTES = new byte[100];
+        new Random().nextBytes(RAWFILEBYTES);
+        // } catch (IOException e) {
+        // throw new RuntimeException(e);
+        // }
     }
 
     /**
@@ -153,7 +156,7 @@ public class ImageGeneratorTest {
                         // OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
-                        new IEncoder.DummyEncoder()
+                        new IEncoder.DummyEncoder(), new ReedSolomon()
                     }
                 }
             };
