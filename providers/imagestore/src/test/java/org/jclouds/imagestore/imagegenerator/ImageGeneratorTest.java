@@ -78,14 +78,23 @@ public class ImageGeneratorTest {
     private static final byte[] RAWFILEBYTES;
 
     static {
-        // try {
-        // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        RAWFILEBYTES = new byte[300];
-        new Random().nextBytes(RAWFILEBYTES);
-        // } catch (IOException e) {
-        // throw new RuntimeException(e);
-        // }
+        try {
+            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    // static {
+    // RAWFILEBYTES = new byte[300];
+    // new Random().nextBytes(RAWFILEBYTES);
+    // }
+
+//    static {
+//        RAWFILEBYTES = new byte[256];
+//        
+//        
+//    }
 
     /**
      * Invokes tests for all byte painters local.
@@ -129,7 +138,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled= false)
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -144,22 +153,24 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
                         new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
                         new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
                         new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
                         new OctalLayeredBytesToImagePainter(),// new
-//                        OctalLayeredColorAlternatingBytesToImagePainter(),
+                        // OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                }, IEncoder.class, new IEncoder[] {
-                    // new IEncoder.DummyEncoder()
-                    new ReedSolomon()
+                    }, IEncoder.class, new IEncoder[] {
+                         new IEncoder.DummyEncoder()
+//                        new ReedSolomon()
 
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 
@@ -307,7 +318,6 @@ public class ImageGeneratorTest {
                     assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
                         " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
                 }
-                host.deleteImageSet(CONTAINER);
             }
         }
     }
