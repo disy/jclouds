@@ -28,7 +28,7 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] encode(byte[] param) {
-        int entireSize = Math.round(param.length * ratio.floatValue());
+        int entireSize = Math.min(256 + param.length, Math.round(param.length * ratio.floatValue()));
         int[] convertedInt = castToInt(param);
         int[] convertedWithECC = new int[entireSize];
         System.arraycopy(convertedInt, 0, convertedWithECC, 0, convertedInt.length);
@@ -41,7 +41,9 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] decode(byte[] param) {
-        int datasize = Math.round(param.length / ratio.floatValue());
+        int datasize =
+            (param.length - (param.length / ratio.floatValue())) > 256 ? param.length - 256 : Math
+                .round(param.length / ratio.floatValue());
         int[] convertedInt = castToInt(param);
         try {
             decoder.decode(convertedInt, param.length - datasize);
