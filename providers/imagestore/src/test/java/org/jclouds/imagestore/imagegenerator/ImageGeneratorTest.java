@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.jclouds.blobstore.domain.Blob;
@@ -41,13 +42,17 @@ import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.HBytesToImagePainterHelper;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
@@ -77,7 +82,8 @@ public class ImageGeneratorTest {
 
     static {
         try {
-            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+            RAWFILEBYTES = new byte[]{3, 23, 89, 127, 1 };
+            loadBytesFromFile(new File(RAWFILEURI));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -100,7 +106,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "localTests", enabled = false)
+    @Test(dataProvider = "allPainters", groups = "localTests", enabled = true)
     public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
         IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -138,20 +144,14 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                        new OctalLayeredBytesToImagePainter(),// new
-                        // OctalLayeredColorAlternatingBytesToImagePainter(),
-                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                    }
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new OctalLayeredColorAlternatingBytesToImagePainter()
+
                 }
-            };
+            }
+        };
         return returnVal;
     }
 
@@ -172,12 +172,12 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
-    public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostFlickr());
-    }
+    // @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
+    // public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
+    // final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
+    // IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    // check(painters, new ImageHostFlickr());
+    // }
 
     /**
      * Returns an Object with all remote hosts and all byte painters.
@@ -219,36 +219,36 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
-    public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostFacebook());
-    }
-
-    /**
-     * Returns an Object with all remote hosts and all byte painters.
-     * 
-     * @return Object with all remote hosts and all byte painters.
-     */
-    @DataProvider(name = "facebookPainters")
-    public Object[][] facebookPainters() {
-        Object[][] returnVal =
-            {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-//                        new OctalLayeredBytesToImagePainter(),// new
-                        // OctalLayeredColorAlternatingBytesToImagePainter(),
-//                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                    }
-                }
-            };
-        return returnVal;
-    }
+    // @Test(dataProvider = "facebookPainters", groups = "remoteTests")
+    // public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
+    // final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
+    // IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    // check(painters, new ImageHostFacebook());
+    // }
+    //
+    // /**
+    // * Returns an Object with all remote hosts and all byte painters.
+    // *
+    // * @return Object with all remote hosts and all byte painters.
+    // */
+    // @DataProvider(name = "facebookPainters")
+    // public Object[][] facebookPainters() {
+    // Object[][] returnVal = {
+    // {
+    // IBytesToImagePainter.class, new IBytesToImagePainter[] {
+    // new BinaryBytesToImagePainter(),
+    // //, new BinaryLayeredBytesToImagePainter(),
+    // // new QuaternaryBytesToImagePainter(),
+    // new QuaternaryLayeredBytesToImagePainter(),
+    // // new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+    // // new OctalLayeredBytesToImagePainter(),// new
+    // // OctalLayeredColorAlternatingBytesToImagePainter(),
+    // // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+    // }
+    // }
+    // };
+    // return returnVal;
+    // }
 
     /**
      * The Tests.
@@ -272,24 +272,47 @@ public class ImageGeneratorTest {
         IllegalAccessException, ClassNotFoundException {
 
         for (IImageHost host : hosts) {
-            host.deleteImageSet(CONTAINER);
+
             for (IBytesToImagePainter pa : painters) {
                 final SyncImageBlobStore ib =
                     new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), Files
                         .createTempDir().getAbsolutePath());
                 final String blobName = "blob_" + System.currentTimeMillis();
-                final BlobBuilder bb = ib.blobBuilder(blobName);
-                bb.payload(RAWFILEBYTES);
-                bb.name(blobName);
-                final Blob testBlob = bb.build();
 
-                ib.putBlob(CONTAINER, testBlob);
-                final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
+                // the file length
+                final int fl = RAWFILEBYTES.length;
+                // the maximum bytes a image can contain
+                final int maxBytes = ib.getMaximumBytesPerImage();
+                // the amount of blobs needed to store the file
+                final int blobCount = (int)(fl / (float)maxBytes) + (fl % maxBytes > 0 ? 1 : 0);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                reTestBlob.getPayload().writeTo(bos);
-                byte[] bss = bos.toByteArray();
-                bos.close();
+                for (int i = 0; i < blobCount; i++) {
+
+                    final BlobBuilder bb = ib.blobBuilder(blobName + "_" + i);
+                    final int blobLength = (i + 1) * maxBytes;
+
+                    bb.payload(Arrays.copyOfRange(RAWFILEBYTES, i * maxBytes, blobLength > fl ? fl
+                        : blobLength));
+
+                    final Blob testBlob = bb.build();
+
+                    ib.putBlob(CONTAINER, testBlob);
+                }
+
+                ArrayList<Byte> al = new ArrayList<Byte>();
+                for (int i = 0; i < blobCount; i++) {
+                    final Blob reTestBlob = ib.getBlob(CONTAINER, blobName + "_" + i);
+
+                    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    reTestBlob.getPayload().writeTo(bos);
+                    byte[] bb = bos.toByteArray();
+                    for (byte b : bb)
+                        al.add(b);
+                    bos.close();
+
+                }
+
+                final byte[] bss = HBytesToImagePainterHelper.arrayListToByteArray(al);
 
                 if (!Arrays.equals(RAWFILEBYTES, bss)) {
                     System.out.println("Arrays differ for host " + host.toString() + " and painter "

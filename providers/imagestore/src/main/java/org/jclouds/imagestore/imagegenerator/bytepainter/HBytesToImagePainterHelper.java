@@ -192,7 +192,7 @@ public final class HBytesToImagePainterHelper {
      * @return the byte array
      */
 
-    static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
+    public static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
         byte[] bs = new byte[li.size()];
         int i = 0;
         for (Byte b : li) {
