@@ -39,6 +39,8 @@ public class ImageGenerator {
 
     /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
+    /** Encoder for applying operations on the bytes. */
+    private final IEncoder enc;
     /** The image type for the given bytes to image painter. */
     private final int imageType;
     /** The byte array header offset. */
@@ -50,20 +52,23 @@ public class ImageGenerator {
     /** The maximum bytes that can be stored in one image. */
     private final int maxBytesPerImage;
 
-
     /**
      * Instantiates a new image generator.
      * 
      * @param bytePainter
      *            the byte painter to be used.
+     * @param encoder
+     *            encoder to apply any operation on the bytes
      * @param ihMaxWidth
      *            The maximum image width for the specific image host.
      * @param ihMaxHeight
      *            The maximum image height for the specific image host.
      */
     @Inject
-    public ImageGenerator(final IBytesToImagePainter bytePainter, final int ihMaxWidth, final int ihMaxHeight) {
+    public ImageGenerator(final IBytesToImagePainter bytePainter, final IEncoder encoder,
+        final int ihMaxWidth, final int ihMaxHeight) {
         bp = bytePainter;
+        enc = encoder;
         imageType = bp.getImageType();
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
@@ -120,7 +125,9 @@ public class ImageGenerator {
 
     public BufferedImage createImageFromBytes(final byte[] bs) {
         int[] dim = getImageWidthAndHeight(bs.length);
-        return bp.storeBytesInImage(createBufferedImage(dim[0], dim[1]), saveArrayLengthInFirst4Bytes(bs));
+        byte[] toStore = enc.encode(bs);
+        return bp.storeBytesInImage(createBufferedImage(dim[0], dim[1]),
+            saveArrayLengthInFirst4Bytes(toStore));
     }
 
     /**
@@ -131,7 +138,8 @@ public class ImageGenerator {
      * @return The bytes extracted from the given image.
      */
     public byte[] getBytesFromImage(final BufferedImage image) {
-        return getOriginalArray(bp.getBytesFromImage(image));
+        byte[] getFromImage = getOriginalArray(bp.getBytesFromImage(image));
+        return enc.decode(getFromImage);
     }
 
     /**
@@ -143,7 +151,6 @@ public class ImageGenerator {
         return maxBytesPerImage;
     }
 
-    
     /**
      * Saves the array length in the first 4 bytes of the array.
      * 

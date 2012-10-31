@@ -52,6 +52,7 @@ import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.io.Payload;
@@ -101,13 +102,15 @@ public class SyncImageBlobStore implements BlobStore {
     @Inject
     public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) final String pImageHoster,
         @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) final String pBytePainter,
+        @Named(ImageStoreConstants.PROPERTY_ENCODER) final String pEncoder,
         @Named(FilesystemConstants.PROPERTY_BASEDIR) final String pStorageParameter) {
         Injector inj =
-            Guice
-                .createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pStorageParameter));
+            Guice.createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pEncoder,
+                pStorageParameter));
         ih = inj.getInstance(IImageHost.class);
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
-        ig = new ImageGenerator(painter, ih.getMaxImageWidth(), ih.getMaxImageHeight());
+        IEncoder encoder = inj.getInstance(IEncoder.class);
+        ig = new ImageGenerator(painter, encoder, ih.getMaxImageWidth(), ih.getMaxImageHeight());
 
         try {
             bb = new BlobBuilderImpl(new JCECrypto());

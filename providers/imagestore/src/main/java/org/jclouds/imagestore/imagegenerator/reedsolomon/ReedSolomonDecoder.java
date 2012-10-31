@@ -197,12 +197,6 @@ public final class ReedSolomonDecoder {
         return result;
     }
 
-    public static byte[] castToByte(final int[] pInt) {
-        byte[] returnVal = new byte[pInt.length];
-        for (int i = 0; i < pInt.length; i++) {
-            returnVal[i] = (byte)(pInt[i] & 0xFF);
-        }
-        return returnVal;
-    }
+   
 
 }

@@ -102,9 +102,10 @@ public class ImageGeneratorTest {
      */
     @Test(dataProvider = "allPainters", groups = "localTests", enabled = false)
     public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostFile(Files.createTempDir().getAbsolutePath()));
+        final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
+        check(painters, encoders, new ImageHostFile(Files.createTempDir().getAbsolutePath()));
     }
 
     /**
@@ -126,9 +127,10 @@ public class ImageGeneratorTest {
      */
     @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostGoogleDataApiPicasa());
+        final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
+        check(painters, encoders, new ImageHostGoogleDataApiPicasa());
     }
 
     /**
@@ -149,6 +151,8 @@ public class ImageGeneratorTest {
                         new OctalLayeredBytesToImagePainter(),// new
                         // OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+                    }, IEncoder.class, new IEncoder[] {
+                        new IEncoder.DummyEncoder()
                     }
                 }
             };
@@ -174,9 +178,10 @@ public class ImageGeneratorTest {
      */
     @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
     public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostFlickr());
+        final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
+        check(painters, encoders, new ImageHostFlickr());
     }
 
     /**
@@ -196,6 +201,8 @@ public class ImageGeneratorTest {
                         new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
                         // new OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter()
+                    }, IEncoder.class, new IEncoder[] {
+                        new IEncoder.DummyEncoder()
                     }
                 }
             };
@@ -219,11 +226,12 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
+    @Test(dataProvider = "facebookPainters", groups = "remoteTests", enabled=false)
     public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
-        final IBytesToImagePainter[] painters) throws NoSuchAlgorithmException, CertificateException,
-        IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        check(painters, new ImageHostFacebook());
+        final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
+        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
+        IllegalAccessException, ClassNotFoundException {
+        check(painters, encoders, new ImageHostFacebook());
     }
 
     /**
@@ -242,6 +250,8 @@ public class ImageGeneratorTest {
                 // new OctalLayeredBytesToImagePainter(),// new
                 // OctalLayeredColorAlternatingBytesToImagePainter(),
                 // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+                }, IEncoder.class, new IEncoder[] {
+                    new IEncoder.DummyEncoder()
                 }
             }
         };
@@ -265,39 +275,41 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    private void check(final IBytesToImagePainter[] painters, final IImageHost... hosts)
-        throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
-        IllegalAccessException, ClassNotFoundException {
+    private void check(final IBytesToImagePainter[] painters, final IEncoder[] encoders,
+        final IImageHost... hosts) throws NoSuchAlgorithmException, CertificateException, IOException,
+        InstantiationException, IllegalAccessException, ClassNotFoundException {
 
         for (IImageHost host : hosts) {
             host.deleteImageSet(CONTAINER);
-            for (IBytesToImagePainter pa : painters) {
-                final SyncImageBlobStore ib =
-                    new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), Files
-                        .createTempDir().getAbsolutePath());
-                final String blobName = "blob_" + System.currentTimeMillis();
-                final BlobBuilder bb = ib.blobBuilder(blobName);
-                bb.payload(RAWFILEBYTES);
-                bb.name(blobName);
-                final Blob testBlob = bb.build();
+            for (IEncoder enc : encoders) {
+                for (IBytesToImagePainter pa : painters) {
+                    final SyncImageBlobStore ib =
+                        new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), enc
+                            .getClass().getName(), Files.createTempDir().getAbsolutePath());
+                    final String blobName = "blob_" + System.currentTimeMillis();
+                    final BlobBuilder bb = ib.blobBuilder(blobName);
+                    bb.payload(RAWFILEBYTES);
+                    bb.name(blobName);
+                    final Blob testBlob = bb.build();
 
-                ib.putBlob(CONTAINER, testBlob);
-                final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
+                    ib.putBlob(CONTAINER, testBlob);
+                    final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                reTestBlob.getPayload().writeTo(bos);
-                byte[] bss = bos.toByteArray();
-                bos.close();
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    reTestBlob.getPayload().writeTo(bos);
+                    byte[] bss = bos.toByteArray();
+                    bos.close();
 
-                if (!Arrays.equals(RAWFILEBYTES, bss)) {
-                    System.out.println("Arrays differ for host " + host.toString() + " and painter "
-                        + pa.toString());
-                } else {
-                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
-                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
+                    if (!Arrays.equals(RAWFILEBYTES, bss)) {
+                        System.out.println("Arrays differ for host " + host.toString() + " and painter "
+                            + pa.toString());
+                    } else {
+                        assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
+                            " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
+                    }
                 }
+                host.deleteImageSet(CONTAINER);
             }
-            host.deleteImageSet(CONTAINER);
         }
     }
 

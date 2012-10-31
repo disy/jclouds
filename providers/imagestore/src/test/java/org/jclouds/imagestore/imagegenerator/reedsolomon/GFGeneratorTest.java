@@ -54,7 +54,7 @@ public final class GFGeneratorTest {
         byte[] dataOnly = new byte[dataSize];
         AbstractReedSolomonTestCase.getRandom().nextBytes(dataOnly);
         System.arraycopy(dataOnly, 0, original, 0, dataSize);
-        return ReedSolomonEncoder.castToInt(original);
+        return ReedSolomon.castToInt(original);
     }
 
     @DataProvider(name = "fieldGenerator")

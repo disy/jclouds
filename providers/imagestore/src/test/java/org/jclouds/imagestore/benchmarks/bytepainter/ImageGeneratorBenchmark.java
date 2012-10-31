@@ -14,6 +14,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
@@ -59,6 +60,7 @@ public class ImageGeneratorBenchmark {
     byte[] data;
     byte[] deserializedData;
     IBytesToImagePainter painter;
+    IEncoder enc;
     BufferedImage image;
     String methodJustBenched = "";
 
@@ -105,7 +107,7 @@ public class ImageGeneratorBenchmark {
     public void generateBinary() {
         methodJustBenched = "binary";
         IBytesToImagePainter painter = new BinaryBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     /**
@@ -115,7 +117,7 @@ public class ImageGeneratorBenchmark {
     public void generateHexadecimal() {
         methodJustBenched = "hexadecimal";
         IBytesToImagePainter painter = new HexadecimalBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     /**
@@ -125,7 +127,7 @@ public class ImageGeneratorBenchmark {
     public void generateQuaternary() {
         methodJustBenched = "quaternary";
         IBytesToImagePainter painter = new QuaternaryBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     /**
@@ -135,7 +137,7 @@ public class ImageGeneratorBenchmark {
     public void generateQuaternaryLayered() {
         methodJustBenched = "quaternaryLayered";
         IBytesToImagePainter painter = new QuaternaryLayeredBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     /**
@@ -145,7 +147,7 @@ public class ImageGeneratorBenchmark {
     public void generateSeptenary() {
         methodJustBenched = "septenary";
         IBytesToImagePainter painter = new SeptenaryBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     /**
@@ -155,7 +157,7 @@ public class ImageGeneratorBenchmark {
     public void generateSeptenaryLayered() {
         methodJustBenched = "septenaryLayered";
         IBytesToImagePainter painter = new SeptenaryLayeredBytesToImagePainter();
-        image = new ImageGenerator(painter, SIZE, SIZE).createImageFromBytes(data);
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
     // ////////////////////////////////////////
@@ -169,7 +171,7 @@ public class ImageGeneratorBenchmark {
     public void degenerateBinary() {
         methodJustBenched = "binary";
         painter = new BinaryBytesToImagePainter();
-        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
@@ -179,7 +181,7 @@ public class ImageGeneratorBenchmark {
     public void degenerateHexadecimal() {
         methodJustBenched = "hexadecimal";
         painter = new HexadecimalBytesToImagePainter();
-        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
@@ -189,7 +191,7 @@ public class ImageGeneratorBenchmark {
     public void degenerateQuaternary() {
         methodJustBenched = "quaternary";
         painter = new QuaternaryBytesToImagePainter();
-        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
@@ -199,7 +201,7 @@ public class ImageGeneratorBenchmark {
     public void degenerateQuaternaryLayered() {
         methodJustBenched = "quaternaryLayered";
         painter = new QuaternaryLayeredBytesToImagePainter();
-        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
     /**
@@ -209,7 +211,7 @@ public class ImageGeneratorBenchmark {
     public void degenerateSeptenary() {
         methodJustBenched = "septenary";
         painter = new SeptenaryBytesToImagePainter();
-        deserializedData = new ImageGenerator(painter, SIZE, SIZE).getBytesFromImage(image);
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
     // ////////////////////////////////////////

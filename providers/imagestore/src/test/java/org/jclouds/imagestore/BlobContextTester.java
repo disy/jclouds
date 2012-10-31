@@ -38,6 +38,7 @@ import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.filesystem.reference.FilesystemConstants;
+import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.providers.ProviderMetadata;
 import org.jclouds.providers.Providers;
 import org.testng.annotations.Test;
@@ -82,6 +83,8 @@ public class BlobContextTester {
                 .getAbsolutePath());
             mProperties.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
                 "org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter");
+            mProperties.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
+                "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
             mProperties.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
                 "org.jclouds.imagestore.imagehoster.file.ImageHostFile");
 
