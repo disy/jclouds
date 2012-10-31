@@ -80,7 +80,7 @@ public class ImageGeneratorTest {
     static {
         // try {
         // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        RAWFILEBYTES = new byte[100];
+        RAWFILEBYTES = new byte[300];
         new Random().nextBytes(RAWFILEBYTES);
         // } catch (IOException e) {
         // throw new RuntimeException(e);
@@ -144,22 +144,22 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
                         new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
                         new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
                         new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
                         new OctalLayeredBytesToImagePainter(),// new
-                        // OctalLayeredColorAlternatingBytesToImagePainter(),
+//                        OctalLayeredColorAlternatingBytesToImagePainter(),
                         new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                    }, IEncoder.class, new IEncoder[] {
-                        new IEncoder.DummyEncoder(), new ReedSolomon()
-                    }
+                }, IEncoder.class, new IEncoder[] {
+                    // new IEncoder.DummyEncoder()
+                    new ReedSolomon()
+
                 }
-            };
+            }
+        };
         return returnVal;
     }
 
@@ -304,13 +304,8 @@ public class ImageGeneratorTest {
                     byte[] bss = bos.toByteArray();
                     bos.close();
 
-                    if (!Arrays.equals(RAWFILEBYTES, bss)) {
-                        System.out.println("Arrays differ for host " + host.toString() + " and painter "
-                            + pa.toString());
-                    } else {
-                        assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
-                            " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
-                    }
+                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
+                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
                 }
                 host.deleteImageSet(CONTAINER);
             }

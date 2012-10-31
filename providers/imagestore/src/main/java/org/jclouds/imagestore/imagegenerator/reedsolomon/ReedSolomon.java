@@ -28,9 +28,6 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] encode(byte[] param) {
-        if (param.length > field.getSize()) {
-            throw new IllegalArgumentException("Max bytes permitted: " + field.getSize());
-        }
         int entireSize = Math.round(param.length * ratio.floatValue());
         int[] convertedInt = castToInt(param);
         int[] convertedWithECC = new int[entireSize];
@@ -44,9 +41,6 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] decode(byte[] param) {
-        if (param.length > field.getPrimitive()) {
-            throw new IllegalArgumentException("Max bytes permitted: " + field.getPrimitive());
-        }
         int datasize = Math.round(param.length / ratio.floatValue());
         int[] convertedInt = castToInt(param);
         try {
