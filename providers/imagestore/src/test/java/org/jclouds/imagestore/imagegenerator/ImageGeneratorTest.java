@@ -77,33 +77,33 @@ public class ImageGeneratorTest {
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
-//    static {
-//        try {
-//            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    // static {
+    // try {
+    // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+    // } catch (IOException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
 
     static {
         RAWFILEBYTES = new byte[10000];
         new Random().nextBytes(RAWFILEBYTES);
     }
 
-//    static {
-//        int runs = 2;
-//        RAWFILEBYTES = new byte[runs * 256];
-//        int i = 0;
-//        for (int u = 0; u < runs; u++) {
-//            byte toStore = Byte.MIN_VALUE;
-//            while (toStore < Byte.MAX_VALUE) {
-//                RAWFILEBYTES[i] = toStore;
-//                toStore++;
-//                i++;
-//            }
-//            RAWFILEBYTES[i] = toStore;
-//        }
-//    }
+    // static {
+    // int runs = 2;
+    // RAWFILEBYTES = new byte[runs * 256];
+    // int i = 0;
+    // for (int u = 0; u < runs; u++) {
+    // byte toStore = Byte.MIN_VALUE;
+    // while (toStore < Byte.MAX_VALUE) {
+    // RAWFILEBYTES[i] = toStore;
+    // toStore++;
+    // i++;
+    // }
+    // RAWFILEBYTES[i] = toStore;
+    // }
+    // }
 
     /**
      * Invokes tests for all byte painters local.
@@ -162,24 +162,23 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter()//, new BinaryLayeredBytesToImagePainter(),
-//                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-//                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-//                        new OctalLayeredBytesToImagePainter(),// new
-//                        // OctalLayeredColorAlternatingBytesToImagePainter(),
-//                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                    }, IEncoder.class, new IEncoder[] {
-//                        new IEncoder.DummyEncoder(), 
-                        new ReedSolomon()
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new BinaryBytesToImagePainter()
+                // , new BinaryLayeredBytesToImagePainter(),
+                // new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+                // new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                // new OctalLayeredBytesToImagePainter(),// new
+                // // OctalLayeredColorAlternatingBytesToImagePainter(),
+                // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
+                }, IEncoder.class, new IEncoder[] {
+                    // new IEncoder.DummyEncoder(),
+                    new ReedSolomon()
 
-                    }
                 }
-            };
+            }
+        };
         return returnVal;
     }
 

@@ -64,7 +64,7 @@ abstract class AbstractReedSolomonTestCase {
     static void assertArraysEqual(int[] expected, int expectedOffset, int[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
-            assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
+            assertEquals("Difference at offset " + i, expected[expectedOffset + i], actual[actualOffset + i]);
 
         }
     }
@@ -72,7 +72,7 @@ abstract class AbstractReedSolomonTestCase {
     static void assertArraysEqual(byte[] expected, int expectedOffset, byte[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
-            assertEquals(expected[expectedOffset + i], actual[actualOffset + i]);
+            assertEquals("Difference at offset " + i, expected[expectedOffset + i], actual[actualOffset + i]);
 
         }
     }

@@ -23,16 +23,31 @@ public class ReedSolomon implements IEncoder {
         ratio = new BigDecimal(field.getPrimitive()).divide(new BigDecimal(field.getSize()));
     }
 
+    private final int mEcSize;
+
+    public ReedSolomon() {
+        this(0);
+    }
+
+    public ReedSolomon(int pEcSize) {
+        mEcSize = pEcSize;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public byte[] encode(byte[] param) {
-        int entireSize = Math.min(256 + param.length, Math.round(param.length * ratio.floatValue()));
+        int[] convertedWithECC;
+        if (mEcSize == 0) {
+            convertedWithECC =
+                new int[Math.min(256 + param.length, Math.round(param.length * ratio.floatValue()))];
+        } else {
+            convertedWithECC = new int[param.length + mEcSize];
+        }
         int[] convertedInt = castToInt(param);
-        int[] convertedWithECC = new int[entireSize];
         System.arraycopy(convertedInt, 0, convertedWithECC, 0, convertedInt.length);
-        encoder.encode(convertedWithECC, entireSize - param.length);
+        encoder.encode(convertedWithECC, convertedWithECC.length - param.length);
         return castToByte(convertedWithECC);
     }
 
@@ -41,9 +56,14 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] decode(byte[] param) {
-        int datasize =
-            (param.length - (param.length / ratio.floatValue())) > 256 ? param.length - 256 : Math
-                .round(param.length / ratio.floatValue());
+        int datasize;
+        if (mEcSize == 0) {
+            datasize =
+                (param.length - (param.length / ratio.floatValue())) > 256 ? param.length - 256 : Math
+                    .round(param.length / ratio.floatValue());
+        } else {
+            datasize = param.length - mEcSize;
+        }
         int[] convertedInt = castToInt(param);
         try {
             decoder.decode(convertedInt, param.length - datasize);
