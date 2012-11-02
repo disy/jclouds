@@ -55,7 +55,7 @@ public class ReedSolomonTest {
 
     @Test
     public void testSplitter() {
-        int multipleSize = size + ran.nextInt(size);
+        int multipleSize = ran.nextInt(20) * size + ran.nextInt(size);
         data = new byte[multipleSize];
         ran.nextBytes(data);
         testByte();

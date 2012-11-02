@@ -45,7 +45,7 @@ public class ReedSolomon implements IEncoder {
             encoder.encode(decoded, decoded.length - convertedInt.length);
             returned[i] = castToByte(decoded);
         }
-        return combine(returned);
+        return combine(returned, field.getSize());
 
     }
 
@@ -69,7 +69,7 @@ public class ReedSolomon implements IEncoder {
             returned[i] = castToByte(dataOnly);
         }
 
-        return combine(returned);
+        return combine(returned, field.getSize() - mEcSize);
     }
 
     private byte[][] split(byte[] param, int splitToSize) {
@@ -86,15 +86,15 @@ public class ReedSolomon implements IEncoder {
         return returnVal;
     }
 
-    private byte[] combine(byte[][] splitted) {
+    private byte[] combine(byte[][] splitted, int splitToSize) {
         byte[] returnVal =
-            new byte[((splitted.length - 1) * field.getSize()) + splitted[splitted.length - 1].length];
+            new byte[((splitted.length - 1) * splitToSize) + splitted[splitted.length - 1].length];
         for (int i = 0; i < splitted.length - 1; i++) {
-            System.arraycopy(splitted[i], 0, returnVal, i * field.getSize(), field.getSize());
+            System.arraycopy(splitted[i], 0, returnVal, i * splitToSize, splitToSize);
         }
 
-        System.arraycopy(splitted[splitted.length - 1], 0, returnVal,
-            (splitted.length - 1) * field.getSize(), splitted[splitted.length - 1].length);
+        System.arraycopy(splitted[splitted.length - 1], 0, returnVal, (splitted.length - 1) * splitToSize,
+            splitted[splitted.length - 1].length);
         return returnVal;
 
     }
