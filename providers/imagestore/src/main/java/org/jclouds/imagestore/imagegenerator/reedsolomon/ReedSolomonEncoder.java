@@ -79,6 +79,4 @@ public final class ReedSolomonEncoder {
         System.arraycopy(coefficients, 0, toEncode, dataBytes + numZeroCoefficients, coefficients.length);
     }
 
- 
-
 }

@@ -197,6 +197,4 @@ public final class ReedSolomonDecoder {
         return result;
     }
 
-   
-
 }

@@ -154,7 +154,6 @@ public final class GenericGF {
     int exp(int a) {
         checkInit();
         return expTable[a];
-
     }
 
     /**
