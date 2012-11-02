@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
-import java.util.Random;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
@@ -43,8 +42,6 @@ import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
@@ -77,33 +74,13 @@ public class ImageGeneratorTest {
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
-    // static {
-    // try {
-    // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-    // } catch (IOException e) {
-    // throw new RuntimeException(e);
-    // }
-    // }
-
     static {
-        RAWFILEBYTES = new byte[10000];
-        new Random().nextBytes(RAWFILEBYTES);
+        try {
+            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    // static {
-    // int runs = 2;
-    // RAWFILEBYTES = new byte[runs * 256];
-    // int i = 0;
-    // for (int u = 0; u < runs; u++) {
-    // byte toStore = Byte.MIN_VALUE;
-    // while (toStore < Byte.MAX_VALUE) {
-    // RAWFILEBYTES[i] = toStore;
-    // toStore++;
-    // i++;
-    // }
-    // RAWFILEBYTES[i] = toStore;
-    // }
-    // }
 
     /**
      * Invokes tests for all byte painters local.
@@ -174,7 +151,7 @@ public class ImageGeneratorTest {
                 // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                 }, IEncoder.class, new IEncoder[] {
                     // new IEncoder.DummyEncoder(),
-                    new ReedSolomon(16)
+                    new ReedSolomon()
 
                 }
             }

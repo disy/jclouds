@@ -31,7 +31,7 @@ public class ReedSolomonTest {
 
     @Test
     public void testByte() {
-        ReedSolomon tool = new ReedSolomon(ecBytes);
+        ReedSolomon tool = new ReedSolomon();
         byte[] encoded = tool.encode(data);
         byte[] corrupted = AbstractReedSolomonTestCase.corrupt(encoded, toCorrupt, ran);
         byte[] decoded = tool.decode(corrupted);

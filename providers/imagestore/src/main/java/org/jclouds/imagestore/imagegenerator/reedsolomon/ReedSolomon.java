@@ -17,19 +17,8 @@ public class ReedSolomon implements IEncoder {
     private final static ReedSolomonEncoder encoder = new ReedSolomonEncoder(field);
     private final static ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
 
-    private final int mEcSize;
-
-    /**
-     * 
-     * Constructor.
-     * 
-     * @param pEcSize
-     *            must be something between 1 and 248 (256 -8)
-     */
-    public ReedSolomon(int pEcSize) {
-        assert pEcSize > 0 && pEcSize <= 248;
-        mEcSize = pEcSize;
-    }
+    // must be something between 1 and 248 (256 -8)
+    private final static int mEcSize = 16;
 
     /**
      * {@inheritDoc}
