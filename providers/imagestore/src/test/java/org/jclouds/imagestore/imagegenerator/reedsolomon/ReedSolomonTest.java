@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
  * 
  */
 public class ReedSolomonTest {
-    final static Random ran = new Random();
+    final static Random ran = new Random(12l);
     // size + ec must be under 256 whereas
     final static int size = 240;
     final static int ecBytes = 16;

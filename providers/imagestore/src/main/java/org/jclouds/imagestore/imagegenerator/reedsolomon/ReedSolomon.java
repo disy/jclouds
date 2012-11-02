@@ -36,7 +36,7 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] encode(byte[] param) {
-        byte[][] splitted = split(param);
+        byte[][] splitted = split(param, field.getSize() - mEcSize);
         byte[][] returned = new byte[splitted.length][];
         for (int i = 0; i < splitted.length; i++) {
             int[] decoded = new int[splitted[i].length + mEcSize];
@@ -54,29 +54,34 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] decode(byte[] param) {
-        int datasize = param.length - mEcSize;
-        int[] convertedInt = castToInt(param);
-        try {
-            decoder.decode(convertedInt, param.length - datasize);
-        } catch (ReedSolomonException exc) {
-            throw new RuntimeException(exc);
+        byte[][] splitted = split(param, field.getSize());
+        byte[][] returned = new byte[splitted.length][];
+
+        for (int i = 0; i < splitted.length; i++) {
+            int[] convertedInt = castToInt(splitted[i]);
+            try {
+                decoder.decode(convertedInt, mEcSize);
+            } catch (ReedSolomonException exc) {
+                throw new RuntimeException(exc);
+            }
+            int[] dataOnly = new int[convertedInt.length - mEcSize];
+            System.arraycopy(convertedInt, 0, dataOnly, 0, dataOnly.length);
+            returned[i] = castToByte(dataOnly);
         }
-        int[] data = new int[datasize];
-        System.arraycopy(convertedInt, 0, data, 0, data.length);
-        return castToByte(data);
+
+        return combine(returned);
     }
 
-    private byte[][] split(byte[] param) {
-        final int dataSize = field.getSize() - mEcSize;
-        byte[][] returnVal = new byte[(int)Math.ceil(new Double(param.length) / new Double(dataSize))][];
+    private byte[][] split(byte[] param, int splitToSize) {
+        byte[][] returnVal = new byte[(int)Math.ceil(new Double(param.length) / new Double(splitToSize))][];
 
         for (int i = 0; i < returnVal.length - 1; i++) {
-            returnVal[i] = new byte[dataSize];
-            System.arraycopy(param, i * dataSize, returnVal[i], 0, dataSize);
+            returnVal[i] = new byte[splitToSize];
+            System.arraycopy(param, i * splitToSize, returnVal[i], 0, splitToSize);
         }
         returnVal[returnVal.length - 1] =
-            new byte[param.length % dataSize == 0 ? param.length : param.length % dataSize];
-        System.arraycopy(param, (returnVal.length - 1) * dataSize, returnVal[returnVal.length - 1], 0,
+            new byte[param.length % splitToSize == 0 ? param.length : param.length % splitToSize];
+        System.arraycopy(param, (returnVal.length - 1) * splitToSize, returnVal[returnVal.length - 1], 0,
             returnVal[returnVal.length - 1].length);
         return returnVal;
     }
