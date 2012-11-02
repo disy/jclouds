@@ -38,16 +38,16 @@ public class ReedSolomon implements IEncoder {
      */
     @Override
     public byte[] encode(byte[] param) {
-        int ecSize;
+        int[] decoded;
         if (mEcSize == 0) {
-            ecSize =
-                param.length - (Math.min(256 + param.length, Math.round(param.length * ratio.floatValue())));
+            decoded = new int[(Math.min(256 + param.length, Math.round(param.length * ratio.floatValue())))];
         } else {
-            ecSize = mEcSize;
+            decoded = new int[param.length + mEcSize];
         }
         int[] convertedInt = castToInt(param);
-        encoder.encode(convertedInt, ecSize);
-        return castToByte(convertedInt);
+        System.arraycopy(convertedInt, 0, decoded, 0, param.length);
+        encoder.encode(decoded, decoded.length - param.length);
+        return castToByte(decoded);
     }
 
     /**
