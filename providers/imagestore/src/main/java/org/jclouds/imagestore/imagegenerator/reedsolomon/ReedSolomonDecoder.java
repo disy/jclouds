@@ -64,7 +64,7 @@ public final class ReedSolomonDecoder {
      * @throws ReedSolomonException
      *             if decoding fails for any reason
      */
-    public void decode(int[] received, int twoS) throws ReedSolomonException {
+    public int[] decode(int[] received, int twoS) throws ReedSolomonException {
         GenericGFPoly poly = new GenericGFPoly(field, received);
         int[] syndromeCoefficients = new int[twoS];
         boolean dataMatrix = field.equals(GenericGF.GenericGFs.AZTEC_DATA_8.mGf);
@@ -78,7 +78,7 @@ public final class ReedSolomonDecoder {
             }
         }
         if (noError) {
-            return;
+            return received;
         }
         GenericGFPoly syndrome = new GenericGFPoly(field, syndromeCoefficients);
         GenericGFPoly[] sigmaOmega = runEuclideanAlgorithm(field.buildMonomial(twoS, 1), syndrome, twoS);
@@ -93,6 +93,8 @@ public final class ReedSolomonDecoder {
             }
             received[position] = GenericGF.addOrSubtract(received[position], errorMagnitudes[i]);
         }
+        return received;
+
     }
 
     private GenericGFPoly[] runEuclideanAlgorithm(GenericGFPoly a, GenericGFPoly b, int R)
@@ -196,7 +198,5 @@ public final class ReedSolomonDecoder {
         }
         return result;
     }
-
-   
 
 }

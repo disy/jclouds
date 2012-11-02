@@ -19,8 +19,9 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.security.SecureRandom;
-import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Sean Owen
@@ -28,16 +29,39 @@ import java.util.Random;
 abstract class AbstractReedSolomonTestCase {
 
     static void corrupt(int[] received, int howMany, Random random) {
-        BitSet corrupted = new BitSet(received.length);
+        Set<Integer> modified = new HashSet<Integer>();
+        // StringBuilder locations = new StringBuilder("{");
+        // StringBuilder data = new StringBuilder("{");
         for (int j = 0; j < howMany; j++) {
             int location = random.nextInt(received.length);
-            if (corrupted.get(location)) {
-                j--;
+            if (!modified.contains(location)) {
+                received[location] = random.nextInt(256);
+                // locations.append(location).append(",");
+                // data.append(received[location]).append(",");
+                modified.add(location);
             } else {
-                corrupted.set(location);
-                received[location] = (received[location] + 1 + random.nextInt(255)) & 255;
+                j--;
             }
         }
+        // locations.deleteCharAt(locations.length() - 1);
+        // data.deleteCharAt(data.length() - 1);
+        // locations.append("}");
+        // data.append("}");
+        // System.out.println(locations.toString());
+        // System.out.println(data.toString());
+    }
+
+    static int[] corrupt(int[] received, int[][] corruptedBytes) {
+        for (int i = 0; i < corruptedBytes.length; i++) {
+            received[corruptedBytes[0][i]] = corruptedBytes[1][i];
+        }
+        return received;
+    }
+
+    static byte[] corrupt(byte[] received, int[][] corruptedBytes) {
+        int[] input = ReedSolomon.castToInt(received);
+        input = corrupt(input, corruptedBytes);
+        return ReedSolomon.castToByte(input);
     }
 
     static byte[] corrupt(byte[] received, int howMany, Random random) {
@@ -64,15 +88,24 @@ abstract class AbstractReedSolomonTestCase {
     static void assertArraysEqual(int[] expected, int expectedOffset, int[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
+            // if (expected[expectedOffset + i] == actual[actualOffset + i]) {
             assertEquals("Difference at offset " + i, expected[expectedOffset + i], actual[actualOffset + i]);
-
+            // } else {
+            // System.out.println("Difference at offset " + i + ":" + expected[expectedOffset + i] + "!="
+            // + actual[actualOffset + i]);
+            // }
         }
     }
 
     static void assertArraysEqual(byte[] expected, int expectedOffset, byte[] actual, int actualOffset,
         int length) {
         for (int i = 0; i < length; i++) {
+            // if (expected[expectedOffset + i] == actual[actualOffset + i]) {
             assertEquals("Difference at offset " + i, expected[expectedOffset + i], actual[actualOffset + i]);
+            // } else {
+            // System.out.println("Difference at offset " + i + ":" + expected[expectedOffset + i] + "!="
+            // + actual[actualOffset + i]);
+            // }
 
         }
     }

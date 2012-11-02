@@ -9,8 +9,6 @@ import java.util.Random;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
 import org.testng.annotations.Test;
 
-import com.google.gdata.data.appsforyourdomain.generic.GenericFeed;
-
 /**
  * @author Sebastian Graf, University of Konstanz
  * 
@@ -25,14 +23,21 @@ public class ReedSolomonTest {
         ran.nextBytes(data);
     }
 
+    int[][] corruptedBytes = {
+        {
+            31, 193, 257, 18, 64, 24, 133, 24, 168, 36, 270, 9, 50, 228, 130, 52
+        }, {
+            126, 226, 213, 46, 250, 127, 122, 159, 53, 96, 39, 212, 29, 213, 87, 68
+        }
+    };
+
     @Test
     public void testByte() {
         ReedSolomon tool = new ReedSolomon(ecBytes);
         byte[] encoded = tool.encode(data);
-        byte[] corrupted = AbstractReedSolomonTestCase.corrupt(encoded, toCorrupt, ran);
+        byte[] corrupted = AbstractReedSolomonTestCase.corrupt(encoded, corruptedBytes);
         byte[] decoded = tool.decode(corrupted);
         AbstractReedSolomonTestCase.assertArraysEqual(data, 0, decoded, 0, data.length);
-        System.out.println(Arrays.toString(decoded));
     }
 
     @Test
@@ -45,8 +50,10 @@ public class ReedSolomonTest {
         ReedSolomonEncoder tool = new ReedSolomonEncoder(GenericGFs.QR_CODE_FIELD_256.mGf);
         ReedSolomonDecoder tool2 = new ReedSolomonDecoder(GenericGFs.QR_CODE_FIELD_256.mGf);
         tool.encode(bytes, ecBytes);
-        AbstractReedSolomonTestCase.corrupt(bytes, toCorrupt, ran);
-        tool2.decode(bytes, ecBytes);
-        AbstractReedSolomonTestCase.assertArraysEqual(bytes, 0, bytes2, 0, bytes2.length);
+        int[] corrupted = AbstractReedSolomonTestCase.corrupt(bytes, corruptedBytes);
+        tool2.decode(corrupted, ecBytes);
+        AbstractReedSolomonTestCase.assertArraysEqual(bytes, 0, corrupted, 0, corrupted.length);
     }
+    
+ 
 }
