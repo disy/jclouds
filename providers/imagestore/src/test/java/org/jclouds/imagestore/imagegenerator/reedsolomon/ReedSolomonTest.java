@@ -13,10 +13,12 @@ import org.testng.annotations.Test;
  * 
  */
 public class ReedSolomonTest {
-    final static Random ran = new Random(12l);
-    final static int size = 128;
-    final static int ecBytes = 32;
-    final static int toCorrupt = 16;
+    final static Random ran = new Random();
+    //size + ec must be under 256
+    final static int size = 230;
+    final static int ecBytes = 26;
+    //bytes to corrupt must be at most halb of ec-bytes
+    final static int toCorrupt = 8;
     static byte[] data = new byte[size];
     static int[][] corruptedBytes = new int[2][toCorrupt];
     static {
