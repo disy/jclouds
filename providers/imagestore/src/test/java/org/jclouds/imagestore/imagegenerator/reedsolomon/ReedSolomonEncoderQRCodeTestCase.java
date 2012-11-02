@@ -18,7 +18,6 @@ package org.jclouds.imagestore.imagegenerator.reedsolomon;
 
 import java.util.Random;
 
-import org.jclouds.imagestore.imagegenerator.reedsolomon.GenericGF.GenericGFs;
 import org.testng.annotations.Test;
 
 /**

@@ -174,7 +174,7 @@ public class ImageGeneratorTest {
                 // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
                 }, IEncoder.class, new IEncoder[] {
                     // new IEncoder.DummyEncoder(),
-                    new ReedSolomon()
+                    new ReedSolomon(16)
 
                 }
             }

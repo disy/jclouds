@@ -14,10 +14,10 @@ import org.testng.annotations.Test;
  */
 public class ReedSolomonTest {
     final static Random ran = new Random();
-    //size + ec must be under 256
-    final static int size = 230;
-    final static int ecBytes = 26;
-    //bytes to corrupt must be at most halb of ec-bytes
+    // size + ec must be under 256 whereas
+    final static int size = 240;
+    final static int ecBytes = 16;
+    // bytes to corrupt must be at most halb of ec-bytes
     final static int toCorrupt = 8;
     static byte[] data = new byte[size];
     static int[][] corruptedBytes = new int[2][toCorrupt];
@@ -51,6 +51,11 @@ public class ReedSolomonTest {
         AbstractReedSolomonTestCase.corrupt(encoded, toCorrupt, ran);
         tool2.decode(encoded, ecBytes);
         AbstractReedSolomonTestCase.assertArraysEqual(bytes, 0, encoded, 0, bytes.length);
+    }
+
+    @Test
+    public void testSplitter() {
+
     }
 
 }
