@@ -35,7 +35,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
      */
     public AAbstractLayeredBytesToImagePainter(final int numSys, final int ppBpL) {
         numeralSystem = numSys;
-        colors = HBytesToImagePainterHelper.generateLayeredUniformlyDistributedColors(numeralSystem);
+        colors = HBytesToImagePainterHelper.generate3LayeredUniformlyDistributedColors(numeralSystem);
         pixelsPerBytePerLayer = ppBpL;
     }
 
@@ -122,11 +122,11 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage image) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
-        final int w = img.getWidth();
-        final int h = img.getHeight();
+        final int w = image.getWidth();
+        final int h = image.getHeight();
 
         String[] bytesInNumSys = new String[] {
             "", "", ""
@@ -140,8 +140,18 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
                 final int pix = hpix + x;
 
-                getLayeredNumericalValueFromPixelColor(colors, img.getRGB(x, y), numeralSystem, bytesInNumSys);
+                // get the values of all three layers of the current pixel
+                for (int layer = 0; layer < LAYERS; layer++) {
 
+                    final int rgb = image.getRGB(x, y);
+                    final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
+
+                    bytesInNumSys[layer] +=
+                        HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(layer, colors,
+                            colorVal, numeralSystem);
+                }
+
+                // if a complete chunk is collected, extract the bytes 
                 if (pix % pixelsPerBytePerLayer == pixelsPerBytePerLayer - 1) {
 
                     for (int layer = 0; layer < LAYERS; layer++) {
@@ -193,69 +203,5 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
             byteColors[i] = colors[layer][dc].getRGB();
         }
         return byteColors;
-    }
-
-    /**
-     * Extracts the numerical value from current pixel's RGB-value.
-     * 
-     * @param colors
-     *            The colors used
-     * @param rgb
-     *            The RGB-value of the current pixel
-     * @param numeralSystem
-     *            The numeral system used
-     * @param numericalValues
-     *            Array to be filled with the numerical values of the current pixel
-     */
-    private void getLayeredNumericalValueFromPixelColor(final Color[][] colors, final int rgb,
-        final int numeralSystem, final String[] numericalValues) {
-
-        final Color c = new Color(rgb);
-        final int red = c.getRed();
-        final int green = c.getGreen();
-        final int blue = c.getBlue();
-
-        for (int l = 0; l < LAYERS; l++) {
-            int dist = -1;
-            int idx = -1;
-
-            if (l == 0) {
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
-
-                    int currDist = Math.abs(cred - red);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else if (l == 1) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
-
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-
-                    int currDist = Math.abs(cblue - blue);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-            numericalValues[l] += Integer.toString(idx, numeralSystem);
-        }
     }
 }

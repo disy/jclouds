@@ -55,17 +55,16 @@ public final class HBytesToImagePainterHelper {
      */
     static int[] getColorsFromByte(final byte b, final int numeralSystem, final int pixelInNumSys) {
         final int it = b & 0xFF;
-        String septenary = Integer.toString(it, numeralSystem);
-        int[] byteColors = new int[numeralSystem];
-        final int l = pixelInNumSys;
+        String numSysVal = Integer.toString(it, numeralSystem);
+        final int[] byteColors = new int[numeralSystem];
 
-        while (septenary.length() < l) {
-            septenary = "0" + septenary;
+        while (numSysVal.length() < pixelInNumSys) {
+            numSysVal = "0" + numSysVal;
         }
 
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < pixelInNumSys; i++) {
 
-            String val = septenary.substring(i, i + 1);
+            String val = numSysVal.substring(i, i + 1);
 
             int dc = Integer.parseInt(val, numeralSystem);
 
@@ -87,12 +86,13 @@ public final class HBytesToImagePainterHelper {
      */
     static String
         getNumericalValueFromPixelColor(final Color[] colors, final int rgb, final int numeralSystem) {
-        final Color c = new Color(rgb);
-        final int red = c.getRed();
-        final int green = c.getGreen();
-        final int blue = c.getBlue();
+        final int red = extractLayerColorFromRGB(rgb, 2);
+        final int green = extractLayerColorFromRGB(rgb, 1);
+        final int blue = extractLayerColorFromRGB(rgb, 0);
 
+        // the distance
         int dist = -1;
+        // the color index
         int idx = -1;
 
         for (int i = 0; i < colors.length; i++) {
@@ -100,7 +100,7 @@ public final class HBytesToImagePainterHelper {
             final int cgreen = colors[i].getGreen();
             final int cblue = colors[i].getBlue();
 
-            int currDist = Math.abs(cred - red) + Math.abs(cgreen - green) + Math.abs(cblue - blue);
+            final int currDist = Math.abs(cred - red) + Math.abs(cgreen - green) + Math.abs(cblue - blue);
 
             if (dist == -1 || currDist < dist) {
                 dist = currDist;
@@ -156,23 +156,23 @@ public final class HBytesToImagePainterHelper {
      * @return the calculated colors
      */
 
-    static Color[][] generateLayeredUniformlyDistributedColors(final int numColors) {
+    static Color[][] generate3LayeredUniformlyDistributedColors(final int numColors) {
         final Color[][] caa = new Color[3][numColors];
         final int len = numColors;
 
-        for (int i = 0; i < 3; i++) {
-            Color[] ca = caa[i];
+        for (int layer = 0; layer < 3; layer++) {
+            Color[] ca = caa[layer];
             int sum = 0;
             final float ratio = 255f / (len - 1);
 
             for (int y = 0; y < len; y++) {
 
-                if (i == 0) {
-                    ca[y] = new Color(sum, 0, 0);
-                } else if (i == 1) {
+                if (layer == 0) {
+                    ca[y] = new Color(0, 0, sum);
+                } else if (layer == 1) {
                     ca[y] = new Color(0, sum, 0);
                 } else {
-                    ca[y] = new Color(0, 0, sum);
+                    ca[y] = new Color(sum, 0, 0);
                 }
 
                 sum += ratio;
@@ -189,12 +189,62 @@ public final class HBytesToImagePainterHelper {
      * @return the byte array
      */
 
-    public static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
+    static byte[] arrayListToByteArray(final ArrayList<Byte> li) {
         byte[] bs = new byte[li.size()];
         int i = 0;
         for (Byte b : li) {
             bs[i++] = b;
         }
         return bs;
+    }
+
+    /**
+     * Extracts the level's color-value of the given RGB-value.
+     * 
+     * @param rgb
+     *            The RGB-value
+     * @param layer
+     *            The layer
+     * @return The color's value
+     */
+    static int extractLayerColorFromRGB(final int rgb, final int layer) {
+        return (rgb >> (layer * 8)) & 0xFF;
+    }
+
+    /**
+     * Extracts the numerical value from current pixel's RGB-value.
+     * 
+     * @param layer
+     *            The current layer
+     * @param colors
+     *            The colors used
+     * @param colorVal
+     *            The RGB-value of the current pixel
+     * @param numeralSystem
+     *            The numeral system used
+     * @return The numerical value extracted from the RGB-value
+     */
+    static String getLayeredNumericalValueFromPixelColor(final int layer, final Color[][] colors,
+        final int colorVal, final int numeralSystem) {
+
+        // the distance
+        int dist = -1;
+        // the color index
+        int idx = -1;
+
+        final int layerLength = colors[layer].length;
+        for (int i = 0; i < layerLength; i++) {
+            final int ccRGB = colors[layer][i].getRGB();
+            final int cColorVal = extractLayerColorFromRGB(ccRGB, layer);
+
+            int currDist = Math.abs(cColorVal - colorVal);
+
+            if (dist == -1 || currDist < dist) {
+                dist = currDist;
+                idx = i;
+            }
+
+        }
+        return Integer.toString(idx, numeralSystem);
     }
 }

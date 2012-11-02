@@ -21,6 +21,9 @@ public class ImageHostFile implements IImageHost {
 
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
+    
+    /** The compression method the image is stored with. */
+    private static final String IMAGE_COMPRESSION = "png";
 
     /** Location of this hoster. */
     private final File mFile;
@@ -118,11 +121,11 @@ public class ImageHostFile implements IImageHost {
     public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         final File set = new File(mFile, imageSetTitle);
         set.mkdirs();
-        final File imageFile = new File(set, imageTitle);
+        final File imageFile = new File(set, imageTitle + "." + IMAGE_COMPRESSION);
         try {
             imageFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(imageFile);
-            ImageIO.write(image, "png", fos);
+            ImageIO.write(image, IMAGE_COMPRESSION, fos);
             fos.flush();
             fos.close();
             return imageFile.getAbsolutePath();
@@ -137,7 +140,7 @@ public class ImageHostFile implements IImageHost {
     @Override
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
-        final File imageFile = new File(set, imageTitle);
+        final File imageFile = new File(set, imageTitle + "." + IMAGE_COMPRESSION);
         try {
             FileInputStream fis = new FileInputStream(imageFile);
             BufferedImage returnVal = ImageIO.read(fis);

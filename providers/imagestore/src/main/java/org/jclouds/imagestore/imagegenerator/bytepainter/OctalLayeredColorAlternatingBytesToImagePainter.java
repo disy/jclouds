@@ -23,12 +23,12 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
     /** The amount of layers. */
     private static final int LAYERS = 3;
 
-    /** The number system. */
-    private final int numberSystem = 8;
+    /** The numeral system. */
+    private static final int NUMERAL_SYSTEM = 8;
 
     /** The colors. */
     private final Color[][] colors = HBytesToImagePainterHelper
-        .generateLayeredUniformlyDistributedColors(numberSystem);
+        .generate3LayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     /** Bytes needed per pixel. */
     public static final float BYTES_PER_PIXEL = 1;
@@ -53,9 +53,8 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
 
-        bi = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
         final int w = bi.getWidth();
         final int h = bi.getHeight();
         final Graphics g = bi.getGraphics();
@@ -96,14 +95,16 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
                 }
 
                 final int idx = ci[i];
-                final int rgb = removeTransparencyFromRGB(colors[layer][idx].getRGB());
+                final Color c = colors[layer][idx];
+                final int rgb = c.getRGB();
+                final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
 
                 // if second layer, add RGB-value to RGB-value of layer 1
                 if (layer == 1) {
                     final int oldRGB = ciList.get(pix);
-                    ciList.set(pix, rgb + oldRGB);
+                    ciList.set(pix, (colorVal << 8) + oldRGB);
                 } else {
-                    ciList.add(rgb);
+                    ciList.add(colorVal);
                 }
 
                 ++pix;
@@ -132,7 +133,8 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
                 if (ciHasNext) {
                     final int idx = ci[cip++];
-                    rgb += removeTransparencyFromRGB(colors[layer][idx].getRGB());
+                    final int red = colors[layer][idx].getRed();
+                    rgb += red << 16;
                 }
 
                 final Color cc = new Color(rgb);
@@ -141,23 +143,16 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
             }
 
         }
-        System.out.println(bp);
         return bi;
-    }
-
-    private int removeTransparencyFromRGB(int rgb) {
-        return ((rgb << 8) >> 8);
     }
 
     /**
      * Gets the color from byte.
      * 
      * @param b
-     *            the b
-     * @param layer
-     *            the layer
+     *            the byte-value
      * @param even
-     *            the even
+     *            boolean if the byte has an even index in the byte-array or not
      * @return the color from byte
      */
     private int[] getColorIndexFromByte(final byte b, final boolean even) {
@@ -165,17 +160,17 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         // if even convert byte to integer, if uneven, add Byte.MAX_VALUE to
         // byte and convert to integer. This is done to alternate the colors.
         // colors1: between 0 and 255, colors2: between 256 and 511
-        int it = even ? b & 0xFF : (b & 0xFF) + Byte.MAX_VALUE;
+        final int it = even ? b & 0xFF : (b & 0xFF) + 255;
 
-        String octs = Integer.toString(it, numberSystem);
+        final String octs = Integer.toString(it, NUMERAL_SYSTEM);
         final int len = octs.length();
-        int[] dc = new int[len];
+        final int[] dc = new int[len];
 
         for (int i = 0; i < len; i++) {
 
             String val = octs.substring(i, i + 1);
 
-            dc[i] = Integer.parseInt(val, numberSystem);
+            dc[i] = Integer.parseInt(val, NUMERAL_SYSTEM);
         }
         return dc;
     }
@@ -184,103 +179,42 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage image) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
 
-        final int w = img.getWidth();
-        final int h = img.getHeight();
+        final int w = image.getWidth();
+        final int h = image.getHeight();
 
-        String[] hepts = new String[] {
-            "", "", ""
-        };
+        String octs = "";
+        boolean even = true;
+        for (int layer = 0; layer < LAYERS; layer++) {
+            for (int y = 0; y < h; y++) {
 
-        for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
 
-            final int hpix = w * y;
+                    final int rgb = image.getRGB(x, y);
 
-            for (int x = 0; x < w; x++) {
+                    if (even && rgb < 0xff000024 || !even && rgb >= 0xff000024) {
 
-                final int pix = hpix + x;
+                        int b = Integer.parseInt(octs, NUMERAL_SYSTEM);
+                        if (even)
+                            b -= 255;
 
-                getHeptsFromPixel(img.getRGB(x, y), hepts);
-
-                if (pix % 3 == 2) {
-
-                    for (int i = 0; i < 3; i++) {
-                        byte b = (byte)Integer.parseInt(hepts[i], 7);
-                        li.add(b);
+                        li.add((byte)b);
+                        even = !even;
+                        octs = "";
                     }
 
-                    hepts = new String[] {
-                        "", "", ""
-                    };
+                    final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
+                    octs +=
+                        HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(layer, colors,
+                            colorVal, NUMERAL_SYSTEM);
+
                 }
             }
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
-    /**
-     * Gets the hepts from pixel.
-     * 
-     * @param pix
-     *            the pix
-     * @param hepts
-     *            the hepts
-     * @return the hepts from pixel
-     */
-    private void getHeptsFromPixel(final int pix, String[] hepts) {
-
-        Color c = new Color(pix);
-        int red = c.getRed();
-        int green = c.getGreen();
-        int blue = c.getBlue();
-
-        for (int l = 0; l < 3; l++) {
-            int dist = -1;
-            int idx = -1;
-
-            if (l == 0) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cred = colors[l][i].getRed();
-
-                    int currDist = Math.abs(cred - red);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-
-            } else if (l == 1) {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cgreen = colors[l][i].getGreen();
-
-                    int currDist = Math.abs(cgreen - green);
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            } else {
-
-                for (int i = 0; i < colors[l].length; i++) {
-                    int cblue = colors[l][i].getBlue();
-
-                    int currDist = Math.abs(cblue - blue);
-
-
-                    if (dist == -1 || currDist < dist) {
-                        dist = currDist;
-                        idx = i;
-                    }
-                }
-            }
-            hepts[l] += Integer.toString(idx, 7);
-        }
-    }
 }
