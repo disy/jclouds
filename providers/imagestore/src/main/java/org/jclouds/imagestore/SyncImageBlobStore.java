@@ -34,7 +34,6 @@ import java.security.cert.CertificateException;
 import java.util.Set;
 
 import javax.inject.Named;
-import javax.management.RuntimeErrorException;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
