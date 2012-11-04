@@ -35,13 +35,19 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
@@ -74,12 +80,17 @@ public class ImageGeneratorTest {
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
+    // static {
+    // try {
+    // RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
+    // } catch (IOException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
+
     static {
-        try {
-            RAWFILEBYTES = loadBytesFromFile(new File(RAWFILEURI));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        RAWFILEBYTES = new byte[524288];
+        new Random(12l).nextBytes(RAWFILEBYTES);
     }
 
     /**
@@ -139,23 +150,26 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
-                    new BinaryBytesToImagePainter()
-                // , new BinaryLayeredBytesToImagePainter(),
-                // new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                // new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                // new OctalLayeredBytesToImagePainter(),// new
-                // // OctalLayeredColorAlternatingBytesToImagePainter(),
-                // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                }, IEncoder.class, new IEncoder[] {
-                    // new IEncoder.DummyEncoder(),
-                    new ReedSolomon()
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
+                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
+                        new OctalLayeredBytesToImagePainter(),
+                        // new OctalLayeredColorAlternatingBytesToImagePainter(),
+                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter(),
+                        // new DihectpenthexagonBytesToImagePainter(),
+                        new DihectpenthexagonLayeredBytesToImagePainter()
+                    }, IEncoder.class, new IEncoder[] {
+                        new IEncoder.DummyEncoder(),
+                    // new ReedSolomon()
 
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 

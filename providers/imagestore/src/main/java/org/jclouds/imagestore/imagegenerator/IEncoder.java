@@ -16,8 +16,9 @@ public interface IEncoder {
 
     byte[] decode(byte[] param);
 
-    static class DummyEncoder implements IEncoder {
+    int getNumbersOfBytesWasted(int numberOfEntireBytes);
 
+    static class DummyEncoder implements IEncoder {
         /**
          * {@inheritDoc}
          */
@@ -32,6 +33,11 @@ public interface IEncoder {
         @Override
         public byte[] decode(byte[] param) {
             return param;
+        }
+
+        @Override
+        public int getNumbersOfBytesWasted(int numberOfEntireBytes) {
+            return 0;
         }
 
     }

@@ -21,7 +21,7 @@ public class ImageHostFile implements IImageHost {
 
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;
-    
+
     /** The compression method the image is stored with. */
     private static final String IMAGE_COMPRESSION = "png";
 
@@ -141,6 +141,9 @@ public class ImageHostFile implements IImageHost {
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         final File imageFile = new File(set, imageTitle + "." + IMAGE_COMPRESSION);
+        if (!imageFile.exists()) {
+            return null;
+        }
         try {
             FileInputStream fis = new FileInputStream(imageFile);
             BufferedImage returnVal = ImageIO.read(fis);

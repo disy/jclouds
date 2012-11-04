@@ -12,16 +12,22 @@ import java.util.Arrays;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.naming.InsufficientResourcesException;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.AfterEachRun;
@@ -49,7 +55,7 @@ public class ImageGeneratorBenchmark {
     static int RUNS = 10;
 
     // size of input-data, is power of 2
-    static int BYTESIZE = 17;
+    static int BYTESIZE = 19;
     // path to store the pictures to
     static File PICFOLDER = new File("/Users/sebi/Desktop/images");
     static {
@@ -60,7 +66,7 @@ public class ImageGeneratorBenchmark {
     byte[] data;
     byte[] deserializedData;
     IBytesToImagePainter painter;
-    IEncoder enc;
+    IEncoder enc = new IEncoder.DummyEncoder();
     BufferedImage image;
     String methodJustBenched = "";
 
@@ -111,12 +117,32 @@ public class ImageGeneratorBenchmark {
     }
 
     /**
+     * Colored, 8 Pixel/1Byte
+     */
+    @Bench
+    public void generateBinaryLayered() {
+        methodJustBenched = "binaryLayered";
+        IBytesToImagePainter painter = new BinaryLayeredBytesToImagePainter();
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
+    }
+
+    /**
      * 2 Pixel/1Byte
      */
     @Bench
     public void generateHexadecimal() {
         methodJustBenched = "hexadecimal";
         IBytesToImagePainter painter = new HexadecimalBytesToImagePainter();
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
+    }
+
+    /**
+     * 2 Pixel/1Byte
+     */
+    @Bench
+    public void generateHexadecimalLayered() {
+        methodJustBenched = "hexadecimalLayered";
+        IBytesToImagePainter painter = new HexadecimalLayeredBytesToImagePainter();
         image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
@@ -160,6 +186,26 @@ public class ImageGeneratorBenchmark {
         image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
     }
 
+    /**
+     * 3 Pixel/1Byte
+     */
+    @Bench
+    public void generateOctalLayered() {
+        methodJustBenched = "octalLayered";
+        IBytesToImagePainter painter = new OctalLayeredBytesToImagePainter();
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
+    }
+
+    /**
+     * 1 Pixel/1Byte
+     */
+    @Bench
+    public void generateDihectLayered() {
+        methodJustBenched = "dihectLayered";
+        IBytesToImagePainter painter = new DihectpenthexagonLayeredBytesToImagePainter();
+        image = new ImageGenerator(painter, enc, SIZE, SIZE).createImageFromBytes(data);
+    }
+
     // ////////////////////////////////////////
     // // Benchmarking methods for degeneration
     // ////////////////////////////////////////
@@ -175,12 +221,32 @@ public class ImageGeneratorBenchmark {
     }
 
     /**
+     * Colored, 8 Pixel/1Byte
+     */
+    @Bench(beforeEachRun = "setUpBinaryLayered", afterEachRun = "check")
+    public void degenerateBinaryLayered() {
+        methodJustBenched = "binary";
+        painter = new BinaryLayeredBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
+    }
+
+    /**
      * 2 Pixel/1Byte
      */
     @Bench(beforeEachRun = "setUpHexadecimal", afterEachRun = "check")
     public void degenerateHexadecimal() {
         methodJustBenched = "hexadecimal";
         painter = new HexadecimalBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
+    }
+
+    /**
+     * 2 Pixel/1Byte
+     */
+    @Bench(beforeEachRun = "setUpHexadecimalLayered", afterEachRun = "check")
+    public void degenerateHexadecimalLayered() {
+        methodJustBenched = "hexadecimalLayered";
+        painter = new HexadecimalLayeredBytesToImagePainter();
         deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
@@ -207,10 +273,40 @@ public class ImageGeneratorBenchmark {
     /**
      * 3 Pixel/1Byte
      */
-    @Bench(beforeEachRun = "generateSeptenary", afterEachRun = "check")
+    @Bench(beforeEachRun = "setupSeptenary", afterEachRun = "check")
     public void degenerateSeptenary() {
         methodJustBenched = "septenary";
         painter = new SeptenaryBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
+    }
+
+    /**
+     * 3 Pixel/3Byte
+     */
+    @Bench(beforeEachRun = "setupSeptenaryLayered", afterEachRun = "check")
+    public void degenerateSeptenaryLayered() {
+        methodJustBenched = "septenaryLayered";
+        painter = new SeptenaryLayeredBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
+    }
+
+    /**
+     * 2 Pixel/2Byte
+     */
+    @Bench(beforeEachRun = "setupOctalLayered", afterEachRun = "check")
+    public void degenerateOctalLayered() {
+        methodJustBenched = "octalLayered";
+        painter = new OctalLayeredBytesToImagePainter();
+        deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
+    }
+
+    /**
+     * 2 Pixel/2Byte
+     */
+    @Bench(beforeEachRun = "setupDihectLayered", afterEachRun = "check")
+    public void degenerateDihectLayered() {
+        methodJustBenched = "dihectLayered";
+        painter = new DihectpenthexagonLayeredBytesToImagePainter();
         deserializedData = new ImageGenerator(painter, enc, SIZE, SIZE).getBytesFromImage(image);
     }
 
@@ -224,8 +320,20 @@ public class ImageGeneratorBenchmark {
         deserialize();
     }
 
+    public void setUpBinaryLayered() {
+        generateBinaryLayered();
+        tearDown();
+        deserialize();
+    }
+
     public void setUpHexadecimal() {
         generateHexadecimal();
+        tearDown();
+        deserialize();
+    }
+
+    public void setUpHexadecimalLayered() {
+        generateHexadecimalLayered();
         tearDown();
         deserialize();
     }
@@ -244,6 +352,24 @@ public class ImageGeneratorBenchmark {
 
     public void setupSeptenary() {
         generateSeptenary();
+        tearDown();
+        deserialize();
+    }
+
+    public void setupSeptenaryLayered() {
+        generateSeptenaryLayered();
+        tearDown();
+        deserialize();
+    }
+
+    public void setupOctalLayered() {
+        generateOctalLayered();
+        tearDown();
+        deserialize();
+    }
+
+    public void setupDihectLayered() {
+        generateDihectLayered();
         tearDown();
         deserialize();
     }
@@ -273,6 +399,8 @@ public class ImageGeneratorBenchmark {
     // ////////////////////////////////////////
 
     public static void main(String[] args) {
+        
+        
         Benchmark benchmark = new Benchmark(new Config());
         benchmark.add(ImageGeneratorBenchmark.class);
         final BenchmarkResult res = benchmark.run();

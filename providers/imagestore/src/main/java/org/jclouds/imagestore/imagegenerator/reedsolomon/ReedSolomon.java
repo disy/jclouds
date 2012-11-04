@@ -118,4 +118,9 @@ public class ReedSolomon implements IEncoder {
         return returnVal;
     }
 
+    @Override
+    public int getNumbersOfBytesWasted(int numberOfEntireBytes) {
+        return (int)(mEcSize * Math.ceil(new Double(numberOfEntireBytes) / new Double(field.getSize())));
+    }
+
 }

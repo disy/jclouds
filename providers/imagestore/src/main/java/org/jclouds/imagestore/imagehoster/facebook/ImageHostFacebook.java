@@ -302,8 +302,7 @@ public class ImageHostFacebook implements IImageHost {
         final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle).get(0);
 
         if (fPh == null) {
-            throw new IllegalArgumentException("There is no image named \"" + imageTitle
-                + "\" in your facebook album \"" + imageSetTitle + "\"!");
+            return null;
         }
 
         try {

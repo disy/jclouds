@@ -34,6 +34,7 @@ import java.security.cert.CertificateException;
 import java.util.Set;
 
 import javax.inject.Named;
+import javax.management.RuntimeErrorException;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
@@ -69,6 +70,8 @@ import com.google.inject.Injector;
  * @author Wolfgang Miller
  */
 public class SyncImageBlobStore implements BlobStore {
+
+    private final static String DEL = "%";
 
     /** The image host instance. */
     private final IImageHost ih;
@@ -292,9 +295,20 @@ public class SyncImageBlobStore implements BlobStore {
             throw new RuntimeException(e);
         }
 
-        BufferedImage bi = ig.createImageFromBytes(bs);
-
-        return ih.uploadImage(container, blob.getMetadata().getName(), bi);
+        // Splitting in multiple images if necessary
+        int numberOfImages = (int)Math.ceil(new Double(bs.length) / new Double(ig.getMaximumBytesPerImage()));
+        String lastImageId = "";
+        for (int i = 0; i < numberOfImages; i++) {
+            byte[] imagePerByte =
+                new byte[bs.length - i * ig.getMaximumBytesPerImage() > ig.getMaximumBytesPerImage() ? ig
+                    .getMaximumBytesPerImage() : bs.length - i * ig.getMaximumBytesPerImage()];
+            System.arraycopy(bs, i * ig.getMaximumBytesPerImage(), imagePerByte, 0, imagePerByte.length);
+            BufferedImage bi = ig.createImageFromBytes(imagePerByte);
+            lastImageId =
+                ih.uploadImage(container, new StringBuilder(blob.getMetadata().getName()).append(DEL).append(
+                    i).toString(), bi);
+        }
+        return lastImageId;
     }
 
     /**
@@ -319,9 +333,26 @@ public class SyncImageBlobStore implements BlobStore {
      */
     @Override
     public Blob getBlob(final String container, final String name) {
-        BufferedImage bi = ih.downloadImage(container, name);
-        final byte[] bs = ig.getBytesFromImage(bi);
-        bb.payload(bs);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        boolean finished = false;
+        int i = 0;
+        do {
+            BufferedImage bi =
+                ih.downloadImage(container, new StringBuilder(name).append(DEL).append(i).toString());
+            if (bi == null) {
+                finished = true;
+            } else {
+                try {
+                    stream.write(ig.getBytesFromImage(bi));
+                } catch (final IOException exc) {
+                    throw new RuntimeException(exc);
+                }
+                i++;
+            }
+        } while (!finished);
+
+        bb.payload(stream.toByteArray());
         return bb.build();
     }
 
