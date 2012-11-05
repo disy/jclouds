@@ -80,15 +80,6 @@ public class SyncImageBlobStore implements BlobStore {
     private BlobBuilder bb;
 
     /**
-     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
-     * 
-     * @return the maximum amount of bytes
-     */
-    public int getMaximumBytesPerImage() {
-        return ig.getMaximumBytesPerImage();
-    }
-
-    /**
      * ImageBlobStore constructor.
      * 
      * @param pImageHoster
@@ -124,6 +115,15 @@ public class SyncImageBlobStore implements BlobStore {
     }
 
     /**
+     * Returns the maximum amount of bytes one image can hold with the given provider and byte painter.
+     * 
+     * @return the maximum amount of bytes
+     */
+    public int getMaximumBytesPerImage() {
+        return ig.getMaximumBytesPerImage();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -143,35 +143,8 @@ public class SyncImageBlobStore implements BlobStore {
      * {@inheritDoc}
      */
     @Override
-    public BlobStoreContext getContext() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public BlobBuilder blobBuilder(final String blobName) {
         return bb.name(blobName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<? extends Location> listAssignableLocations() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageSet<? extends StorageMetadata> list() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /**
@@ -203,25 +176,6 @@ public class SyncImageBlobStore implements BlobStore {
      * {@inheritDoc}
      */
     @Override
-    public PageSet<? extends StorageMetadata> list(final String container) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageSet<? extends StorageMetadata>
-        list(final String container, final ListContainerOptions options) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void clearContainer(final String container) {
         ih.clearImageSet(container);
     }
@@ -246,34 +200,8 @@ public class SyncImageBlobStore implements BlobStore {
      * {@inheritDoc}
      */
     @Override
-    public boolean directoryExists(final String container, final String directory) {
-        // TODO Directory??
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void createDirectory(final String container, final String directory) {
-        // TODO Directory??
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteDirectory(final String containerName, final String name) {
-        // TODO Directory??
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean blobExists(final String container, final String name) {
-        return ih.imageExists(container, name);
+        return ih.imageExists(container, new StringBuilder(name).append(DEL).append(0).toString());
     }
 
     /**
@@ -322,15 +250,6 @@ public class SyncImageBlobStore implements BlobStore {
      * {@inheritDoc}
      */
     @Override
-    public BlobMetadata blobMetadata(final String container, final String name) {
-        // TODO Metadata??
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Blob getBlob(final String container, final String name) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -368,7 +287,87 @@ public class SyncImageBlobStore implements BlobStore {
      */
     @Override
     public void removeBlob(final String container, final String name) {
-        ih.deleteImage(container, name);
+        ih.deleteImage(container, new StringBuilder(name).append(DEL).append(0).toString());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean directoryExists(final String container, final String directory) {
+        // TODO Directory??
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createDirectory(final String container, final String directory) {
+        // TODO Directory??
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteDirectory(final String containerName, final String name) {
+        // TODO Directory??
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BlobMetadata blobMetadata(final String container, final String name) {
+        // TODO Metadata??
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageSet<? extends StorageMetadata> list(final String container) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageSet<? extends StorageMetadata>
+        list(final String container, final ListContainerOptions options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BlobStoreContext getContext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<? extends Location> listAssignableLocations() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageSet<? extends StorageMetadata> list() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

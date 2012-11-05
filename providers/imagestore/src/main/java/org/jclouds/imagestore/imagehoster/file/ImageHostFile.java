@@ -69,7 +69,7 @@ public class ImageHostFile implements IImageHost {
     public boolean imageExists(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
-            final File image = new File(set, imageTitle);
+            final File image = new File(set, imageTitle + "." + IMAGE_COMPRESSION);
             return image.exists();
         } else {
             return false;
@@ -92,7 +92,7 @@ public class ImageHostFile implements IImageHost {
     public void deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         for (File singleFile : set.listFiles()) {
-            if (singleFile.getName().equals(imageTitle)) {
+            if (singleFile.getName().equals(imageTitle + "." + IMAGE_COMPRESSION)) {
                 singleFile.delete();
                 break;
             }
