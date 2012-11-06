@@ -60,9 +60,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     private static final int PIXELS_PER_BYTE = 8;
 
     /**
-     * The amount of
-     * 
-     * /** {@inheritDoc}
+     *  {@inheritDoc}
      */
     @Override
     public int getImageType() {
@@ -137,14 +135,14 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         final int it = b & 0xFF;
         String bin = Integer.toString(it, NUMERAL_SYSTEM);
 
-        while (bin.length() < 8) {
+        // fill length of binary representation to match byte-length
+        while (bin.length() < PIXELS_PER_BYTE) {
             bin = "0" + bin;
         }
 
-        final int l = bin.length();
-        boolean[] bw = new boolean[l];
+        boolean[] bw = new boolean[PIXELS_PER_BYTE];
 
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < PIXELS_PER_BYTE; i++) {
             if (bin.charAt(i) == '1') {
                 bw[i] = true;
             }

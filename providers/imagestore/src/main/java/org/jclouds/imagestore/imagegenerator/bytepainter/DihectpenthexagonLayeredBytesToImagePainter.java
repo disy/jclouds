@@ -62,7 +62,9 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
         final int h = image.getHeight();
         final Graphics g = image.getGraphics();
 
+        // the length of the given byte-array
         int len = bs.length;
+        // the current index position in the byte-array
         int bp = 0;
 
         for (int y = 0; y < h; y++) {
@@ -72,6 +74,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
                 if (bp >= len)
                     return image;
 
+                // get the color for the curren pixel
                 Color nc = getPixelColorFromBytes(bs, len, bp);
                 g.setColor(nc);
                 g.drawLine(x, y, x, y);
@@ -95,9 +98,12 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     private Color getPixelColorFromBytes(final byte[] bs, final int len, final int bp) {
 
         int c = 0;
+
+        // for every layer get one byte
         for (int i = 0; i < LAYERS; i++) {
             final int pos = bp + i;
 
+            // if all bytes are stored break loop
             if (pos >= len)
                 break;
 
@@ -107,19 +113,6 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
             c += shift;
         }
         return new Color(c);
-    }
-
-    /**
-     * Returns a byte-array with the bytes stored in the given pixel.
-     * 
-     * @param rgb
-     *            The RGB-value of the current pixel
-     * @return The three bytes stored in the pixel
-     */
-    private byte[] getBytesFromPixel(final int rgb) {
-        return new byte[] {
-            (byte)rgb, (byte)(rgb >> 8), (byte)(rgb >> 16)
-        };
     }
 
     @Override
@@ -134,10 +127,11 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
             for (int x = 0; x < w; x++) {
 
                 final int rgb = image.getRGB(x, y);
-                final byte[] bs = getBytesFromPixel(rgb);
 
+                // extract bytes from layers
                 for (int layer = 0; layer < LAYERS; layer++) {
-                    al.add(bs[layer]);
+                    final byte b = (byte)HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
+                    al.add(b);
                 }
 
             }
