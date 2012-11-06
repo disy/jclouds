@@ -197,6 +197,9 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
         PhotoEntry myPhoto = getPhotoByNameForDownload(imageSetTitle, imageTitle);
         try {
+            if (myPhoto == null) {
+                return null;
+            }
             String source = myPhoto.getMediaContents().get(0).getUrl();
             return ImageIO.read(new URL(source));
         } catch (IOException exc) {
