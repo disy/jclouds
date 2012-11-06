@@ -56,10 +56,14 @@ public class BinaryLayeredBytesToImagePainter extends AAbstractLayeredBytesToIma
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed per Byte in one layer. */
-    private static final int PIXELS_PER_BYTE_PER_LAYER = 8;
+    private static final int PIXELS_PER_BYTE = 8;
 
+    /**
+     * Constructor. Invokes AAbstractLayeredBytesToImagePainter with given numeral system and the amount of
+     * pixels needed to store one byte in the image.
+     */
     public BinaryLayeredBytesToImagePainter() {
-        super(NUMERAL_SYSTEM, PIXELS_PER_BYTE_PER_LAYER);
+        super(NUMERAL_SYSTEM, PIXELS_PER_BYTE);
     }
 
     /**

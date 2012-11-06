@@ -196,8 +196,10 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
         for (int i = 0; i < pixelInNumSys; i++) {
 
+            // the next value in given string
             String val = numVal.substring(i, i + 1);
 
+            // get the color index
             int dc = Integer.parseInt(val, numeralSystem);
 
             byteColors[i] = colors[layer][dc].getRGB();

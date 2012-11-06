@@ -57,10 +57,12 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 2;
     /** Pixels needed for one Byte. */
-    private static final float PIXELS_PER_BYTE = 8;
+    private static final int PIXELS_PER_BYTE = 8;
 
     /**
-     * {@inheritDoc}
+     * The amount of
+     * 
+     * /** {@inheritDoc}
      */
     @Override
     public int getImageType() {
@@ -87,7 +89,9 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         g.setColor(Color.WHITE);
 
         int len = bs.length;
+        // position in byte array
         int bsPos = 0;
+        // boolean array standing for black and white color
         boolean[] bw = null;
 
         for (int y = 0; y < h; y++) {
@@ -97,13 +101,11 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
             for (int x = 0; x < w; x++) {
 
                 final int pix = hpix + x;
-                final int pos = pix % 8;
+                final int pos = pix % PIXELS_PER_BYTE;
 
-                if (pix % 8 == 0) {
+                // if pos == 0 a new Byte starts
+                if (pos == 0) {
 
-                    /* if picture is too small for next bytes return */
-                    if ((y == h - 1) && (x + 8 > w))
-                        return bi;
 
                     if (bsPos >= len) {
                         break;
@@ -117,6 +119,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
                 if (!bw[pos])
                     continue;
 
+                // draw the pixel
                 g.drawLine(x, y, x, y);
             }
         }
@@ -171,7 +174,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
                 binary += getNumericalValueFromPixelColor(img.getRGB(x, y));
 
-                if (pix % 8 == 7) {
+                if (pix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
                     byte b = (byte)Integer.parseInt(binary, NUMERAL_SYSTEM);
                     li.add(b);
                     binary = "";

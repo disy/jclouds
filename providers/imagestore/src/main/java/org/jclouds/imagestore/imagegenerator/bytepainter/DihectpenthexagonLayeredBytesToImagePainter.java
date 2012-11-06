@@ -33,7 +33,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** Pixels needed per Byte in one layer. */
     private static final int PIXELS_PER_BYTE_PER_LAYER = 1;
-    /** The amount of layers */
+    /** The amount of layers. */
     private static final int LAYERS = 3;
 
     /**
@@ -56,7 +56,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage image, byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
 
         final int w = image.getWidth();
         final int h = image.getHeight();
@@ -82,7 +82,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     }
 
     /**
-     * Returns the Color composed from the next thre next three bytes in the byte array.
+     * Returns the Color composed from the next three bytes in the byte array.
      * 
      * @param bs
      *            The byte array
@@ -90,7 +90,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      *            The lenght of the byte array
      * @param bp
      *            The current position in the byte array
-     * @return
+     * @return the pixels color
      */
     private Color getPixelColorFromBytes(final byte[] bs, final int len, final int bp) {
 
@@ -116,14 +116,14 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      *            The RGB-value of the current pixel
      * @return The three bytes stored in the pixel
      */
-    private byte[] getBytesFromPixel(int rgb) {
+    private byte[] getBytesFromPixel(final int rgb) {
         return new byte[] {
             (byte)rgb, (byte)(rgb >> 8), (byte)(rgb >> 16)
         };
     }
 
     @Override
-    public byte[] getBytesFromImage(BufferedImage image) {
+    public byte[] getBytesFromImage(final BufferedImage image) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
         final int w = image.getWidth();
