@@ -103,20 +103,20 @@ public class ImageHostTest {
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             BufferedImage download = host.downloadImage(SET1, IMAGE1);
             compareImages(image, download);
-            host.deleteImage(SET1, IMAGE1);
+            assertTrue(host.deleteImage(SET1, IMAGE1));
             assertFalse(host.imageExists(SET1, IMAGE1));
-            host.uploadImage(SET1, IMAGE1, image);
-            host.uploadImage(SET1, IMAGE2, image);
+            assertTrue(host.uploadImage(SET1, IMAGE1, image));
+            assertTrue(host.uploadImage(SET1, IMAGE2, image));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE2));
-            host.clearImageSet(SET1);
+            assertTrue(host.clearImageSet(SET1));
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE1));
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE2));
-            host.uploadImage(SET1, IMAGE1, image);
-            host.uploadImage(SET1, IMAGE2, image);
+            assertTrue(host.uploadImage(SET1, IMAGE1, image));
+            assertTrue(host.uploadImage(SET1, IMAGE2, image));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE2));
-            host.deleteImageSet(SET1);
+            assertTrue(host.deleteImageSet(SET1));
             assertFalse(host.toString(), host.imageSetExists(SET1));
         }
     }
