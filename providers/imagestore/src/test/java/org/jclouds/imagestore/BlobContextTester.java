@@ -97,7 +97,7 @@ public class BlobContextTester {
                 }
             }
 
-            blobStore.deleteContainer(containerName);
+//            blobStore.deleteContainer(containerName);
             context.close();
         }
     }
@@ -149,11 +149,25 @@ public class BlobContextTester {
         BlobStoreContext context3 =
             ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties3)
                 .buildView(BlobStoreContext.class);
+        
+        Properties properties4 = new Properties();
+        properties4
+            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
+        properties4.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
+            "org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter");
+        properties4.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
+            "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
+        properties4.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
+            "org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook");
+
+        BlobStoreContext context4 =
+            ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties4)
+                .buildView(BlobStoreContext.class);
 
         Object[][] returnVal = {
             {
                 BlobStoreContext.class, new BlobStoreContext[] {
-                    context2, context3, context1
+                    context4, context2, context3, context1
                 }
             }
         };

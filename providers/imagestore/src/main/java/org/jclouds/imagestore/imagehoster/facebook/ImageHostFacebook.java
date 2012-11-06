@@ -307,20 +307,19 @@ public class ImageHostFacebook implements IImageHost {
                 + imageSetTitle + "\"!");
         }
 
-        final FqlPhoto fPh = getFacebookImageFql(imageSetId, imageTitle).get(0);
-
-        if (fPh == null) {
+        List<FqlPhoto> photos = getFacebookImageFql(imageSetId, imageTitle);
+        if (photos.isEmpty()) {
             return null;
         }
+        final FqlPhoto fPh = photos.get(0);
 
         try {
             return ImageIO.read(new URL(fPh.src_big));
         } catch (MalformedURLException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
