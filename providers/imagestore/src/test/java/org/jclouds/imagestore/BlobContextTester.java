@@ -19,37 +19,25 @@
 
 package org.jclouds.imagestore;
 
-import static org.testng.AssertJUnit.fail;
 import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Set;
 
 import org.jclouds.ContextBuilder;
-import org.jclouds.apis.ApiMetadata;
-import org.jclouds.apis.Apis;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.providers.ProviderMetadata;
-import org.jclouds.providers.Providers;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
@@ -79,7 +67,7 @@ public class BlobContextTester {
     @Test(dataProvider = "blobContextProvider")
     public void test(final Class<BlobStoreContext> clazz, final BlobStoreContext[] pContext)
         throws IOException {
-        String containerName = "testcontainer";
+        String containerName = "blobcontexttest";
 
         for (BlobStoreContext context : pContext) {
 
@@ -97,7 +85,6 @@ public class BlobContextTester {
                 blob.setPayload(vals[i]);
                 blobStore.putBlob(containerName, blob);
             }
-            context.close();
 
             for (int i = 0; i < vals.length; i++) {
                 Blob blobRetrieved =
@@ -108,10 +95,10 @@ public class BlobContextTester {
                 if (!Arrays.equals(out.toByteArray(), vals[i])) {
                     fail();
                 }
-
             }
-            blobStore.deleteContainer(containerName);
 
+            blobStore.deleteContainer(containerName);
+            context.close();
         }
     }
 
@@ -166,8 +153,7 @@ public class BlobContextTester {
         Object[][] returnVal = {
             {
                 BlobStoreContext.class, new BlobStoreContext[] {
-                    context2
-                // , context3,context1
+                    context2, context3, context1
                 }
             }
         };

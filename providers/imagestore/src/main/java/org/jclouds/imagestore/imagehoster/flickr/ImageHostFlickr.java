@@ -314,6 +314,8 @@ public class ImageHostFlickr implements IImageHost {
             new RuntimeException(e);
         } catch (JSONException e) {
             new RuntimeException(e);
+        } catch (NullPointerException e) {
+            return null;
         }
         return null;
     }
