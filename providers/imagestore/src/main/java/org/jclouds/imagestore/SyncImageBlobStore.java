@@ -224,18 +224,21 @@ public class SyncImageBlobStore implements BlobStore {
 
         // Splitting in multiple images if necessary
         int numberOfImages = (int)Math.ceil(new Double(bs.length) / new Double(ig.getMaximumBytesPerImage()));
-        String lastImageId = "";
         for (int i = 0; i < numberOfImages; i++) {
             byte[] imagePerByte =
                 new byte[bs.length - i * ig.getMaximumBytesPerImage() > ig.getMaximumBytesPerImage() ? ig
                     .getMaximumBytesPerImage() : bs.length - i * ig.getMaximumBytesPerImage()];
             System.arraycopy(bs, i * ig.getMaximumBytesPerImage(), imagePerByte, 0, imagePerByte.length);
             BufferedImage bi = ig.createImageFromBytes(imagePerByte);
-            lastImageId =
-                ih.uploadImage(container, new StringBuilder(blob.getMetadata().getName()).append(DEL).append(
-                    i).toString(), bi);
+
+            if (!ih.uploadImage(container, new StringBuilder(blob.getMetadata().getName()).append(DEL)
+                .append(i).toString(), bi)) {
+                throw new RuntimeException("Image "
+                    + new StringBuilder(blob.getMetadata().getName()).append(DEL).append(i).toString()
+                    + " already existing!");
+            }
         }
-        return lastImageId;
+        return blob.getMetadata().getName();
     }
 
     /**

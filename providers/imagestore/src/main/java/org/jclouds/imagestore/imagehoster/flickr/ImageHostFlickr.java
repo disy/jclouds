@@ -228,41 +228,46 @@ public class ImageHostFlickr implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void deleteImage(final String imageSetTitle, final String imageTitle) {
+    public boolean deleteImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
         final String imageId = getFlickrImageId(imageSetId, imageTitle);
-        try {
-            poi.delete(imageId);
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
+        if (imageExists(imageSetTitle, imageTitle)) {
+            try {
+                poi.delete(imageId);
+                return true;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (FlickrException e) {
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteImageSet(final String imageSetTitle) {
+    public boolean deleteImageSet(final String imageSetTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty())
-            return;
+            return false;
 
         try {
             final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
             for (final Photo ph : pl) {
                 poi.delete(ph.getId());
             }
+            return true;
         } catch (IOException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (FlickrException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (JSONException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -270,7 +275,10 @@ public class ImageHostFlickr implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
+    public boolean uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage img) {
+        if (imageExists(imageSetTitle, imageTitle)) {
+            return false;
+        }
         final String imageId = uploadImage(imageTitle, img);
 
         Photoset ps = createImageSetAndGetSet(imageSetTitle);
@@ -288,7 +296,7 @@ public class ImageHostFlickr implements IImageHost {
             new RuntimeException(e);
         }
 
-        return imageId;
+        return true;
     }
 
     /**
@@ -338,7 +346,7 @@ public class ImageHostFlickr implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void clearImageSet(final String imageSetTitle) {
+    public boolean clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
         try {
@@ -347,13 +355,15 @@ public class ImageHostFlickr implements IImageHost {
                 for (final Photo ph : pl) {
                     psi.removePhoto(imageSetId, ph.getId());
                 }
+                return true;
             }
+            return false;
         } catch (IOException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (FlickrException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (JSONException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -225,31 +225,30 @@ public class ImageHostFacebook implements IImageHost {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void deleteImage(final String imageSetTitle, final String imageTitle) {
+    public boolean deleteImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         if (imageSetId.isEmpty()) {
-            return;
+            return false;
         }
 
         final String imageId = getFacebookImageId(imageSetId, imageTitle);
 
         if (imageId.isEmpty()) {
-            return;
+            return false;
         }
 
-        fbClient.deleteObject(imageId);
+        return fbClient.deleteObject(imageId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteImageSet(final String imageSetTitle) {
+    public boolean deleteImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
         if (imageSetId.isEmpty()) {
-            return;
+            return false;
         }
 
         // NOT WORKING DUE TO BUG IN FACEBOOK GRAPH API, STORING DUMMY LIKEWISE
@@ -257,11 +256,15 @@ public class ImageHostFacebook implements IImageHost {
         // fbClient.deleteObject(imageSetId);
 
         // Instead, uploading dummy as only picture in album
-        clearImageSet(imageSetTitle);
+        if (clearImageSet(imageSetTitle)) {
 
-        List<FqlPhoto> markerPhotos = getFacebookImageFql(imageSetId, MARKERFORSET);
-        if (!markerPhotos.isEmpty()) {
-            fbClient.deleteObject(markerPhotos.get(0).object_id);
+            List<FqlPhoto> markerPhotos = getFacebookImageFql(imageSetId, MARKERFORSET);
+            if (!markerPhotos.isEmpty()) {
+                fbClient.deleteObject(markerPhotos.get(0).object_id);
+            }
+            return true;
+        } else {
+            return false;
         }
 
     }
@@ -270,21 +273,26 @@ public class ImageHostFacebook implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
+    public boolean
+        uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         if (!imageSetExists(imageSetTitle)) {
             createImageSet(imageSetTitle);
+        }
+        if (imageExists(imageSetTitle, imageTitle)) {
+            return false;
+
         }
         String imageSetId = getFacebookImageSetId(imageSetTitle);
 
         // upload image to facebook
         try {
-            return fbClient.publish(imageSetId + "/photos", FacebookType.class,
+            fbClient.publish(imageSetId + "/photos", FacebookType.class,
                 BinaryAttachment.with(imageTitle + ".png", HImageHostHelper.getInputStreamFromImage(image)),
                 Parameter.with("name", imageTitle)).getId();
+            return true;
         } catch (IOException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
-        return "";
     }
 
     /**
@@ -334,10 +342,10 @@ public class ImageHostFacebook implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void clearImageSet(final String imageSetTitle) {
+    public boolean clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFacebookImageSetId(imageSetTitle);
         if (imageSetId.isEmpty())
-            return;
+            return false;
 
         final List<FqlPhoto> photos = getFacebookImageFql(imageSetId, "");
 
@@ -346,5 +354,6 @@ public class ImageHostFacebook implements IImageHost {
                 fbClient.deleteObject(ph.object_id);
             }
         }
+        return true;
     }
 }

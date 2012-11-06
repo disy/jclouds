@@ -89,46 +89,53 @@ public class ImageHostFile implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void deleteImage(final String imageSetTitle, final String imageTitle) {
+    public boolean deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         for (File singleFile : set.listFiles()) {
             if (singleFile.getName().equals(imageTitle + "." + IMAGE_COMPRESSION)) {
-                singleFile.delete();
-                break;
+                return singleFile.delete();
             }
         }
-
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteImageSet(final String imageSetTitle) {
+    public boolean deleteImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             for (File singleFile : set.listFiles()) {
-                singleFile.delete();
+                if (!singleFile.delete()) {
+                    return false;
+                }
             }
-            set.delete();
+            return set.delete();
         }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
+    public boolean
+        uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
         final File set = new File(mFile, imageSetTitle);
         set.mkdirs();
         final File imageFile = new File(set, imageTitle + "." + IMAGE_COMPRESSION);
+        if (imageFile.exists()) {
+            return false;
+        }
         try {
             imageFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(imageFile);
             ImageIO.write(image, IMAGE_COMPRESSION, fos);
             fos.flush();
             fos.close();
-            return imageFile.getAbsolutePath();
+            imageFile.getAbsolutePath();
+            return true;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -167,15 +174,16 @@ public class ImageHostFile implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void clearImageSet(final String imageSetTitle) {
+    public boolean clearImageSet(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
         if (set.exists()) {
             for (File singleFile : set.listFiles()) {
                 if (!singleFile.delete()) {
-                    throw new IllegalStateException(new StringBuilder("File ").append(
-                        singleFile.getAbsolutePath()).append(" could not be deleted!").toString());
+                    return false;
                 }
             }
+            return true;
         }
+        return false;
     }
 }

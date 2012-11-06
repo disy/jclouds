@@ -122,45 +122,52 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void deleteImage(String imageSetTitle, String imageTitle) {
+    public boolean deleteImage(String imageSetTitle, String imageTitle) {
         PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
         if (entry != null) {
             try {
                 entry.delete();
+                return true;
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
             } catch (ServiceException exc) {
                 throw new RuntimeException(exc);
             }
         }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void deleteImageSet(String imageSetTitle) {
+    public boolean deleteImageSet(String imageSetTitle) {
         AlbumEntry entry = getAlbumByName(imageSetTitle);
         if (entry != null) {
             try {
                 entry.delete();
+                return true;
             } catch (IOException exc) {
                 throw new RuntimeException(exc);
             } catch (ServiceException exc) {
                 throw new RuntimeException(exc);
             }
         }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String uploadImage(String imageSetTitle, String imageTitle, BufferedImage image) {
+    public boolean uploadImage(String imageSetTitle, String imageTitle, BufferedImage image) {
         AlbumEntry entry = getAlbumByName(imageSetTitle);
         if (entry == null) {
             createImageSet(imageSetTitle);
             entry = getAlbumByName(imageSetTitle);
+        }
+        if (imageExists(imageSetTitle, imageTitle)) {
+            return false;
         }
         PhotoEntry myPhoto = new PhotoEntry();
         myPhoto.setTitle(new PlainTextConstruct(imageTitle));
@@ -174,7 +181,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             myPhoto.setMediaSource(myMedia);
 
             service.insert(toPost, myPhoto);
-            return imageTitle;
+            return true;
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         } catch (ServiceException exc) {
@@ -214,9 +221,11 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public void clearImageSet(String imageSetTitle) {
-        deleteImageSet(imageSetTitle);
-        createImageSet(imageSetTitle);
+    public boolean clearImageSet(String imageSetTitle) {
+        if (deleteImageSet(imageSetTitle)) {
+            return createImageSet(imageSetTitle);
+        }
+        return false;
     }
 
     private final PhotoEntry getPhotoByNameNormal(String albumTitle, String imageTitle) {

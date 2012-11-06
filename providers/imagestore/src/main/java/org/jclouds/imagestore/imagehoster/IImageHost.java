@@ -86,16 +86,18 @@ public interface IImageHost {
      *            the set-title
      * @param imageTitle
      *            the image-title
+     * @return true if successful
      */
-    void deleteImage(final String imageSetTitle, final String imageTitle);
+    boolean deleteImage(final String imageSetTitle, final String imageTitle);
 
     /**
      * Delete image set.
      * 
      * @param imageSetTitle
      *            the set-title
+     * @return true if successful
      */
-    void deleteImageSet(final String imageSetTitle);
+    boolean deleteImageSet(final String imageSetTitle);
 
     /**
      * Upload image and add it to a specified set.
@@ -106,10 +108,10 @@ public interface IImageHost {
      *            the image title
      * @param image
      *            the image
-     * @return the image id
+     * @return true if upload successful, false if image already existing
      * 
      */
-    String uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image);
+    boolean uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image);
 
     /**
      * Download image.
@@ -137,7 +139,8 @@ public interface IImageHost {
      * 
      * @param imageSetTitle
      *            the set title
+     * @return true if successful
      */
-    void clearImageSet(final String imageSetTitle);
+    boolean clearImageSet(final String imageSetTitle);
 
 }
