@@ -36,10 +36,10 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
     /** Pixels needed for one Byte. */
     private static final float PIXELS_PER_BYTE = 3;
 
-    /** The colors. */
+    /** The colors. Used recommended colors from "Novel Color Scheme for 2D Barcode" paper. */
     private final Color[] colors = new Color[] {
-        new Color(0f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 1f, 0f), new Color(0f, 0f, 1f),
-        new Color(1f, 0f, 1f), new Color(1f, 1f, 0f), new Color(0f, 1f, 1f)
+        new Color(0f, 0f, 0f), new Color(0.5f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 0.5f, 0.5f),
+        new Color(0.5f, 0.5f, 0.5f), new Color(1f, 0.5f, 0.5f), new Color(0f, 1f, 1f)
     };
 
     /**

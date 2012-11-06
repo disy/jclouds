@@ -96,14 +96,17 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
                         byte b = bs[bp++];
 
+                        // the current byte-color values
                         int[] bc =
                             getLayeredColorsFromByte(colors, b, layer, numeralSystem, pixelsPerBytePerLayer);
 
+                        // if byte-color == null, set bc as initial byte-color
                         if (currByteColor == null) {
                             currByteColor = bc;
                             continue;
                         }
 
+                        // add all byte-color values of the layers together
                         for (int c = 0; c < pixelsPerBytePerLayer; c++) {
                             currByteColor[c] = currByteColor[c] + bc[c];
                         }
@@ -151,7 +154,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
                             colorVal, numeralSystem);
                 }
 
-                // if a complete chunk is collected, extract the bytes 
+                // if a complete chunk is collected, extract the bytes
                 if (pix % pixelsPerBytePerLayer == pixelsPerBytePerLayer - 1) {
 
                     for (int layer = 0; layer < LAYERS; layer++) {
@@ -186,18 +189,22 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
      */
     private int[] getLayeredColorsFromByte(final Color[][] colors, final byte b, final int layer,
         final int numeralSystem, final int pixelInNumSys) {
+        // unsign byte
         final int it = b & 0xFF;
         String numVal = Integer.toString(it, numeralSystem);
         final int[] byteColors = new int[pixelInNumSys];
 
+        // add 0 to numVal-string until it matches the expected pixelSize of the numeral system
         while (numVal.length() < pixelInNumSys) {
             numVal = "0" + numVal;
         }
 
         for (int i = 0; i < pixelInNumSys; i++) {
 
+            // the next value in given string
             String val = numVal.substring(i, i + 1);
 
+            // get the color index
             int dc = Integer.parseInt(val, numeralSystem);
 
             byteColors[i] = colors[layer][dc].getRGB();
