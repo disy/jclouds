@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.inject.Named;
@@ -165,9 +167,15 @@ public class ImageHostFile implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public int countImagesInSet(final String imageSetTitle) {
+    public Set<String> imageSetContent(final String imageSetTitle) {
         final File set = new File(mFile, imageSetTitle);
-        return set.list().length;
+        Set<String> returnVal = new HashSet<String>();
+        if (set.list() != null) {
+            for (String photo : set.list()) {
+                returnVal.add(photo);
+            }
+        }
+        return returnVal;
     }
 
     /**

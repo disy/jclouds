@@ -29,6 +29,8 @@ package org.jclouds.imagestore.imagehoster.flickr;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.json.JSONException;
@@ -50,6 +52,11 @@ import com.googlecode.flickrjandroid.uploader.UploadMetaData;
  * @author Wolfgang Miller
  */
 public class ImageHostFlickr implements IImageHost {
+
+    /** Dummy Picture for marking deleted albums. */
+    private static final BufferedImage DUMMYIMAGE = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_BINARY);
+    /** Deleted set name. */
+    private static final String MARKERFORSET = "MARKER";
 
     /** The Flickr instance. */
     private Flickr fl;
@@ -190,9 +197,7 @@ public class ImageHostFlickr implements IImageHost {
         if (imageSetExists(imageSetTitle))
             return null;
 
-        final BufferedImage dummyImage = new BufferedImage(10, 10, BufferedImage.TYPE_BYTE_BINARY);
-
-        final String dummyID = uploadImage("Dummy_" + Long.toString(System.currentTimeMillis()), dummyImage);
+        final String dummyID = uploadImage(MARKERFORSET, DUMMYIMAGE);
         try {
             return psi.create(imageSetTitle, "", dummyID);
         } catch (IOException e) {
@@ -337,11 +342,32 @@ public class ImageHostFlickr implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public int countImagesInSet(final String imageSetTitle) {
+    public Set<String> imageSetContent(final String imageSetTitle) {
+        Set<String> returnVal = new HashSet<String>();
+
         final Photoset ps = getFlickrImageSet(imageSetTitle);
-        if (ps == null)
-            return 0;
-        return ps.getPhotoCount();
+
+        if (ps == null) {
+            return returnVal;
+        }
+
+        try {
+            PhotoList list = psi.getPhotos(ps.getId(), 1000, 0);
+            for (Photo photo : list) {
+                if (!photo.getTitle().equals(MARKERFORSET)) {
+                    returnVal.add(photo.getTitle());
+                }
+
+            }
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        } catch (FlickrException exc) {
+            throw new RuntimeException(exc);
+        } catch (JSONException exc) {
+            throw new RuntimeException(exc);
+        }
+
+        return returnVal;
     }
 
     /**

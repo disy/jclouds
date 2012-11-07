@@ -27,6 +27,7 @@
 package org.jclouds.imagestore.imagehoster;
 
 import java.awt.image.BufferedImage;
+import java.util.Set;
 
 /**
  * The ImageHoster interface.
@@ -130,9 +131,9 @@ public interface IImageHost {
      * 
      * @param imageSetTitle
      *            the set title
-     * @return count of images in the set
+     * @return Set of strings in the set
      */
-    int countImagesInSet(final String imageSetTitle);
+    Set<String> imageSetContent(final String imageSetTitle);
 
     /**
      * Deletes all content of the image set without deleting the set itself.

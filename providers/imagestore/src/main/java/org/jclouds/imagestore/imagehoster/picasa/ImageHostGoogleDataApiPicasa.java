@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -211,13 +213,24 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public int countImagesInSet(String imageSetTitle) {
+    public Set<String> imageSetContent(String imageSetTitle) {
+        Set<String> returnVal = new HashSet<String>();
+
         AlbumEntry entry = getAlbumByName(imageSetTitle);
-        if (entry != null) {
-            return entry.getPhotosUsed();
-        } else {
-            return 0;
+        try {
+            if (entry != null) {
+                AlbumFeed feed = entry.getFeed("photo");
+                for (PhotoEntry photo : feed.getPhotoEntries()) {
+                    returnVal.add(photo.getTitle().getPlainText());
+                }
+            }
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        } catch (ServiceException exc) {
+            throw new RuntimeException(exc);
         }
+
+        return returnVal;
     }
 
     /**

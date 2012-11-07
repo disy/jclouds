@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.xml.parsers.ParserConfigurationException;
@@ -326,15 +328,16 @@ public class ImageHostFacebook implements IImageHost {
      * {@inheritDoc}
      */
     @Override
-    public int countImagesInSet(final String imageSetTitle) {
-        FqlAlbum fAlbum = getFacebookImageSetFql(imageSetTitle);
-
-        if (fAlbum == null) {
-            throw new IllegalArgumentException("There is no facebook album with given title: \""
-                + imageSetTitle + "\"!");
+    public Set<String> imageSetContent(final String imageSetTitle) {
+        Set<String> returnVal = new HashSet<String>();
+        final String imageSetId = getFacebookImageSetId(imageSetTitle);
+        List<FqlPhoto> photos = getFacebookImageFql(imageSetId, "");
+        for (FqlPhoto photo : photos) {
+            if (!photo.caption.equals(MARKERFORSET)) {
+                returnVal.add(photo.caption);
+            }
         }
-
-        return fAlbum.photo_count;
+        return returnVal;
     }
 
     /**

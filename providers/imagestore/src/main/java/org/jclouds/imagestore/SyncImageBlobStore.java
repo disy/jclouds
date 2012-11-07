@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -128,7 +129,12 @@ public class SyncImageBlobStore implements BlobStore {
      */
     @Override
     public long countBlobs(final String container) {
-        return ih.countImagesInSet(container);
+        Set<String> photos = ih.imageSetContent(container);
+        Set<String> realPhotos = new HashSet<String>();
+        for (String photoName : photos) {
+            realPhotos.add(photoName.split(DEL)[0]);
+        }
+        return realPhotos.size();
     }
 
     /**

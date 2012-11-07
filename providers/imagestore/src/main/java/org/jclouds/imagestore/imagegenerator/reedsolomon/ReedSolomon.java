@@ -68,23 +68,29 @@ public class ReedSolomon implements IEncoder {
             returnVal[i] = new byte[splitToSize];
             System.arraycopy(param, i * splitToSize, returnVal[i], 0, splitToSize);
         }
-        returnVal[returnVal.length - 1] =
-            new byte[param.length % splitToSize == 0 ? param.length : param.length % splitToSize];
-        System.arraycopy(param, (returnVal.length - 1) * splitToSize, returnVal[returnVal.length - 1], 0,
-            returnVal[returnVal.length - 1].length);
+        if (returnVal.length > 0) {
+            returnVal[returnVal.length - 1] =
+                new byte[param.length % splitToSize == 0 ? param.length : param.length % splitToSize];
+            System.arraycopy(param, (returnVal.length - 1) * splitToSize, returnVal[returnVal.length - 1], 0,
+                returnVal[returnVal.length - 1].length);
+        }
         return returnVal;
     }
 
     private byte[] combine(byte[][] splitted, int splitToSize) {
-        byte[] returnVal =
-            new byte[((splitted.length - 1) * splitToSize) + splitted[splitted.length - 1].length];
-        for (int i = 0; i < splitted.length - 1; i++) {
-            System.arraycopy(splitted[i], 0, returnVal, i * splitToSize, splitToSize);
-        }
+        if (splitted.length > 0) {
+            byte[] returnVal =
+                new byte[((splitted.length - 1) * splitToSize) + splitted[splitted.length - 1].length];
+            for (int i = 0; i < splitted.length - 1; i++) {
+                System.arraycopy(splitted[i], 0, returnVal, i * splitToSize, splitToSize);
+            }
 
-        System.arraycopy(splitted[splitted.length - 1], 0, returnVal, (splitted.length - 1) * splitToSize,
-            splitted[splitted.length - 1].length);
-        return returnVal;
+            System.arraycopy(splitted[splitted.length - 1], 0, returnVal,
+                (splitted.length - 1) * splitToSize, splitted[splitted.length - 1].length);
+            return returnVal;
+        } else {
+            return new byte[0];
+        }
 
     }
 

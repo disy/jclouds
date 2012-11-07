@@ -93,30 +93,41 @@ public class ImageHostTest {
 
         for (IImageHost host : pHandlers) {
             host.deleteImageSet(SET1);
+            assertEquals(host.toString(), 0, host.imageSetContent(SET1).size());
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE1));
             assertFalse(host.toString(), host.imageSetExists(SET1));
             assertTrue(host.toString(), host.createImageSet(SET1));
             assertFalse(host.toString(), host.createImageSet(SET1));
+            assertEquals(host.toString(), 0, host.imageSetContent(SET1).size());
             assertTrue(host.toString(), host.imageSetExists(SET1));
             assertTrue(host.uploadImage(SET1, IMAGE1, image));
+            assertEquals(host.toString(), 1, host.imageSetContent(SET1).size());
             assertFalse(host.uploadImage(SET1, IMAGE1, image));
+            assertEquals(host.toString(), 1, host.imageSetContent(SET1).size());
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             BufferedImage download = host.downloadImage(SET1, IMAGE1);
             compareImages(image, download);
             assertTrue(host.deleteImage(SET1, IMAGE1));
+            assertEquals(host.toString(), 0, host.imageSetContent(SET1).size());
             assertFalse(host.imageExists(SET1, IMAGE1));
             assertTrue(host.uploadImage(SET1, IMAGE1, image));
+            assertEquals(host.toString(), 1, host.imageSetContent(SET1).size());
             assertTrue(host.uploadImage(SET1, IMAGE2, image));
+            assertEquals(host.toString(), 2, host.imageSetContent(SET1).size());
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE2));
             assertTrue(host.clearImageSet(SET1));
+            assertEquals(host.toString(), 0, host.imageSetContent(SET1).size());
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE1));
             assertFalse(host.toString(), host.imageExists(SET1, IMAGE2));
             assertTrue(host.uploadImage(SET1, IMAGE1, image));
+            assertEquals(host.toString(), 1, host.imageSetContent(SET1).size());
             assertTrue(host.uploadImage(SET1, IMAGE2, image));
+            assertEquals(host.toString(), 2, host.imageSetContent(SET1).size());
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE1));
             assertTrue(host.toString(), host.imageExists(SET1, IMAGE2));
             assertTrue(host.deleteImageSet(SET1));
+            assertEquals(host.toString(), 0, host.imageSetContent(SET1).size());
             assertFalse(host.toString(), host.imageSetExists(SET1));
         }
     }
