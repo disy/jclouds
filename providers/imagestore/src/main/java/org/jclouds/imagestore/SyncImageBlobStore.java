@@ -304,6 +304,14 @@ public class SyncImageBlobStore implements BlobStore {
         }
     }
 
+    public IImageHost getImageHost() {
+        return ih;
+    }
+
+    public ImageGenerator getImageGenerator() {
+        return ig;
+    }
+
     /**
      * {@inheritDoc}
      */

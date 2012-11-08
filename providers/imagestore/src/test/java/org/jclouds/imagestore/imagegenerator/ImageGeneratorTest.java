@@ -81,8 +81,8 @@ public class ImageGeneratorTest {
     // }
 
     static {
-         RAWFILEBYTES = new byte[524288];
-//        RAWFILEBYTES = new byte[200];
+        RAWFILEBYTES = new byte[524288];
+        // RAWFILEBYTES = new byte[200];
         new Random(12l).nextBytes(RAWFILEBYTES);
     }
 
@@ -245,8 +245,7 @@ public class ImageGeneratorTest {
                 {
                     IBytesToImagePainter.class,
                     new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
                         new IEncoder.DummyEncoder()
                     }
@@ -298,7 +297,8 @@ public class ImageGeneratorTest {
                     bos.close();
 
                     if (!Arrays.equals(RAWFILEBYTES, bss)) {
-                        fail();
+                        fail(new StringBuilder(pa.toString()).append(" failed on host ").append(
+                            host.toString()).toString());
                     }
 
                 }

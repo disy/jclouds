@@ -151,6 +151,10 @@ public class ImageGenerator {
         return maxBytesPerImage;
     }
 
+    public IBytesToImagePainter getPainter() {
+        return bp;
+    }
+
     /**
      * Saves the array length in the first 4 bytes of the array.
      * 

@@ -94,7 +94,8 @@ public class ImageHostFile implements IImageHost {
     public boolean deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         for (File singleFile : set.listFiles()) {
-            if (singleFile.getName().equals(imageTitle)) {
+            if (singleFile.getName().equals(
+                new StringBuilder(imageTitle).append(".").append(IMAGE_COMPRESSION).toString())) {
                 return singleFile.delete();
             }
         }
@@ -172,7 +173,7 @@ public class ImageHostFile implements IImageHost {
         Set<String> returnVal = new HashSet<String>();
         if (set.list() != null) {
             for (String photo : set.list()) {
-                returnVal.add(photo);
+                returnVal.add(photo.substring(0, photo.length() - 4));
             }
         }
         return returnVal;

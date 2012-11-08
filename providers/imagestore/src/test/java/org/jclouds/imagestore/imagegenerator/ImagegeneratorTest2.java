@@ -4,11 +4,13 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 
 import com.google.common.io.Files;
 
@@ -27,47 +29,50 @@ public class ImagegeneratorTest2 {
 
         final String setTitle = "TestSet_" + System.currentTimeMillis();
 
-        IImageHost[] iha =
-            new IImageHost[] {
-                new ImageHostFile(Files.createTempDir().getPath()), new ImageHostFlickr(),
-                new ImageHostFacebook()
+        IImageHost[] iha = new IImageHost[] {
+            // new ImageHostFile(Files.createTempDir().getPath())
+            new ImageHostFlickr()
+        // new ImageHostFacebook()
+        // new ImageHostGoogleDataApiPicasa()
             };
 
         for (IImageHost ih : iha) {
 
             System.out.println("\n<<<<<<<<<<<<< " + ih.getClass().getName() + " >>>>>>>>>>>>>>\n");
 
-            for (int numSys = 2; numSys <= 16; numSys++) {
+            // for (int numSys = 2; numSys <= 16; numSys++) {
 
-                IBytesToImagePainter ip = new LayeredBytesToImagePainter(numSys);
+            // IBytesToImagePainter ip = new LayeredBytesToImagePainter(numSys);
 
-                int[] dim =
-                    getWidhtAndHeight(ip.pixelsPerByte(), TESTBYTES.length, ih.getMaxImageWidth(), ih
-                        .getMaxImageHeight());
+            IBytesToImagePainter ip = new BinaryBytesToImagePainter();
+            int[] dim =
+                getWidhtAndHeight(ip.pixelsPerByte(), TESTBYTES.length, ih.getMaxImageWidth(), ih
+                    .getMaxImageHeight());
 
-                System.out.println("3layered painter with numeral system " + numSys);
+            // System.out.println("3layered painter with numeral system " + numSys);
 
-                ImageGenerator ig = new ImageGenerator(ip, dEncoder, dim[0], dim[1]);
+            ImageGenerator ig = new ImageGenerator(ip, dEncoder, dim[0], dim[1]);
 
-                final BufferedImage bi = ig.createImageFromBytes(TESTBYTES);
+            final BufferedImage bi = ig.createImageFromBytes(TESTBYTES);
 
-                System.out.println("image-size: " + bi.getWidth() + " X " + bi.getHeight());
+            System.out.println("image-size: " + bi.getWidth() + " X " + bi.getHeight());
 
-                final long timeMillis = System.currentTimeMillis();
+            final long timeMillis = System.currentTimeMillis();
 
-                final String imageTitle = "ns_" + numSys + "_tm_" + timeMillis;
+            // final String imageTitle = "ns_" + numSys + "_tm_" + timeMillis;
+            final String imageTitle = "ns_" + 1 + "_tm_" + timeMillis;
 
-                ih.uploadImage(setTitle, imageTitle, bi);
+            ih.uploadImage(setTitle, imageTitle, bi);
 
-                BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
+            BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
 
-                byte[] backB = ig.getBytesFromImage(backImage);
+            byte[] backB = ig.getBytesFromImage(backImage);
 
-                // : " works not on " + ih.toString() + "!!"));
-                compareByteArrays(backB, TESTBYTES);
+            // : " works not on " + ih.toString() + "!!"));
+            compareByteArrays(backB, TESTBYTES);
 
-                System.out.println("\n######################################\n");
-            }
+            System.out.println("\n######################################\n");
+            // }
         }
     }
 
@@ -106,8 +111,8 @@ public class ImagegeneratorTest2 {
 
                 match++;
             } else {
-                System.out.print("\n" + i + ". not match " + bs1[i] + " != " + bs2[i]
-                    + " !!!!!!!!!!!!!!!!!!!!!!!!");
+                // System.out.print("\n" + i + ". not match " + bs1[i] + " != " + bs2[i]
+                // + " !!!!!!!!!!!!!!!!!!!!!!!!");
                 notMatch++;
             }
         }
