@@ -85,7 +85,7 @@ public final class HBytesToImagePainterHelper {
      * @return String with the pixel's value converted to the numeral system.
      */
     static String
-        getNumericalValueFromPixelColor(final Color[] colors, final int rgb, final int numeralSystem) {
+        getNumeralValueFromPixelColor(final Color[] colors, final int rgb, final int numeralSystem) {
         final int red = extractLayerColorFromRGB(rgb, 2);
         final int green = extractLayerColorFromRGB(rgb, 1);
         final int blue = extractLayerColorFromRGB(rgb, 0);
@@ -212,7 +212,7 @@ public final class HBytesToImagePainterHelper {
     }
 
     /**
-     * Extracts the numerical value from current pixel's RGB-value.
+     * Extracts the numeral value from current pixel's RGB-value.
      * 
      * @param layer
      *            The current layer
@@ -222,9 +222,9 @@ public final class HBytesToImagePainterHelper {
      *            The RGB-value of the current pixel
      * @param numeralSystem
      *            The numeral system used
-     * @return The numerical value extracted from the RGB-value
+     * @return The numeral value extracted from the RGB-value
      */
-    static String getLayeredNumericalValueFromPixelColor(final int layer, final Color[][] colors,
+    static String getLayeredNumeralValueFromPixelColor(final int layer, final Color[][] colors,
         final int colorVal, final int numeralSystem) {
 
         // the distance

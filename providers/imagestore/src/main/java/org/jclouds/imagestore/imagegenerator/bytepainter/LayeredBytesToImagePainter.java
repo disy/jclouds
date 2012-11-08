@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
- * This abstract class offers an abstraction to create different layered byte painters.
+ * This class offers an abstraction to create different layered byte painters.
  * 
  * @author Wolfgang Miller, University of Konstanz.
  * 
  */
-public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToImagePainter {
+public class LayeredBytesToImagePainter implements IBytesToImagePainter {
 
     /** The amount of image layers. */
     private static final int LAYERS = 3;
@@ -22,28 +22,167 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
     /** The amount of pixels needed for one byte in one layer. */
     private final int pixelsPerBytePerLayer;
 
+    public enum PainterType {
+        /**
+         * The BinaryLayeredBytesToPixelPainter.
+         * Numeral System: Binary (2) <br/>
+         * Layers: 3 <br/>
+         * 1Byte = 8/3Pixel
+         * 8Bit pro Pixel (2Bit power 3Layers)<br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        BINARY_LAYERED(2),
+
+        /**
+         * The TernaryLayeredBytesToImagePainter.
+         * <p/>
+         * Numeral System: Ternary (3) <br/>
+         * Layers: 3 <br/>
+         * 1Byte = 2Pixels <br/>
+         * 27Bit pro Pixel (3Bit power 3Layers) <br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        TERNARY(3),
+
+        /**
+         * The QuatenaryLayeredBytesToImagePainter.
+         * <p/>
+         * Numeral System: Quaternary (4) <br/>
+         * Layers: 3 <br/>
+         * 1Byte = 4/3 Pixels <br/>
+         * 64Bit pro Pixel (4Bit power 3Layers) <br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        QUATENARY_LAYERED(4),
+
+        /**
+         * The SeptenaryLayeredBytesToImagePainter.
+         * <p/>
+         * Numeral System: Septenary (7) <br/>
+         * Layers: 3 <br/>
+         * 1Byte = 1 Pixel<br/>
+         * 343Bit pro Pixel (7Bit power 3Layers)<br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         * */
+        SEPTENARY_LAYERED(7),
+
+        /**
+         * HexadecimalLayeredBytesToImagePainter.
+         * <p/>
+         * Numeral System: Hexadecimal <br/>
+         * Layers: 3 <br/>
+         * 1Byte = 2/3 Pixel <br/>
+         * 4096Bit pro Pixel (16Bit power 3Layers) <br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        HEXADECIMAL_LAYERED(16);
+
+        /** The numeral system. */
+        final int numSys;
+
+        /**
+         * Constructor. Sets the numeral system of a predefined ByteToImagePainter.
+         * 
+         * @param pNumSys
+         *            the numeral system
+         */
+        PainterType(final int pNumSys) {
+            numSys = pNumSys;
+
+        }
+    }
+
+    /** The type of the BufferedImage. */
+    private final int bufferedImageType = BufferedImage.TYPE_INT_RGB;
+
     /** The different pixel colors. */
     private final Color[][] colors;
 
     /**
-     * Constructor. Generates a layered byte painter with the values given by the subclass.
+     * Constructor. Generates a layered byte painter with the given numeral system.
      * 
      * @param numSys
      *            The numeral system
-     * @param ppBpL
-     *            The pixels amount of pixels needed for one byte per layer
      */
-    public AAbstractLayeredBytesToImagePainter(final int numSys, final int ppBpL) {
+    public LayeredBytesToImagePainter(final int numSys) {
+        pixelsPerBytePerLayer = calcPixelsPerBytePerLayer(numSys);
         numeralSystem = numSys;
         colors = HBytesToImagePainterHelper.generate3LayeredUniformlyDistributedColors(numeralSystem);
-        pixelsPerBytePerLayer = ppBpL;
+    }
+
+    /**
+     * Constructor. Generates a layered byte painter of predefined type.
+     * 
+     * @param pt
+     *            the predefined LayeredBytesToImagePainter
+     */
+    public LayeredBytesToImagePainter(final PainterType pt) {
+        this(pt.numSys);
+    }
+
+    /**
+     * Calculates how many pixels needed to store one byte in one layer.
+     * 
+     * @param numSys
+     *            numeral system
+     * @return the amount of pixels needed to store one byte in one layer
+     */
+    private int calcPixelsPerBytePerLayer(final int numSys) {
+        return (int)Math.ceil(Math.log(256) / Math.log(numSys));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public abstract int getImageType();
+    public int getImageType() {
+        return bufferedImageType;
+    }
 
     /**
      * {@inheritDoc}
@@ -76,7 +215,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
 
                 // amount of used pixels
                 final int pix = hpix + x;
-                // if pos == 0 the new byte buckets start
+                // if pos == 0 the new byte bucket starts
                 final int pos = pix % pixelsPerBytePerLayer;
 
                 if (pos == 0) {
@@ -112,7 +251,6 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
                         }
                     }
                 }
-
                 Color nc = new Color(currByteColor[pos]);
                 g.setColor(nc);
                 g.drawLine(x, y, x, y);
@@ -150,7 +288,7 @@ public abstract class AAbstractLayeredBytesToImagePainter implements IBytesToIma
                     final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
 
                     bytesInNumSys[layer] +=
-                        HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(layer, colors,
+                        HBytesToImagePainterHelper.getLayeredNumeralValueFromPixelColor(layer, colors,
                             colorVal, numeralSystem);
                 }
 
