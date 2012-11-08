@@ -127,7 +127,7 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
                 final int pix = hpix + x;
 
                 septenary +=
-                    HBytesToImagePainterHelper.getNumericalValueFromPixelColor(colors, img.getRGB(x, y),
+                    HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
                 if (pix % PIXELS_PER_BYTE == mod) {

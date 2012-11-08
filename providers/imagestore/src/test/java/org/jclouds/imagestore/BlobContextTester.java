@@ -50,7 +50,8 @@ public class BlobContextTester {
 
     static {
         for (int i = 0; i < vals.length; i++) {
-            vals[i] = new byte[ran.nextInt(700000)];
+            vals[i] = new byte[ran.nextInt(2000)];
+            // vals[i] = new byte[ran.nextInt(700000)];
             ran.nextBytes(vals[i]);
         }
     }
@@ -99,7 +100,7 @@ public class BlobContextTester {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 ByteStreams.copy(in, out);
                 if (!Arrays.equals(out.toByteArray(), vals[i])) {
-//                    fail();
+                    fail();
                 }
             }
 

@@ -45,13 +45,13 @@
             <artifactId>guava</artifactId>
             <version>13.0</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jclouds</groupId>
             <artifactId>jclouds-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.jclouds</groupId>
             <artifactId>jclouds-blobstore</artifactId>

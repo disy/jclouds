@@ -208,7 +208,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
 
                     final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
                     octs +=
-                        HBytesToImagePainterHelper.getLayeredNumericalValueFromPixelColor(layer, colors,
+                        HBytesToImagePainterHelper.getLayeredNumeralValueFromPixelColor(layer, colors,
                             colorVal, NUMERAL_SYSTEM);
 
                 }

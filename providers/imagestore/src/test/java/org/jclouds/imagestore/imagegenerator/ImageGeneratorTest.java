@@ -26,7 +26,7 @@
  */
 package org.jclouds.imagestore.imagegenerator;
 
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,18 +41,10 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.OctalLayeredColorAlternatingBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryLayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
@@ -89,7 +81,8 @@ public class ImageGeneratorTest {
     // }
 
     static {
-        RAWFILEBYTES = new byte[524288];
+        // RAWFILEBYTES = new byte[524288];
+        RAWFILEBYTES = new byte[200];
         new Random(12l).nextBytes(RAWFILEBYTES);
     }
 
@@ -135,7 +128,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "allPainters", groups = "remoteTests")
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -155,13 +148,8 @@ public class ImageGeneratorTest {
                 {
                     IBytesToImagePainter.class,
                     new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                        new OctalLayeredBytesToImagePainter(),
-                        // new OctalLayeredColorAlternatingBytesToImagePainter(),
-                        new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter(),
-                        // new DihectpenthexagonBytesToImagePainter(),
+                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
                         new DihectpenthexagonLayeredBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
                         new IEncoder.DummyEncoder(),
@@ -190,7 +178,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "flickrPainters", groups = "remoteTests")
     public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -210,11 +198,8 @@ public class ImageGeneratorTest {
                 {
                     IBytesToImagePainter.class,
                     new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-                        new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                        // new OctalLayeredColorAlternatingBytesToImagePainter(),
-                        new HexadecimalBytesToImagePainter()
+                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
                         new IEncoder.DummyEncoder()
                     }
@@ -240,7 +225,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
     public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -255,20 +240,18 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "facebookPainters")
     public Object[][] facebookPainters() {
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
-                    new BinaryBytesToImagePainter(), new BinaryLayeredBytesToImagePainter(),
-                // new QuaternaryBytesToImagePainter(), new QuaternaryLayeredBytesToImagePainter(),
-                // new SeptenaryBytesToImagePainter(), new SeptenaryLayeredBytesToImagePainter(),
-                // new OctalLayeredBytesToImagePainter(),// new
-                // OctalLayeredColorAlternatingBytesToImagePainter(),
-                // new HexadecimalBytesToImagePainter(), new HexadecimalLayeredBytesToImagePainter()
-                }, IEncoder.class, new IEncoder[] {
-                    new IEncoder.DummyEncoder()
+                {
+                    IBytesToImagePainter.class,
+                    new IBytesToImagePainter[] {
+                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
+                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                    }, IEncoder.class, new IEncoder[] {
+                        new IEncoder.DummyEncoder()
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 
@@ -314,8 +297,10 @@ public class ImageGeneratorTest {
                     byte[] bss = bos.toByteArray();
                     bos.close();
 
-                    assertTrue(new StringBuilder("Check for ").append(pa.getClass().getName()).append(
-                        " failed.").toString(), Arrays.equals(RAWFILEBYTES, bss));
+                    if (!Arrays.equals(RAWFILEBYTES, bss)) {
+                        fail();
+                    }
+
                 }
             }
         }

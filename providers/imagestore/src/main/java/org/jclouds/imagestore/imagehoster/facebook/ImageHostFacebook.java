@@ -277,14 +277,18 @@ public class ImageHostFacebook implements IImageHost {
     @Override
     public boolean
         uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
-        if (!imageSetExists(imageSetTitle)) {
-            createImageSet(imageSetTitle);
-        }
-        if (imageExists(imageSetTitle, imageTitle)) {
-            return false;
-
-        }
+        
         String imageSetId = getFacebookImageSetId(imageSetTitle);
+        
+        if (imageSetId.isEmpty()) {
+            createImageSet(imageSetTitle);
+            imageSetId = getFacebookImageSetId(imageSetTitle);
+        }
+        
+        if (!getFacebookImageId(imageSetId, imageTitle).isEmpty()) {
+            return false;
+        }
+        
 
         // upload image to facebook
         try {

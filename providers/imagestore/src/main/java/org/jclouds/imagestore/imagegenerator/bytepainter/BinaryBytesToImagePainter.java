@@ -170,7 +170,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
                 final int pix = hpix + x;
 
-                binary += getNumericalValueFromPixelColor(img.getRGB(x, y));
+                binary += getNumeralValueFromPixelColor(img.getRGB(x, y));
 
                 if (pix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
                     byte b = (byte)Integer.parseInt(binary, NUMERAL_SYSTEM);
@@ -183,13 +183,13 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     }
 
     /**
-     * Extracts the numerical value from current pixel's RGB-value.
+     * Extracts the numeral value from current pixel's RGB-value.
      * 
      * @param rgb
      *            The RGB-value of the current pixel.
      * @return The binary-value.
      */
-    private char getNumericalValueFromPixelColor(final int rgb) {
+    private char getNumeralValueFromPixelColor(final int rgb) {
         final Color c = new Color(rgb);
         final int bl = c.getBlue() > 128 ? 1 : 0;
         final int gr = c.getGreen() > 128 ? 1 : 0;

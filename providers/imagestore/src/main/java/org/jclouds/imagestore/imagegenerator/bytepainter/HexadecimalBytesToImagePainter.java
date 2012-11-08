@@ -128,7 +128,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
             for (int x = 0; x < w; x++) {
 
                 hex +=
-                    HBytesToImagePainterHelper.getNumericalValueFromPixelColor(colors, img.getRGB(x, y),
+                    HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
                 if (x % 2 == 1) {

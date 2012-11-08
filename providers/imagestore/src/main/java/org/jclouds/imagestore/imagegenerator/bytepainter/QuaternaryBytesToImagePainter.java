@@ -53,7 +53,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The image type to be used. */
-    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_BYTE_GRAY;
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** The used numeral system. */
     private static final int NUMERAL_SYSTEM = 4;
     /** Pixels needed for one Byte. */
@@ -61,7 +61,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
     /** The colors. */
     Color[] colors = new Color[] {
-        Color.WHITE, new Color(1, 0, 0), new Color(0, 1, 1), Color.BLACK
+        Color.WHITE, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.BLACK
     };
 
     /**
@@ -150,7 +150,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
                 final int pix = hpix + x;
 
                 quaternary +=
-                    HBytesToImagePainterHelper.getNumericalValueFromPixelColor(colors, img.getRGB(x, y),
+                    HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
                 if (pix % PIXELS_PER_BYTE == mod) {
