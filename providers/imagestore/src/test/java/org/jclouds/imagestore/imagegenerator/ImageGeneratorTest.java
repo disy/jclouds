@@ -81,8 +81,8 @@ public class ImageGeneratorTest {
     // }
 
     static {
-        // RAWFILEBYTES = new byte[524288];
-        RAWFILEBYTES = new byte[200];
+         RAWFILEBYTES = new byte[524288];
+//        RAWFILEBYTES = new byte[200];
         new Random(12l).nextBytes(RAWFILEBYTES);
     }
 

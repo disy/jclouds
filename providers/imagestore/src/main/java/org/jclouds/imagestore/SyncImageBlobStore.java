@@ -296,7 +296,12 @@ public class SyncImageBlobStore implements BlobStore {
      */
     @Override
     public void removeBlob(final String container, final String name) {
-        ih.deleteImage(container, new StringBuilder(name).append(DEL).append(0).toString());
+        Set<String> setContent = ih.imageSetContent(container);
+        for (String blobName : setContent) {
+            if (blobName.split(DEL)[0].equals(name)) {
+                ih.deleteImage(container, blobName);
+            }
+        }
     }
 
     /**

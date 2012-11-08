@@ -94,7 +94,7 @@ public class ImageHostFile implements IImageHost {
     public boolean deleteImage(final String imageSetTitle, final String imageTitle) {
         final File set = new File(mFile, imageSetTitle);
         for (File singleFile : set.listFiles()) {
-            if (singleFile.getName().equals(imageTitle + "." + IMAGE_COMPRESSION)) {
+            if (singleFile.getName().equals(imageTitle)) {
                 return singleFile.delete();
             }
         }

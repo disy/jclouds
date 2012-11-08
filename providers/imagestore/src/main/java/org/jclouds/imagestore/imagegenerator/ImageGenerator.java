@@ -183,7 +183,7 @@ public class ImageGenerator {
         final int b3 = (int)bs[2] & 0xFF;
         final int b4 = (int)bs[3] & 0xFF;
         final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
-        
+
         byte[] bss;
         if (oLength < 0 || oLength > bs.length - HEADER_OFFSET) {
             bss = new byte[0];
