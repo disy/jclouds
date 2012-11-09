@@ -77,7 +77,7 @@ public class ImageGeneratorTest {
     // }
 
     static {
-        RAWFILEBYTES = new byte[524288];
+        RAWFILEBYTES = new byte[4288];
         // RAWFILEBYTES = new byte[200];
         new Random(12l).nextBytes(RAWFILEBYTES);
     }
@@ -99,7 +99,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "localTests")
+    @Test(dataProvider = "allPainters", groups = "localTests", enabled = false)
     public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -124,7 +124,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests")
+    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -175,7 +175,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "flickrPainters", groups = "remoteTests")
+    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = true)
     public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -222,7 +222,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
+    @Test(dataProvider = "facebookPainters", groups = "remoteTests", enabled = false)
     public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
