@@ -29,9 +29,9 @@ public class ImageHostFacebook implements IImageHost {
     private static final String MARKERFORSET = "MARKER";
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 720;
+    private static final int MAX_IMAGE_WIDTH = 2048;
     /** The maximum image height. */
-    private static final int MAX_IMAGE_HEIGHT = 720;
+    private static final int MAX_IMAGE_HEIGHT = 2048;
     /** The FacebookClient instance. */
     private FacebookClient fbClient;
 
@@ -59,6 +59,12 @@ public class ImageHostFacebook implements IImageHost {
 
     }
 
+    private static class FqlBigPhotoURL {
+        /** The photo URL. */
+        @Facebook
+        String src;
+    }
+
     private static class FqlPhoto {
 
         /** Caption of picture. */
@@ -68,10 +74,6 @@ public class ImageHostFacebook implements IImageHost {
         /** The photo id. */
         @Facebook
         String object_id;
-
-        /** The big photo URL. */
-        @Facebook
-        String src_big;
     }
 
     /**
@@ -88,6 +90,19 @@ public class ImageHostFacebook implements IImageHost {
     @Override
     public int getMaxImageHeight() {
         return MAX_IMAGE_HEIGHT;
+    }
+
+    private FqlBigPhotoURL getBigPhotoURL(final FqlPhoto ph) {
+        final StringBuilder builder = new StringBuilder("SELECT src FROM photo_src WHERE photo_id = \"");
+        builder.append(ph.object_id);
+        builder.append("\" ORDER BY width DESC LIMIT 1");
+
+        final List<FqlBigPhotoURL> bigURLL = fbClient.executeQuery(builder.toString(), FqlBigPhotoURL.class);
+
+        if (bigURLL.size() > 0) {
+            return bigURLL.get(0);
+        }
+        return null;
     }
 
     /**
@@ -277,18 +292,17 @@ public class ImageHostFacebook implements IImageHost {
     @Override
     public boolean
         uploadImage(final String imageSetTitle, final String imageTitle, final BufferedImage image) {
-        
+
         String imageSetId = getFacebookImageSetId(imageSetTitle);
-        
+
         if (imageSetId.isEmpty()) {
             createImageSet(imageSetTitle);
             imageSetId = getFacebookImageSetId(imageSetTitle);
         }
-        
+
         if (!getFacebookImageId(imageSetId, imageTitle).isEmpty()) {
             return false;
         }
-        
 
         // upload image to facebook
         try {
@@ -318,9 +332,10 @@ public class ImageHostFacebook implements IImageHost {
             return null;
         }
         final FqlPhoto fPh = photos.get(0);
+        final FqlBigPhotoURL bfURL = getBigPhotoURL(fPh);
 
         try {
-            return ImageIO.read(new URL(fPh.src_big));
+            return ImageIO.read(new URL(bfURL.src));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
