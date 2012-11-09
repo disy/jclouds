@@ -15,19 +15,24 @@ public class TestAndBenchmarkHelper {
 
     public static BlobStoreContext createContext(Class<? extends IImageHost> host,
         final Class<? extends IBytesToImagePainter> painter, final Class<? extends IEncoder> encoder) {
+        return createContext(host, painter, encoder, 2);
+    }
+
+    public static BlobStoreContext createContext(Class<? extends IImageHost> host,
+        final Class<? extends IBytesToImagePainter> painter, final Class<? extends IEncoder> encoder,
+        int layers) {
 
         String identity = "user";
         String credential = "pass";
 
-        Properties properties4 = new Properties();
-        properties4
-            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
-        properties4.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER, painter.getName());
-        properties4.setProperty(ImageStoreConstants.PROPERTY_ENCODER, encoder.getName());
-        properties4.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER, host.getName());
+        Properties properties = new Properties();
+        properties.setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
+        properties.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER, painter.getName());
+        properties.setProperty(ImageStoreConstants.PROPERTY_ENCODER, encoder.getName());
+        properties.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER, host.getName());
+        properties.setProperty(ImageStoreConstants.PROPERTY_LAYERS, Integer.toString(layers));
 
-        return ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(
-            properties4).buildView(BlobStoreContext.class);
-
+        return ContextBuilder.newBuilder("imagestore").credentials(identity, credential)
+            .overrides(properties).buildView(BlobStoreContext.class);
     }
 }

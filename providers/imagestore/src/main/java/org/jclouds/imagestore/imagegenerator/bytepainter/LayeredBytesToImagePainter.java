@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.inject.Named;
+
+import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
 /**
@@ -149,7 +152,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      * @param numSys
      *            The numeral system
      */
-    public LayeredBytesToImagePainter(final int numSys) {
+    public LayeredBytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final int numSys) {
         pixelsPerBytePerLayer = calcPixelsPerBytePerLayer(numSys);
         numeralSystem = numSys;
         colors = HBytesToImagePainterHelper.generate3LayeredUniformlyDistributedColors(numeralSystem);

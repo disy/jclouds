@@ -5,17 +5,11 @@ import java.util.Random;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
-import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
-
-import com.google.common.io.Files;
 
 public class PainterOnHosterTest {
 
