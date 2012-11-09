@@ -53,7 +53,8 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -179,7 +180,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage image) {
+    public byte[] getBytesFromImage(final BufferedImage image, final int startP, final int endP) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
 

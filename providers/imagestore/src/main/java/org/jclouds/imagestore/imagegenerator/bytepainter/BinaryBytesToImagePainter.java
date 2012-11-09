@@ -60,7 +60,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
     private static final int PIXELS_PER_BYTE = 8;
 
     /**
-     *  {@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public int getImageType() {
@@ -79,7 +79,8 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -98,16 +99,25 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
-                final int pos = pix % PIXELS_PER_BYTE;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+                
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return bi;
+
+                final int pos = psPix % PIXELS_PER_BYTE;
 
                 // if pos == 0 a new Byte starts
                 if (pos == 0) {
 
-
-                    if (bsPos >= len) {
-                        break;
-                    }
+                    if (bsPos >= len)
+                        return bi;
 
                     byte currB = bs[bsPos++];
 
@@ -154,7 +164,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img, final int startP, final int endP) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
@@ -168,11 +178,21 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+                
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 binary += getNumeralValueFromPixelColor(img.getRGB(x, y));
 
-                if (pix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
+                if (psPix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
                     byte b = (byte)Integer.parseInt(binary, NUMERAL_SYSTEM);
                     li.add(b);
                     binary = "";

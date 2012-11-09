@@ -58,15 +58,15 @@ public interface IBytesToImagePainter {
      *            the bytes to be stored
      * @return the image from the given bytes
      */
-    BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs);
+    BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP, final int endP);
 
     /**
      * Extracts bytes from given image.
      * 
      * @param bi
-     *            the image
+     *            the BufferedImage to extract bytes from
      * @return the bytes from pixels
      */
-    byte[] getBytesFromImage(BufferedImage bi);
+    byte[] getBytesFromImage(BufferedImage bi, final int startP, final int endP);
 
 }

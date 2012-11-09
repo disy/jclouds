@@ -84,7 +84,8 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -100,8 +101,19 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
-                final int pos = pix % (int)PIXELS_PER_BYTE;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return bi;
+
+                final int pos = psPix % (int)PIXELS_PER_BYTE;
 
                 if (pos == 0) {
 
@@ -132,7 +144,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img, final int startP, final int endP) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
@@ -147,7 +159,17 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 quaternary +=
                     HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),

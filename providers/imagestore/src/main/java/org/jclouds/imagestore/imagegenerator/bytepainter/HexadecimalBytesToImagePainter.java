@@ -91,7 +91,8 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -101,7 +102,23 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
 
         int bp = 0;
         for (int y = 0; y < h; y++) {
+
+            final int hpix = w * y;
+
             for (int x = 0; x < w; x += 2) {
+
+                // absolute amount of pixels visited
+                final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return bi;
+
                 if (bp >= len)
                     break;
                 byte b = bs[bp++];
@@ -115,7 +132,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img, final int startP, final int endP) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
 
@@ -125,13 +142,28 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
         String hex = "";
 
         for (int y = 0; y < h; y++) {
+
+            final int hpix = w * y;
+
             for (int x = 0; x < w; x++) {
+
+                // absolute amount of pixels visited
+                final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 hex +=
                     HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
-                if (x % 2 == 1) {
+                if (psPix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
 
                     byte b = (byte)Integer.parseInt(hex, NUMERAL_SYSTEM);
                     li.add(b);

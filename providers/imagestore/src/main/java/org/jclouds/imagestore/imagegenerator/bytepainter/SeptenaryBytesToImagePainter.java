@@ -62,7 +62,8 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage bi, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = bi.getWidth();
         final int h = bi.getHeight();
@@ -78,8 +79,19 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
-                final int pos = pix % (int)PIXELS_PER_BYTE;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return bi;
+
+                final int pos = psPix % (int)PIXELS_PER_BYTE;
 
                 if (pos == 0) {
 
@@ -109,12 +121,11 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage img) {
+    public byte[] getBytesFromImage(final BufferedImage img, final int startP, final int endP) {
 
         final ArrayList<Byte> li = new ArrayList<Byte>();
         final int w = img.getWidth();
         final int h = img.getHeight();
-        final int mod = (int)(PIXELS_PER_BYTE - 1);
 
         String septenary = "";
 
@@ -124,13 +135,23 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 septenary +=
                     HBytesToImagePainterHelper.getNumeralValueFromPixelColor(colors, img.getRGB(x, y),
                         NUMERAL_SYSTEM);
 
-                if (pix % PIXELS_PER_BYTE == mod) {
+                if (psPix % PIXELS_PER_BYTE == PIXELS_PER_BYTE - 1) {
                     byte b = (byte)Integer.parseInt(septenary, NUMERAL_SYSTEM);
                     li.add(b);
                     septenary = "";

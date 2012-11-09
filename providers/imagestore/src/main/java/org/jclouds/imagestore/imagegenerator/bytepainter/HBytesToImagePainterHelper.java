@@ -84,8 +84,7 @@ public final class HBytesToImagePainterHelper {
      *            The numeral system used
      * @return String with the pixel's value converted to the numeral system.
      */
-    static String
-        getNumeralValueFromPixelColor(final Color[] colors, final int rgb, final int numeralSystem) {
+    static String getNumeralValueFromPixelColor(final Color[] colors, final int rgb, final int numeralSystem) {
         final int red = extractLayerColorFromRGB(rgb, 2);
         final int green = extractLayerColorFromRGB(rgb, 1);
         final int blue = extractLayerColorFromRGB(rgb, 0);
@@ -247,4 +246,5 @@ public final class HBytesToImagePainterHelper {
         }
         return Integer.toString(idx, numeralSystem);
     }
+
 }

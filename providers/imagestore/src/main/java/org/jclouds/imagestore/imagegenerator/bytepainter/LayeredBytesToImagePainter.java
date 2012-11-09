@@ -196,7 +196,8 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = image.getWidth();
         final int h = image.getHeight();
@@ -215,8 +216,18 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
 
                 // amount of used pixels
                 final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (endP < pix)
+                    return image;
+
                 // if pos == 0 the new byte bucket starts
-                final int pos = pix % pixelsPerBytePerLayer;
+                final int pos = psPix % pixelsPerBytePerLayer;
 
                 if (pos == 0) {
 
@@ -263,7 +274,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBytesFromImage(final BufferedImage image) {
+    public byte[] getBytesFromImage(final BufferedImage image, final int startP, final int endP) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
         final int w = image.getWidth();
@@ -279,12 +290,23 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
 
             for (int x = 0; x < w; x++) {
 
+                // absolute amount of pixels visited
                 final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (endP < pix)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(al);
+
+                final int rgb = image.getRGB(x, y);
 
                 // get the values of all three layers of the current pixel
                 for (int layer = 0; layer < LAYERS; layer++) {
 
-                    final int rgb = image.getRGB(x, y);
                     final int colorVal = HBytesToImagePainterHelper.extractLayerColorFromRGB(rgb, layer);
 
                     bytesInNumSys[layer] +=
@@ -293,7 +315,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
                 }
 
                 // if a complete chunk is collected, extract the bytes
-                if (pix % pixelsPerBytePerLayer == pixelsPerBytePerLayer - 1) {
+                if (psPix % pixelsPerBytePerLayer == pixelsPerBytePerLayer - 1) {
 
                     for (int layer = 0; layer < LAYERS; layer++) {
                         byte b = (byte)Integer.parseInt(bytesInNumSys[layer], numeralSystem);

@@ -56,7 +56,8 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs, final int startP,
+        final int endP) {
 
         final int w = image.getWidth();
         final int h = image.getHeight();
@@ -69,7 +70,21 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
 
         for (int y = 0; y < h; y++) {
 
+            final int hpix = w * y;
+
             for (int x = 0; x < w; x++) {
+
+                // absolute amount of pixels visited
+                final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return image;
 
                 if (bp >= len)
                     return image;
@@ -116,7 +131,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     }
 
     @Override
-    public byte[] getBytesFromImage(final BufferedImage image) {
+    public byte[] getBytesFromImage(final BufferedImage image, int startP, int endP) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
         final int w = image.getWidth();
@@ -124,7 +139,21 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
 
         for (int y = 0; y < h; y++) {
 
+            final int hpix = w * y;
+
             for (int x = 0; x < w; x++) {
+
+                // absolute amount of pixels visited
+                final int pix = hpix + x;
+
+                // the difference between start position and pixels visited
+                final int psPix = pix - startP;
+
+                if (psPix < 0)
+                    continue;
+
+                if (pix > endP)
+                    return HBytesToImagePainterHelper.arrayListToByteArray(al);
 
                 final int rgb = image.getRGB(x, y);
 
