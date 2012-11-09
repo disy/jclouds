@@ -217,4 +217,8 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
             }
         }
     }
+    
+    public String toString() {
+        return "HexaDecimal";
+    }
 }

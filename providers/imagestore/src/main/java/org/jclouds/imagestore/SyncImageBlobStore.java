@@ -96,11 +96,12 @@ public class SyncImageBlobStore implements BlobStore {
     @Inject
     public SyncImageBlobStore(@Named(ImageStoreConstants.PROPERTY_IMAGEHOSTER) final String pImageHoster,
         @Named(ImageStoreConstants.PROPERTY_BYTEPAINTER) final String pBytePainter,
+        @Named(ImageStoreConstants.PROPERTY_LAYERS) final String pLayers,
         @Named(ImageStoreConstants.PROPERTY_ENCODER) final String pEncoder,
         @Named(FilesystemConstants.PROPERTY_BASEDIR) final String pStorageParameter) {
         Injector inj =
-            Guice.createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pEncoder,
-                pStorageParameter));
+            Guice.createInjector(new BytePainterAndHosterModule(pImageHoster, pBytePainter, pLayers,
+                pEncoder, pStorageParameter));
         ih = inj.getInstance(IImageHost.class);
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
         IEncoder encoder = inj.getInstance(IEncoder.class);

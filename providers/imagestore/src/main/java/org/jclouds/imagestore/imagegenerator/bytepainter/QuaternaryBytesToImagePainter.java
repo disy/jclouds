@@ -185,4 +185,8 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
 
+    public String toString() {
+        return "Quaternary";
+    }
+    
 }

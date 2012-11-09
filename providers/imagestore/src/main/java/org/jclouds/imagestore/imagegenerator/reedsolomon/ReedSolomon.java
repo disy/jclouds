@@ -129,4 +129,8 @@ public class ReedSolomon implements IEncoder {
         return (int)(mEcSize * Math.ceil(new Double(numberOfEntireBytes) / new Double(field.getSize())));
     }
 
+    public String toString() {
+        return "ReedSolomon";
+    }
+
 }

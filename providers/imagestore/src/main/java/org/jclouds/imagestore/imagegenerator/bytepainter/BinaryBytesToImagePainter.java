@@ -220,4 +220,9 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         }
         return '0';
     }
+    
+    public String toString() {
+        return "Binary";
+    }
+    
 }

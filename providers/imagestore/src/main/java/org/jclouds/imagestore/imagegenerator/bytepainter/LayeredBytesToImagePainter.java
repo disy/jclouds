@@ -5,10 +5,11 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.inject.Named;
-
 import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * This class offers an abstraction to create different layered byte painters.
@@ -24,6 +25,8 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
     private final int numeralSystem;
     /** The amount of pixels needed for one byte in one layer. */
     private final int pixelsPerBytePerLayer;
+    /** Size of Pixels for holding one information. */
+    private final int blockSize;
 
     public enum PainterType {
         /**
@@ -146,16 +149,22 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
     /** The different pixel colors. */
     private final Color[][] colors;
 
+    @Inject
+    public LayeredBytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final String numSys) {
+        this(Integer.parseInt(numSys));
+    }
+
     /**
      * Constructor. Generates a layered byte painter with the given numeral system.
      * 
      * @param numSys
      *            The numeral system
      */
-    public LayeredBytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final int numSys) {
+    public LayeredBytesToImagePainter(final int numSys) {
         pixelsPerBytePerLayer = calcPixelsPerBytePerLayer(numSys);
         numeralSystem = numSys;
         colors = HBytesToImagePainterHelper.generate3LayeredUniformlyDistributedColors(numeralSystem);
+        blockSize = 1;
     }
 
     /**
@@ -211,11 +220,11 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
 
         // postion in byte-array
         int bp = 0;
-        for (int y = 0; y < h; y++) {
+        for (int y = 0; y < h; y = y + blockSize) {
 
             final int hpix = w * y;
 
-            for (int x = 0; x < w; x++) {
+            for (int x = 0; x < w; x = x + blockSize) {
 
                 // amount of used pixels
                 final int pix = hpix + x;
@@ -287,11 +296,12 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
             "", "", ""
         };
 
-        for (int y = 0; y < h; y++) {
+        for (int y = 0; y < h; y = y + blockSize) {
 
             final int hpix = w * y;
 
-            for (int x = 0; x < w; x++) {
+            for (int x = 0; x < w; x = x + blockSize
+            ) {
 
                 // absolute amount of pixels visited
                 final int pix = hpix + x;
@@ -374,4 +384,9 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
         }
         return byteColors;
     }
+
+    public String toString() {
+        return "Layered with " + numeralSystem + " colors per component";
+    }
+
 }

@@ -6,6 +6,7 @@ package org.jclouds.imagestore.config;
 import java.util.Properties;
 
 import org.jclouds.filesystem.reference.FilesystemConstants;
+import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagehoster.IImageHost;
@@ -22,15 +23,17 @@ public class BytePainterAndHosterModule extends AbstractModule {
     private final String mImageHoster;
     private final String mBytePainter;
     private final String mEncoder;
+
     private final Properties mProps;
 
-    public BytePainterAndHosterModule(String pImageHoster, String pBytePainter, String pEncoder,
-        String pStorageParameter) {
-        this.mBytePainter = pBytePainter;
+    public BytePainterAndHosterModule(String pImageHoster, String pBytePainter, String pLayers,
+        String pEncoder, String pStorageParameter) {
+        mBytePainter = pBytePainter;
         mImageHoster = pImageHoster;
         mEncoder = pEncoder;
         mProps = new Properties();
         mProps.setProperty(FilesystemConstants.PROPERTY_BASEDIR, pStorageParameter);
+        mProps.setProperty(ImageStoreConstants.PROPERTY_LAYERS, pLayers);
     }
 
     /**

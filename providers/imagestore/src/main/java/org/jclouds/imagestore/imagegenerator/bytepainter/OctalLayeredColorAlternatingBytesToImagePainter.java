@@ -217,5 +217,9 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
+    
+    public String toString() {
+        return "OctalLayered";
+    }
 
 }

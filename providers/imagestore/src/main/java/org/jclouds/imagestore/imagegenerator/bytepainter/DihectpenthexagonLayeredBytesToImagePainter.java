@@ -169,4 +169,8 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
         return HBytesToImagePainterHelper.arrayListToByteArray(al);
     }
 
+    public String toString() {
+        return "DiHectPentHexagonLayered";
+    }
+    
 }

@@ -160,4 +160,9 @@ public class SeptenaryBytesToImagePainter implements IBytesToImagePainter {
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
+    
+    public String toString() {
+        return "Septenary";
+    }
+    
 }

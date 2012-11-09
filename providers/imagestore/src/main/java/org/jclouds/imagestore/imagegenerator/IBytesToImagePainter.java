@@ -78,4 +78,11 @@ public interface IBytesToImagePainter {
      */
     byte[] getBytesFromImage(BufferedImage bi, final int startP, final int endP);
 
+    /**
+     * Mandatory to String for better result.
+     * 
+     * @return a String with name
+     */
+    String toString();
+
 }

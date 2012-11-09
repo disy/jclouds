@@ -18,6 +18,8 @@ public interface IEncoder {
 
     int getNumbersOfBytesWasted(int numberOfEntireBytes);
 
+    String toString();
+
     static class DummyEncoder implements IEncoder {
         /**
          * {@inheritDoc}
@@ -38,6 +40,10 @@ public interface IEncoder {
         @Override
         public int getNumbersOfBytesWasted(int numberOfEntireBytes) {
             return 0;
+        }
+
+        public String toString() {
+            return "DummyEncoder";
         }
 
     }
