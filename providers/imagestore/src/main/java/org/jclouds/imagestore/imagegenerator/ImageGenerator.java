@@ -76,7 +76,8 @@ public class ImageGenerator {
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
         final float ppb = bp.pixelsPerByte();
-        maxBytesPerImage = (int)((maxImageHostHeight - 1) * maxImageHostWidth / ppb);
+        int numberOfBytesInPicture = (int)((maxImageHostHeight - 1) * maxImageHostWidth / ppb);
+        maxBytesPerImage = numberOfBytesInPicture - enc.getNumbersOfBytesWasted(numberOfBytesInPicture);
     }
 
     /**

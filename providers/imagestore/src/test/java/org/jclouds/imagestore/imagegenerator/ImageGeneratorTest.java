@@ -26,25 +26,21 @@
  */
 package org.jclouds.imagestore.imagegenerator;
 
+import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.fail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.jclouds.blobstore.domain.Blob;
-import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
@@ -66,9 +62,9 @@ public class ImageGeneratorTest {
     /** The test container's name. */
     private static final String CONTAINER = "TestContainer";
 
-    /** The path to the test input file. */
-    private static final String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
-        + File.separator + "Linie9C.pdf";
+    // /** The path to the test input file. */
+    // private static final String RAWFILEURI = "src" + File.separator + "test" + File.separator + "resources"
+    // + File.separator + "Linie9C.pdf";
     /** The test blob. */
     private static final byte[] RAWFILEBYTES;
 
@@ -143,21 +139,22 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
-                        new DihectpenthexagonLayeredBytesToImagePainter()
-                    }, IEncoder.class, new IEncoder[] {
-                        new IEncoder.DummyEncoder(),
-                    // new ReedSolomon()
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new BinaryBytesToImagePainter()
+                /*
+                 * , new QuaternaryBytesToImagePainter(),
+                 * new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
+                 * new DihectpenthexagonLayeredBytesToImagePainter()
+                 */
+                }, IEncoder.class, new IEncoder[] {
+                    // new IEncoder.DummyEncoder(),
+                    new ReedSolomon()
 
-                    }
                 }
-            };
+            }
+        };
         return returnVal;
     }
 
@@ -201,7 +198,7 @@ public class ImageGeneratorTest {
                         new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
                         new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter()
                     }, IEncoder.class, new IEncoder[] {
-                        new IEncoder.DummyEncoder()
+                        new IEncoder.DummyEncoder(), new ReedSolomon()
                     }
                 }
             };
@@ -240,17 +237,15 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "facebookPainters")
     public Object[][] facebookPainters() {
-        Object[][] returnVal =
+        Object[][] returnVal = {
             {
-                {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter()
-                    }, IEncoder.class, new IEncoder[] {
-                        new IEncoder.DummyEncoder()
-                    }
+                IBytesToImagePainter.class, new IBytesToImagePainter[] {
+                    new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter()
+                }, IEncoder.class, new IEncoder[] {
+                    new IEncoder.DummyEncoder(), new ReedSolomon()
                 }
-            };
+            }
+        };
         return returnVal;
     }
 
@@ -279,61 +274,61 @@ public class ImageGeneratorTest {
             host.deleteImageSet(CONTAINER);
             for (IEncoder enc : encoders) {
                 for (IBytesToImagePainter pa : painters) {
-                    final SyncImageBlobStore ib =
-                        new SyncImageBlobStore(host.getClass().getName(), pa.getClass().getName(), enc
-                            .getClass().getName(), Files.createTempDir().getAbsolutePath());
+                    ImageGenerator generator =
+                        new ImageGenerator(pa, enc, host.getMaxImageWidth(), host.getMaxImageHeight());
+                    final BufferedImage imageToSend = generator.createImageFromBytes(RAWFILEBYTES);
                     final String blobName = "blob_" + System.currentTimeMillis();
-                    final BlobBuilder bb = ib.blobBuilder(blobName);
-                    bb.payload(RAWFILEBYTES);
-                    bb.name(blobName);
-                    final Blob testBlob = bb.build();
+                    assertTrue(host.uploadImage(CONTAINER, blobName, imageToSend));
 
-                    ib.putBlob(CONTAINER, testBlob);
-                    final Blob reTestBlob = ib.getBlob(CONTAINER, blobName);
+                    byte[] toCheck = generator.getBytesFromImage(imageToSend);
 
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    reTestBlob.getPayload().writeTo(bos);
-                    byte[] bss = bos.toByteArray();
-                    bos.close();
+                    if (!Arrays.equals(RAWFILEBYTES, toCheck)) {
+                        fail(new StringBuilder("Failed: ImageHost: ").append(host.toString()).append(
+                            " and Painter: ").append(pa.toString()).append(" and Encoder: ").append(
+                            enc.toString()).toString());
+                    }
 
-                    if (!Arrays.equals(RAWFILEBYTES, bss)) {
-                        fail(new StringBuilder(pa.toString()).append(" failed on host ").append(
-                            host.toString()).toString());
+                    final BufferedImage imageReceived = host.downloadImage(CONTAINER, blobName);
+                    byte[] receivedBytes = generator.getBytesFromImage(imageReceived);
+
+                    if (!Arrays.equals(RAWFILEBYTES, receivedBytes)) {
+                        fail(new StringBuilder("Failed: ImageHost: ").append(host.toString()).append(
+                            " and Painter: ").append(pa.toString()).append(" and Encoder: ").append(
+                            enc.toString()).toString());
                     }
 
                 }
             }
         }
     }
-
-    /**
-     * Returns content of a file as byte array.
-     * 
-     * @param f
-     *            The file to read from.
-     * @return The file's content as byte array.
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
-     */
-    private static byte[] loadBytesFromFile(final File f) throws IOException {
-        if (!f.isFile())
-            return new byte[0];
-
-        long len = f.length();
-
-        if (len > Integer.MAX_VALUE) {
-            try {
-                throw new IllegalArgumentException("File too large!");
-            } catch (IllegalArgumentException e) {
-                new RuntimeException(e);
-            }
-        }
-
-        byte[] bs = new byte[(int)len];
-        FileInputStream is = new FileInputStream(f);
-
-        is.read(bs);
-        is.close();
-        return bs;
-    }
+    // /**
+    // * Returns content of a file as byte array.
+    // *
+    // * @param f
+    // * The file to read from.
+    // * @return The file's content as byte array.
+    // * @throws IOException
+    // * Signals that an I/O exception has occurred.
+    // */
+    // private static byte[] loadBytesFromFile(final File f) throws IOException {
+    // if (!f.isFile())
+    // return new byte[0];
+    //
+    // long len = f.length();
+    //
+    // if (len > Integer.MAX_VALUE) {
+    // try {
+    // throw new IllegalArgumentException("File too large!");
+    // } catch (IllegalArgumentException e) {
+    // new RuntimeException(e);
+    // }
+    // }
+    //
+    // byte[] bs = new byte[(int)len];
+    // FileInputStream is = new FileInputStream(f);
+    //
+    // is.read(bs);
+    // is.close();
+    // return bs;
+    // }
 }
