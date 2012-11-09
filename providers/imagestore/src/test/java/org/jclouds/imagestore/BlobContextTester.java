@@ -19,29 +19,30 @@
 
 package org.jclouds.imagestore;
 
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.fail;
-import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Properties;
 import java.util.Random;
 
-import org.jclouds.ContextBuilder;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.filesystem.reference.FilesystemConstants;
-import org.jclouds.imagestore.TestAndBenchmarkHelper.HOSTER;
+import org.jclouds.imagestore.imagegenerator.IEncoder;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 
 public class BlobContextTester {
 
@@ -126,10 +127,14 @@ public class BlobContextTester {
                 {
                     BlobStoreContext.class,
                     new BlobStoreContext[] {
-//                        TestAndBenchmarkHelper.createContext(HOSTER.FACEBOOK),
-                        TestAndBenchmarkHelper.createContext(HOSTER.FILE),
-//                        TestAndBenchmarkHelper.createContext(HOSTER.PICASA),
-//                        TestAndBenchmarkHelper.createContext(HOSTER.FLICKR)
+//                        TestAndBenchmarkHelper.createContext(ImageHostFacebook.class,
+//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
+                        TestAndBenchmarkHelper.createContext(ImageHostFile.class,
+                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
+//                        TestAndBenchmarkHelper.createContext(ImageHostGoogleDataApiPicasa.class,
+//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
+//                        TestAndBenchmarkHelper.createContext(ImageHostFlickr.class,
+//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
                     }
                 }
             };
