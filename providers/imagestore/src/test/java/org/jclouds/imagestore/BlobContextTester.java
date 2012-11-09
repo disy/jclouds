@@ -36,6 +36,7 @@ import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.filesystem.reference.FilesystemConstants;
+import org.jclouds.imagestore.TestAndBenchmarkHelper.HOSTER;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -120,74 +121,19 @@ public class BlobContextTester {
     @DataProvider(name = "blobContextProvider")
     public Object[][] blobContextProvider() {
 
-        String identity = "user";
-        String credential = "pass";
-
-        Properties properties1 = new Properties();
-        properties1
-            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
-        properties1.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
-            "org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter");
-        properties1.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
-            "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
-        properties1.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
-            "org.jclouds.imagestore.imagehoster.file.ImageHostFile");
-
-        BlobStoreContext fileContext =
-            ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties1)
-                .buildView(BlobStoreContext.class);
-
-        Properties properties2 = new Properties();
-        properties2
-            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
-        properties2.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
-            "org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter");
-        properties2.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
-            "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
-        properties2.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
-            "org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa");
-
-        BlobStoreContext picasaContext =
-            ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties2)
-                .buildView(BlobStoreContext.class);
-
-        Properties properties3 = new Properties();
-        properties3
-            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
-        properties3.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
-            "org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter");
-        properties3.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
-            "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
-        properties3.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
-            "org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr");
-
-        BlobStoreContext flickrContext =
-            ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties3)
-                .buildView(BlobStoreContext.class);
-
-        Properties properties4 = new Properties();
-        properties4
-            .setProperty(FilesystemConstants.PROPERTY_BASEDIR, Files.createTempDir().getAbsolutePath());
-        properties4.setProperty(ImageStoreConstants.PROPERTY_BYTEPAINTER,
-            "org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter");
-        properties4.setProperty(ImageStoreConstants.PROPERTY_ENCODER,
-            "org.jclouds.imagestore.imagegenerator.IEncoder$DummyEncoder");
-        properties4.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER,
-            "org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook");
-
-        BlobStoreContext facebookContext =
-            ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties4)
-                .buildView(BlobStoreContext.class);
-
-        Object[][] returnVal = {
+        Object[][] returnVal =
             {
-                BlobStoreContext.class, new BlobStoreContext[] {
-                    facebookContext, fileContext, picasaContext, flickrContext
+                {
+                    BlobStoreContext.class,
+                    new BlobStoreContext[] {
+//                        TestAndBenchmarkHelper.createContext(HOSTER.FACEBOOK),
+                        TestAndBenchmarkHelper.createContext(HOSTER.FILE),
+//                        TestAndBenchmarkHelper.createContext(HOSTER.PICASA),
+//                        TestAndBenchmarkHelper.createContext(HOSTER.FLICKR)
+                    }
                 }
-            }
-        };
+            };
 
         return returnVal;
     }
-
 }

@@ -10,7 +10,16 @@ package org.jclouds.imagestore.benchmarks.bytepainter;
  * @author Sebastian Graf, University of Konstanz
  * 
  */
-public class ImageGeneratorBenchmark {
+public class LayeredPainterBenchmark {
 
-
+    
+    
+    
+    public static void main(String[] args) {
+        
+        
+        
+    }
+    
+    
 }
