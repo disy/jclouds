@@ -110,7 +110,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return bi;
 
                 final int pos = psPix % (int)PIXELS_PER_BYTE;
@@ -168,7 +168,7 @@ public class QuaternaryBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 quaternary +=

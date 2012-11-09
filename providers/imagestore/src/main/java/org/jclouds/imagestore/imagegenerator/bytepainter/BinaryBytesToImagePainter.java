@@ -108,7 +108,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return bi;
 
                 final int pos = psPix % PIXELS_PER_BYTE;
@@ -187,7 +187,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 binary += getNumeralValueFromPixelColor(img.getRGB(x, y));

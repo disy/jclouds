@@ -235,7 +235,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (endP < pix)
+                if (endP <= pix)
                     return image;
 
                 // if pos == 0 the new byte bucket starts
@@ -312,7 +312,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (endP < pix)
+                if (endP <= pix)
                     return HBytesToImagePainterHelper.arrayListToByteArray(al);
 
                 final int rgb = image.getRGB(x, y);

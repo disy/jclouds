@@ -116,7 +116,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return bi;
 
                 if (bp >= len)
@@ -156,7 +156,7 @@ public class HexadecimalBytesToImagePainter implements IBytesToImagePainter {
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return HBytesToImagePainterHelper.arrayListToByteArray(li);
 
                 hex +=

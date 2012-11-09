@@ -83,7 +83,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return image;
 
                 if (bp >= len)
@@ -152,7 +152,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
                 if (psPix < 0)
                     continue;
 
-                if (pix > endP)
+                if (pix >= endP)
                     return HBytesToImagePainterHelper.arrayListToByteArray(al);
 
                 final int rgb = image.getRGB(x, y);
