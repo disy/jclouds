@@ -39,6 +39,7 @@ import com.google.inject.Inject;
  */
 public class ImageGenerator {
 
+    /** The robust painter. */
     private final IBytesToImagePainter robustPainter = new BinaryBytesToImagePainter();
     /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
@@ -155,18 +156,23 @@ public class ImageGenerator {
         return maxBytesPerImage;
     }
 
+    /**
+     * Returns the current byte painter.
+     * @return the byte painter
+     */
     public IBytesToImagePainter getPainter() {
         return bp;
     }
 
     /**
-     * Saves the array length in the first 4 bytes of the array.
+     * Stores the length of the array as first for bytes in the image.
      * 
-     * @param bs
-     *            the byte array.
-     * @return the byte array with original array length stored in first 4 bytes.
+     * @param bi
+     *            the BufferedImage.
+     * @param length
+     *            the length of the byte array to be stored in the image
      */
-    private void saveArrayLengthInFirst4Bytes(BufferedImage bi, int length) {
+    private void saveArrayLengthInFirst4Bytes(final BufferedImage bi, final int length) {
         final byte[] bss = new byte[] {
             (byte)length, (byte)(length >> 8), (byte)(length >> 16), (byte)(length >> 24)
         };
@@ -174,22 +180,22 @@ public class ImageGenerator {
     }
 
     /**
-     * Extracts the original array through the original array length stored in the first 4 bytes of the image.
+     * Extracts the original array from the image.
      * 
-     * @param bs
-     *            the byte array.
+     * @param bi
+     *            the image with the stored byte array
      * @return the original byte array.
      */
-    private byte[] getOriginalArray(final BufferedImage image) {
+    private byte[] getOriginalArray(final BufferedImage bi) {
 
-        final byte[] bal = robustPainter.getBytesFromImage(image, 0, getStartPixel());
+        final byte[] bal = robustPainter.getBytesFromImage(bi, 0, getStartPixel());
         final int b1 = (int)bal[0] & 0xFF;
         final int b2 = (int)bal[1] & 0xFF;
         final int b3 = (int)bal[2] & 0xFF;
         final int b4 = (int)bal[3] & 0xFF;
         final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
 
-        byte[] bs = bp.getBytesFromImage(image, getStartPixel(), getEndPixel(image));
+        byte[] bs = bp.getBytesFromImage(bi, getStartPixel(), getEndPixel(bi));
 
         byte[] bss;
         if (oLength < 0 || oLength > bs.length - HEADER_OFFSET) {
@@ -201,10 +207,22 @@ public class ImageGenerator {
         return bss;
     }
 
+    /**
+     * Returns the pixel where the image starts.
+     * 
+     * @return the pixel where the image starts
+     * */
     private int getStartPixel() {
         return (int)(robustPainter.pixelsPerByte() * HEADER_OFFSET);
     }
 
+    /**
+     * Returns the pixel where the image ends.
+     * 
+     * @param bi
+     *            the BufferedImage
+     * @return The pixel where the image ends
+     */
     private int getEndPixel(final BufferedImage bi) {
         return bi.getHeight() * bi.getWidth();
     }

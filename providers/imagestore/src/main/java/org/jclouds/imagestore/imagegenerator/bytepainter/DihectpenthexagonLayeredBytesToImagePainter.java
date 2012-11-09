@@ -131,7 +131,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     }
 
     @Override
-    public byte[] getBytesFromImage(final BufferedImage image, int startP, int endP) {
+    public byte[] getBytesFromImage(final BufferedImage image, final int startP, final int endP) {
         final ArrayList<Byte> al = new ArrayList<Byte>();
 
         final int w = image.getWidth();
