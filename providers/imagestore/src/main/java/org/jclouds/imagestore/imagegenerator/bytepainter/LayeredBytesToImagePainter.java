@@ -139,8 +139,12 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
          */
         PainterType(final int pNumSys) {
             numSys = pNumSys;
-
         }
+
+        public IBytesToImagePainter getPainter() {
+            return new LayeredBytesToImagePainter(numSys);
+        }
+
     }
 
     /** The type of the BufferedImage. */
@@ -300,8 +304,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
 
             final int hpix = w * y;
 
-            for (int x = 0; x < w; x = x + blockSize
-            ) {
+            for (int x = 0; x < w; x = x + blockSize) {
 
                 // absolute amount of pixels visited
                 final int pix = hpix + x;
@@ -386,7 +389,11 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
     }
 
     public String toString() {
-        return "Layered with " + numeralSystem + " colors per component";
+        return "Layered" + numeralSystem;
+    }
+
+    public int getNumSys() {
+        return numeralSystem;
     }
 
 }

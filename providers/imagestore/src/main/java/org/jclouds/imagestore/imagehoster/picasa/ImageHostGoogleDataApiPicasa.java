@@ -6,11 +6,13 @@ package org.jclouds.imagestore.imagehoster.picasa;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -42,6 +44,10 @@ import com.google.gdata.util.ServiceException;
  */
 public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
+    private final static String PICASA_USER = "jclouds.imagestore.picasauser";
+
+    private final static String PICASA_PASSWORD = "jclouds.imagestore.picasapass";
+
     /** The maximum image width. */
     private static final int MAX_IMAGE_WIDTH = 2048;
     /** The maximum image height. */
@@ -51,14 +57,18 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
     private final PicasawebService service;
 
-    private final Credential credential;
-
     public ImageHostGoogleDataApiPicasa() {
         try {
-            credential = authorize();
-            credential.getRefreshToken();
+
             service = new PicasawebService("imageuploader");
-            service.setOAuth2Credentials(credential);
+            String[] user = getUserCredentials();
+            if (user.length > 0) {
+                service.setUserCredentials(user[0], user[1]);
+            } else {
+                Credential credential = authorize();
+                credential.getRefreshToken();
+                service.setOAuth2Credentials(credential);
+            }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -340,4 +350,24 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
+    private static String[] getUserCredentials() {
+        File userStore =
+            new File(System.getProperty("user.home"), new StringBuilder(".imagecredentials").append(
+                File.separator).append("picasa.properties").toString());
+        if (!userStore.exists()) {
+            return new String[0];
+        } else {
+            Properties props = new Properties();
+            try {
+                props.load(new FileReader(userStore));
+                return new String[] {
+                    props.getProperty(PICASA_USER), props.getProperty(PICASA_PASSWORD)
+                };
+
+            } catch (IOException exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
 }

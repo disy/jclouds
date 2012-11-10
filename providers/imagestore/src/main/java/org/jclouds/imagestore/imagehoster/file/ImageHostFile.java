@@ -137,7 +137,6 @@ public class ImageHostFile implements IImageHost {
             ImageIO.write(image, IMAGE_COMPRESSION, fos);
             fos.flush();
             fos.close();
-            imageFile.getAbsolutePath();
             return true;
         } catch (IOException e) {
             throw new RuntimeException(e);

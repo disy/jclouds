@@ -18,7 +18,7 @@ public class ReedSolomon implements IEncoder {
     private final static ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
 
     // must be something between 1 and 248 (256 -8)
-    private final static int mEcSize = 16;
+    private final static int mEcSize = 64;
 
     /**
      * {@inheritDoc}
@@ -51,7 +51,7 @@ public class ReedSolomon implements IEncoder {
             try {
                 decoder.decode(convertedInt, mEcSize);
             } catch (ReedSolomonException exc) {
-                throw new RuntimeException(exc);
+                return new byte[0];
             }
             int[] dataOnly = new int[convertedInt.length - mEcSize];
             System.arraycopy(convertedInt, 0, dataOnly, 0, dataOnly.length);

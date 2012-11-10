@@ -311,7 +311,8 @@ public class ImageHostFacebook implements IImageHost {
                 Parameter.with("name", imageTitle)).getId();
             return true;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return false;
         }
     }
 

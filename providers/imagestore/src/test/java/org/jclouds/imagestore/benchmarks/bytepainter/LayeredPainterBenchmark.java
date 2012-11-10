@@ -3,20 +3,27 @@
  */
 package org.jclouds.imagestore.benchmarks.bytepainter;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
+import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -41,9 +48,8 @@ public class LayeredPainterBenchmark {
     private static final Random RAN = new Random(12l);
 
     // //SETTINGS TO SET MANUALLY
-    private static final Class<? extends IImageHost> HOST = ImageHostGoogleDataApiPicasa.class;
-    private static final Class<? extends IBytesToImagePainter> PAINTER = LayeredBytesToImagePainter.class;
-    private static final Class<? extends IEncoder> ENCODER = IEncoder.DummyEncoder.class;
+    private static Class<? extends IEncoder> ENCODER = IEncoder.DummyEncoder.class;
+    private static final File IMAGESTORE = new File(System.getProperty("user.home"), "imagestore");
 
     private static BlobStore store;
 
@@ -62,6 +68,12 @@ public class LayeredPainterBenchmark {
         store.deleteContainer(new StringBuilder("grave9283").append(dataFactor + currentRun).toString());
         store.createContainerInLocation(null, new StringBuilder("grave9283").append(dataFactor + currentRun)
             .toString());
+        saveOrigImage();
+    }
+
+    public void tearDown() {
+        saveHostedImage();
+        store.deleteContainer(new StringBuilder("grave9283").append(dataFactor + currentRun).toString());
     }
 
     @Bench(beforeFirstRun = "setUp")
@@ -70,62 +82,65 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench
+    @Bench(afterLastRun = "tearDown")
     public void download10() {
         name--;
         download();
     }
 
-    @Bench(beforeFirstRun = "setUp")
-    public void upload11() {
-        upload();
-        name++;
-    }
-
-    @Bench
-    public void download11() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload12() {
-        upload();
-        name++;
-    }
-
-    @Bench
-    public void download12() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload13() {
-        upload();
-        name++;
-    }
-
-    @Bench
-    public void download13() {
-        name--;
-        download();
-    }
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload11() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench
+    // public void download11() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload12() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench
+    // public void download12() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload13() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench
+    // public void download13() {
+    // name--;
+    // download();
+    // }
 
     private void upload() {
         BlobBuilder blobbuilder =
-            store.blobBuilder(new StringBuilder(PAINTER.getSimpleName()).append(":").append(
-                ENCODER.getSimpleName()).append(":").append(name).toString());
+            store.blobBuilder(new StringBuilder("grave9283").append(":").append(
+                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
+                name).toString());
         Blob blob = blobbuilder.build();
         blob.setPayload(data);
         store.putBlob(new StringBuilder("grave9283").append(dataFactor + currentRun).toString(), blob);
+
     }
 
     private void download() {
         Blob blob =
             store.getBlob(new StringBuilder("grave9283").append(dataFactor + currentRun).toString(),
-                new StringBuilder(PAINTER.getSimpleName()).append(":").append(ENCODER.getSimpleName())
-                    .append(":").append(name).toString());
+                new StringBuilder("grave9283").append(":").append(
+                    ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":")
+                    .append(name).toString());
         InputStream in = blob.getPayload().getInput();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -141,38 +156,135 @@ public class LayeredPainterBenchmark {
         RAN.nextBytes(data);
     }
 
+    private void saveOrigImage() {
+        // storing the actual image somewhere
+        SyncImageBlobStore blobStore = (SyncImageBlobStore)store;
+        BufferedImage img = blobStore.getImageGenerator().createImageFromBytes(data);
+        File rawStore = new File(IMAGESTORE.getAbsolutePath(), "rawPictures");
+        rawStore.mkdirs();
+        File toStore =
+            new File(rawStore.getAbsolutePath(), blobStore.getImageGenerator().getPainter().toString() + ":"
+                + (dataFactor + currentRun) + ".png");
+        saveBufferedImage(toStore, img);
+    }
+
+    private void saveHostedImage() {
+        SyncImageBlobStore blobStore = (SyncImageBlobStore)store;
+
+        File rawStore =
+            new File(IMAGESTORE.getAbsolutePath(), blobStore.getImageHost().getClass().getSimpleName());
+        rawStore.mkdirs();
+
+        String imageSetTitle = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
+        String imageTitle =
+            new StringBuilder("grave9283").append(":").append(
+                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").toString();
+
+        Set<String> images = blobStore.getImageHost().imageSetContent(imageSetTitle);
+        int i = 0;
+        for (String image : images) {
+            if (image.startsWith(imageTitle)) {
+                BufferedImage img = blobStore.getImageHost().downloadImage(imageSetTitle, image);
+                File toStore =
+                    new File(rawStore.getAbsolutePath(), blobStore.getImageGenerator().getPainter()
+                        .toString()
+                        + ":" + (dataFactor + currentRun) + ":" + i + ".png");
+                saveBufferedImage(toStore, img);
+                i++;
+            }
+        }
+
+    }
+
+    private static void saveBufferedImage(final File file, final BufferedImage img) {
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            ImageIO.write(img, "png", fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception exc) {
+            exc.toString();
+        }
+    }
+
     public static void main(String[] args) {
 
-        store = TestAndBenchmarkHelper.createContext(HOST, PAINTER, ENCODER, 2).getBlobStore();
-        // BlobStoreContext context =
-        // new BlobStoreContextFactory().createContext("aws-s3", "",
-        // "");
-//        store = context.getBlobStore();
-        // store.blobBuilder("bla");
-        //
-        // BlobBuilder blobbuilder =
-        // store.blobBuilder(new StringBuilder(PAINTER.getSimpleName()).append(":").append(
-        // ENCODER.getSimpleName()).append(":").append(1).toString());
-        // Blob blob = blobbuilder.build();
-        // byte[] blubb = {
-        // 123, 123, 123, 123
-        // };
-        // blob.setPayload(blubb);
-        // store.putBlob("grave9283", blob);
-        //
+        Class<? extends IImageHost> host = ImageHostFile.class;
+        System.out.println("=================================");
+        System.out.println(host.toString());
+        for (final IBytesToImagePainter painter : TestAndBenchmarkHelper.getAllPainters()) {
+            System.out.println("++++++++++++++++++++++++++++++++++++");
+            System.out.println(painter.toString());
+            System.out.println("++++++++++++++++++++++++++++++++++++");
+            if (painter instanceof LayeredBytesToImagePainter) {
+                int layers = ((LayeredBytesToImagePainter)painter).getNumSys();
+                store =
+                    TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, layers)
+                        .getBlobStore();
+            } else {
+                store =
+                    TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, 0).getBlobStore();
+            }
+            Benchmark bench = new Benchmark(new BenchmarkConf());
+            bench.add(LayeredPainterBenchmark.class);
+            BenchmarkResult res = bench.run();
+            TabularSummaryOutput output = new TabularSummaryOutput();
+            output.visitBenchmark(res);
+        }
 
-        Benchmark bench = new Benchmark(new BenchmarkConf());
-        bench.add(LayeredPainterBenchmark.class);
-        BenchmarkResult res = bench.run();
-        TabularSummaryOutput output = new TabularSummaryOutput();
-        output.visitBenchmark(res);
+        // host = ImageHostGoogleDataApiPicasa.class;
+        // System.out.println("=================================");
+        // System.out.println(host.getName());
+        // for (final IBytesToImagePainter painter : TestAndBenchmarkHelper.getAllPainters()) {
+        // System.out.println("+++++++++++" + host.getName() + "+++++++++++");
+        // System.out.println(painter.toString());
+        // System.out.println("++++++++++++++++++++++++++++++++++++");
+        // store = TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, 2).getBlobStore();
+        // Benchmark bench = new Benchmark(new BenchmarkConf());
+        // bench.add(LayeredPainterBenchmark.class);
+        // BenchmarkResult res = bench.run();
+        // TabularSummaryOutput output = new TabularSummaryOutput();
+        // output.visitBenchmark(res);
+        // }
+        //
+        // host = ImageHostFacebook.class;
+        // System.out.println("=================================");
+        // System.out.println(host.getName());
+        // for (final IBytesToImagePainter painter : TestAndBenchmarkHelper.getPaintersForFacebook()) {
+        // System.out.println("+++++++++++" + host.getName() + "+++++++++++");
+        // System.out.println(painter.toString());
+        // System.out.println("++++++++++++++++++++++++++++++++++++");
+        // store = TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, 2).getBlobStore();
+        // Benchmark bench = new Benchmark(new BenchmarkConf());
+        // bench.add(LayeredPainterBenchmark.class);
+        // BenchmarkResult res = bench.run();
+        // TabularSummaryOutput output = new TabularSummaryOutput();
+        // output.visitBenchmark(res);
+        // }
+        //
+        // host = ImageHostFlickr.class;
+        // System.out.println("=================================");
+        // System.out.println(host.getName());
+        // for (final IBytesToImagePainter painter : TestAndBenchmarkHelper.getPaintersForFlickr()) {
+        // System.out.println("+++++++++++" + host.getName() + "+++++++++++");
+        // System.out.println(painter.toString());
+        // System.out.println("++++++++++++++++++++++++++++++++++++");
+        // store = TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, 2).getBlobStore();
+        // Benchmark bench = new Benchmark(new BenchmarkConf());
+        // bench.add(LayeredPainterBenchmark.class);
+        // BenchmarkResult res = bench.run();
+        // TabularSummaryOutput output = new TabularSummaryOutput();
+        // output.visitBenchmark(res);
+        // }
 
-//        context.close();
     }
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 25;
+        private final static int RUNS = 1;
         private final static AbstractMeter[] METERS = {
             new TimeMeter(Time.MilliSeconds)
         };

@@ -1,15 +1,21 @@
 package org.jclouds.imagestore;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Random;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
-import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
+
+import com.google.common.io.Files;
 
 public class PainterOnHosterTest {
 
@@ -27,26 +33,21 @@ public class PainterOnHosterTest {
         final String setTitle = "TestSet_" + System.currentTimeMillis();
 
         IImageHost[] iha = new IImageHost[] {
-            // new ImageHostFile(Files.createTempDir().getPath())
-            // new ImageHostFlickr()
             new ImageHostFacebook()
-        // new ImageHostGoogleDataApiPicasa()
-            };
+        };
 
         for (IImageHost ih : iha) {
 
             System.out.println("\n<<<<<<<<<<<<< " + ih.getClass().getName() + " >>>>>>>>>>>>>>\n");
 
-            for (int numSys = 2; numSys <= 16; numSys++) {
+            List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
+            for (IBytesToImagePainter ip : painters) {
 
-                IBytesToImagePainter ip = new LayeredBytesToImagePainter(numSys);
-
-                // IBytesToImagePainter ip = new BinaryBytesToImagePainter();
                 int[] dim =
                     getWidhtAndHeight(ip.pixelsPerByte(), TESTBYTES.length, ih.getMaxImageWidth(), ih
                         .getMaxImageHeight());
 
-                System.out.println("3layered painter with numeral system " + numSys);
+                System.out.println("painter " + ip.toString());
 
                 ImageGenerator ig = new ImageGenerator(ip, dEncoder, dim[0], dim[1]);
 
@@ -56,14 +57,18 @@ public class PainterOnHosterTest {
 
                 final long timeMillis = System.currentTimeMillis();
 
-                final String imageTitle = "ns_" + numSys + "_tm_" + timeMillis;
-                // final String imageTitle = "ns_" + 1 + "_tm_" + timeMillis;
+                final String imageTitle = "painter_" + ip.toString() + "_tm_" + timeMillis;
 
                 ih.uploadImage(setTitle, imageTitle, bi);
+
+                System.out.println("time to upload: " + (System.currentTimeMillis() - timeMillis));
 
                 BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
 
                 byte[] backB = ig.getBytesFromImage(backImage);
+
+                System.out.println("time to upload and download: "
+                    + (System.currentTimeMillis() - timeMillis));
 
                 // : " works not on " + ih.toString() + "!!"));
                 compareByteArrays(backB, TESTBYTES);
@@ -97,7 +102,7 @@ public class PainterOnHosterTest {
         int len = bs1.length > bs2.length ? bs2.length : bs1.length;
 
         if (len == 0) {
-            System.out.println("Failure!! Array size = 0");
+            System.err.println("Failure!! Array size = 0");
             return;
         }
 
@@ -114,6 +119,12 @@ public class PainterOnHosterTest {
             }
         }
         System.out.println("\n----------------");
-        System.out.println("Matches: " + match + " Errors: " + notMatch);
+        if(notMatch>0) {
+            System.err.println("Matches: " + match + " Errors: " + notMatch);
+        } else {
+                
+        }
+        
     }
+
 }
