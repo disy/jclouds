@@ -113,13 +113,19 @@ public class FlickrOAuth {
      *             Signals that an I/O exception has occurred.
      */
     private void loadFlickrProperties() throws IOException {
-        File propFile = new File(FLICKR_PROP_FILE_URI);
+        File userStore =
+            new File(System.getProperty("user.home"), new StringBuilder(".imagecredentials").append(
+                File.separator).append("flickr.properties").toString());
+        // if (userStore.exists()) {
+        // fp.load(new FileInputStream(userStore));
+        // } else {
 
+        File propFile = new File(FLICKR_PROP_FILE_URI);
         if (!propFile.exists()) {
             propFile.createNewFile();
         }
-
         fp.load(new FileInputStream(propFile));
+        // }
     }
 
     /**
