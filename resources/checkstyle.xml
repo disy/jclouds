@@ -4,16 +4,24 @@
 <module name="Checker">
     <property name="severity" value="warning"/>
     <module name="NewlineAtEndOfFile"/>
+    <module name="SuppressionFilter">
+        <property name="file" value="resources/checkstyle_suppressions.xml"/>
+    </module>
     <module name="TreeWalker">
         <module name="EmptyStatement"/>
         <module name="IllegalThrows"/>
+<!--
+        jclouds prefers 120 character line lengths but has many files with
+        longer lines
         <module name="LineLength">
             <property name="ignorePattern" value="^import\s.*;$"/>
             <property name="max" value="120"/>
         </module>
+-->
         <module name="ModifierOrder"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="SimplifyBooleanExpression"/>
+        <module name="UnnecessaryParentheses"/>
         <module name="UnusedImports"/>
     </module>
     <module name="RegexpMultiline">
