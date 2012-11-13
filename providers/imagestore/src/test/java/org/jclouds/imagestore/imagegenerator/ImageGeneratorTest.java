@@ -34,8 +34,10 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
+import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
@@ -99,7 +101,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "localTests", enabled = false)
+    @Test(dataProvider = "allPainters", groups = "localTests")
     public void testOnFile(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -124,7 +126,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "allPainters", groups = "remoteTests")
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -139,22 +141,19 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "allPainters")
     public Object[][] allPainters() {
-        Object[][] returnVal = {
-            {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
-                    new BinaryBytesToImagePainter()
-                /*
-                 * , new QuaternaryBytesToImagePainter(),
-                 * new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter(),
-                 * new DihectpenthexagonLayeredBytesToImagePainter()
-                 */
-                }, IEncoder.class, new IEncoder[] {
-                    // new IEncoder.DummyEncoder(),
-                    new ReedSolomon()
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
 
+        Object[][] returnVal =
+            {
+                {
+                    IBytesToImagePainter.class, painters.toArray(new IBytesToImagePainter[painters.size()]),
+                    IEncoder.class, new IEncoder[] {
+                        // new IEncoder.DummyEncoder(),
+                        new ReedSolomon()
+
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 
@@ -175,7 +174,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = true)
+    @Test(dataProvider = "flickrPainters", groups = "remoteTests")
     public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -190,14 +189,14 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "flickrPainters")
     public Object[][] flickrPainters() {
+
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFlickr();
+
         Object[][] returnVal =
             {
                 {
-                    IBytesToImagePainter.class,
-                    new IBytesToImagePainter[] {
-                        new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter(),
-                        new SeptenaryBytesToImagePainter(), new HexadecimalBytesToImagePainter()
-                    }, IEncoder.class, new IEncoder[] {
+                    IBytesToImagePainter.class, painters.toArray(new IBytesToImagePainter[painters.size()]),
+                    IEncoder.class, new IEncoder[] {
                         new IEncoder.DummyEncoder(), new ReedSolomon()
                     }
                 }
@@ -222,7 +221,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests", enabled = false)
+    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
     public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -237,15 +236,18 @@ public class ImageGeneratorTest {
      */
     @DataProvider(name = "facebookPainters")
     public Object[][] facebookPainters() {
-        Object[][] returnVal = {
+
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
+
+        Object[][] returnVal =
             {
-                IBytesToImagePainter.class, new IBytesToImagePainter[] {
-                    new BinaryBytesToImagePainter(), new QuaternaryBytesToImagePainter()
-                }, IEncoder.class, new IEncoder[] {
-                    new IEncoder.DummyEncoder(), new ReedSolomon()
+                {
+                    IBytesToImagePainter.class, painters.toArray(new IBytesToImagePainter[painters.size()]),
+                    IEncoder.class, new IEncoder[] {
+                        new IEncoder.DummyEncoder(), new ReedSolomon()
+                    }
                 }
-            }
-        };
+            };
         return returnVal;
     }
 

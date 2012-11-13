@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 /**
- * This class offers an abstraction to create different layered byte painters.
+ * This class offers an abstraction to create different RGB-layered byte painters.
  * 
  * @author Wolfgang Miller, University of Konstanz.
  * 
@@ -165,7 +165,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      *            The numeral system
      */
     public LayeredBytesToImagePainter(final int numSys) {
-        pixelsPerBytePerLayer = calcPixelsPerBytePerLayer(numSys);
+        pixelsPerBytePerLayer = HBytesToImagePainterHelper.calcPixelsPerBytePerLayer(numSys);
         numeralSystem = numSys;
         colors = HBytesToImagePainterHelper.generate3LayeredUniformlyDistributedColors(numeralSystem);
         blockSize = 1;
@@ -179,17 +179,6 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      */
     public LayeredBytesToImagePainter(final PainterType pt) {
         this(pt.numSys);
-    }
-
-    /**
-     * Calculates how many pixels needed to store one byte in one layer.
-     * 
-     * @param numSys
-     *            numeral system
-     * @return the amount of pixels needed to store one byte in one layer
-     */
-    private int calcPixelsPerBytePerLayer(final int numSys) {
-        return (int)Math.ceil(Math.log(256) / Math.log(numSys));
     }
 
     /**

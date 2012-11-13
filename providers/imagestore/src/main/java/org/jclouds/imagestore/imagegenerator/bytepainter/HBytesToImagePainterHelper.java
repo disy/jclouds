@@ -56,7 +56,7 @@ public final class HBytesToImagePainterHelper {
     static int[] getColorsFromByte(final byte b, final int numeralSystem, final int pixelInNumSys) {
         final int it = b & 0xFF;
         String numSysVal = Integer.toString(it, numeralSystem);
-        final int[] byteColors = new int[numeralSystem];
+        final int[] byteColors = new int[pixelInNumSys];
 
         while (numSysVal.length() < pixelInNumSys) {
             numSysVal = "0" + numSysVal;
@@ -245,6 +245,17 @@ public final class HBytesToImagePainterHelper {
 
         }
         return Integer.toString(idx, numeralSystem);
+    }
+    
+    /**
+     * Calculates how many pixels needed to store one byte in one layer.
+     * 
+     * @param numSys
+     *            numeral system
+     * @return the amount of pixels needed to store one byte in one layer
+     */
+    static int calcPixelsPerBytePerLayer(final int numSys) {
+        return (int)Math.ceil(Math.log(256) / Math.log(numSys));
     }
 
 }

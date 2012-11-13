@@ -18,6 +18,7 @@ import com.restfb.BinaryAttachment;
 import com.restfb.Facebook;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
+import com.restfb.exception.FacebookOAuthException;
 import com.restfb.types.Album;
 import com.restfb.types.FacebookType;
 
@@ -29,9 +30,9 @@ public class ImageHostFacebook implements IImageHost {
     private static final String MARKERFORSET = "MARKER";
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 2048;
+    private static final int MAX_IMAGE_WIDTH = 720;
     /** The maximum image height. */
-    private static final int MAX_IMAGE_HEIGHT = 2048;
+    private static final int MAX_IMAGE_HEIGHT = 720;
     /** The FacebookClient instance. */
     private FacebookClient fbClient;
 
@@ -312,6 +313,9 @@ public class ImageHostFacebook implements IImageHost {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
+        } catch (FacebookOAuthException exc) {
+            exc.printStackTrace();
             return false;
         }
     }
