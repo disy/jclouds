@@ -14,7 +14,9 @@ import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 
 import com.google.common.io.Files;
 
@@ -32,7 +34,7 @@ public class PainterOnHosterTest {
         final IEncoder dEncoder = new DummyEncoder();
         final String setTitle = "TestSet";
 
-        IImageHost ih = new ImageHostFile(Files.createTempDir().getAbsolutePath());
+        IImageHost ih = new ImageHostFacebook();
 
         ih.clearImageSet(setTitle);
 
@@ -47,7 +49,7 @@ public class PainterOnHosterTest {
                 byte[] TESTBYTES = new byte[1 << i];
                 RAN.nextBytes(TESTBYTES);
 
-                System.out.println("\n<<<<<<<<<<<<< " + ih.getClass().getName() + " >>>>>>>>>>>>>>\n");
+                System.out.println("\n<<<<<<<<<<<<< " + i + " >>>>>>>>>>>>>>\n");
 
                 List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
                 for (IBytesToImagePainter ip : painters) {

@@ -45,17 +45,27 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getAllPainters() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values()) {
-            returnVal.add(type.getPainter());
-        }
+        returnVal.addAll(getLayeredPainters());
+        returnVal.addAll(getNormalPainters());
 
+        return returnVal;
+    }
+
+    public static List<IBytesToImagePainter> getNormalPainters() {
+        List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
         for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
             returnVal.add(type.getPainter());
         }
-
         returnVal.add(new DihectpenthexagonBytesToImagePainter());
-        returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
+        return returnVal;
+    }
 
+    public static List<IBytesToImagePainter> getLayeredPainters() {
+        List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
+        for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values()) {
+            returnVal.add(type.getPainter());
+        }
+        returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
         return returnVal;
     }
 
