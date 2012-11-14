@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
@@ -12,34 +14,35 @@ import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
+import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 
 public class PainterOnHosterTest {
 
     static Random RAN = new Random(12l);
 
-    static File generalStore = new File(System.getProperty("user.home"), "failures");
+    static File csvStore = new File(System.getProperty("user.home"), "failures");
 
     static File painterStore;
 
     public static void main(String args[]) throws InterruptedException {
 
+        File imageStore = new File(System.getProperty("user.home"), "fileHostImages");
+        imageStore.mkdirs();
+
         final IEncoder dEncoder = new DummyEncoder();
         final String setTitle = "TestSet";
-        IImageHost ih = new ImageHostFacebook();
+
+        IImageHost ih = new ImageHostFile(imageStore.getAbsolutePath());
 
         ih.clearImageSet(setTitle);
 
-        painterStore = new File(generalStore, ih.toString());
+        painterStore = new File(csvStore, ih.toString());
         painterStore.mkdirs();
+
+        Map<String, FileWriter> painterWriter = new HashMap<String, FileWriter>();
 
         try {
             for (int i = 10; i <= 20; i++) {
-                File size = new File(painterStore, "fileSize" + i + ".csv");
-                if (!size.exists()) {
-                    size.createNewFile();
-                }
-                FileWriter writer = new FileWriter(size);
 
                 byte[] TESTBYTES = new byte[1 << i];
                 RAN.nextBytes(TESTBYTES);
@@ -48,6 +51,27 @@ public class PainterOnHosterTest {
 
                 List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
                 for (IBytesToImagePainter ip : painters) {
+
+                    FileWriter writer;
+
+                    if (!painterWriter.containsKey(ip.toString())) {
+                        File painter = new File(painterStore, ip.toString() + ".csv");
+                        if (!painter.exists()) {
+                            painter.createNewFile();
+                        }
+                        writer = new FileWriter(painter);
+                        writer.write("Input Size");
+                        writer.write(",");
+                        writer.write("Width");
+                        writer.write(",");
+                        writer.write("Height");
+                        writer.write(",");
+                        writer.write("File Size");
+                        writer.write("\n");
+                        writer.flush();
+                        painterWriter.put(ip.toString(), writer);
+                    }
+                    writer = painterWriter.get(ip.toString());
 
                     try {
                         int[] dim =
@@ -62,24 +86,26 @@ public class PainterOnHosterTest {
 
                         System.out.println("image-size: " + bi.getWidth() + " X " + bi.getHeight());
 
-                        writer.write(ip.toString());
-                        writer.write(",");
+                        final long timeMillis = System.currentTimeMillis();
+
+                        final String imageTitle = "painter_" + ip.toString() + "_size_" + i;
+
                         writer.write(Integer.toString(TESTBYTES.length));
                         writer.write(",");
                         writer.write(Integer.toString(bi.getWidth()));
                         writer.write(",");
                         writer.write(Integer.toString(bi.getHeight()));
-                        writer.write("\n");
-                        writer.flush();
-
-                        final long timeMillis = System.currentTimeMillis();
-
-                        final String imageTitle = "painter_" + ip.toString() + "_tm_" + timeMillis;
+                        writer.write(",");
 
                         if (ih.uploadImage(setTitle, imageTitle, bi)) {
 
                             System.out
                                 .println("time to upload: " + (System.currentTimeMillis() - timeMillis));
+
+                            long fileSize = getFileSize(imageTitle, new File(imageStore, setTitle));
+                            writer.write(Long.toString(fileSize));
+                            writer.write("\n");
+                            writer.flush();
 
                             BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
 
@@ -93,17 +119,36 @@ public class PainterOnHosterTest {
 
                         } else {
                             System.out.println("Upload not successful");
+                            writer.write(Integer.toString(0));
+                            writer.write("\n");
+                            writer.flush();
+
                         }
                         System.out.println("\n######################################\n");
                     } catch (RuntimeException exc) {
                         exc.printStackTrace();
                     }
                 }
+            }
+
+            for (FileWriter writer : painterWriter.values()) {
                 writer.close();
             }
+
         } catch (IOException exc) {
             exc.printStackTrace();
         }
+    }
+
+    static long getFileSize(String imageTitle, File store) {
+        long size = 0;
+        for (File content : store.listFiles()) {
+            if (content.getName().contains(imageTitle)) {
+                size = size + content.length();
+            }
+        }
+
+        return size;
     }
 
     static int[] getWidhtAndHeight(final float pixelPerByte, final int inputLength,
