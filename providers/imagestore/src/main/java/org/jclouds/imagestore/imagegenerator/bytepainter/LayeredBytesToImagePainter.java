@@ -396,10 +396,6 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
         return "Layered " + numeralSystem;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int getNumSys() {
         return numeralSystem;
     }

@@ -229,12 +229,4 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         return "Binary";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNumSys() {
-        return NUMERAL_SYSTEM;
-    }
-    
 }

@@ -35,8 +35,6 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     private static final int PIXELS_PER_BYTE_PER_LAYER = 1;
     /** The amount of layers. */
     private static final int LAYERS = 3;
-    /** The numeral system. */
-    private static final int NUMERAL_SYSTEM = 256;
 
     /**
      * {@inheritDoc}
@@ -177,14 +175,6 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     @Override
     public String toString() {
         return "DiHectPentHexagonLayered";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNumSys() {
-        return NUMERAL_SYSTEM;
     }
 
 }

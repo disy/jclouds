@@ -12,8 +12,6 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_BYTE_GRAY;
     /** Pixels needed per Byte. */
     private static final int PIXELS_PER_BYTE = 1;
-    /** The numeral system. */
-    private static final int NUMERAL_SYSTEM = 256;
 
     /**
      * {@inheritDoc}
@@ -85,7 +83,6 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
         final int w = img.getWidth();
         final int h = img.getHeight();
         final WritableRaster raster = img.getRaster();
-        
 
         for (int y = 0; y < h; y++) {
 
@@ -111,13 +108,11 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getNumSys() {
-        return NUMERAL_SYSTEM;
+    public String toString() {
+        return "DiHectPentHexagon";
     }
-
 }

@@ -368,15 +368,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
      */
     @Override
     public String toString() {
-        return "Normal " + numeralSystem + ", image-type: " + bufferedImageType;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNumSys() {
-        return numeralSystem;
+        return "Normal " + numeralSystem + ": image-type: " + bufferedImageType;
     }
 
 }

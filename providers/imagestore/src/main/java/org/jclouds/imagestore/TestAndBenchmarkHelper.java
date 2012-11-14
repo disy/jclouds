@@ -10,6 +10,7 @@ import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter.PainterType;
@@ -52,6 +53,7 @@ public class TestAndBenchmarkHelper {
             returnVal.add(type.getPainter());
         }
 
+        returnVal.add(new DihectpenthexagonBytesToImagePainter());
         returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
 
         return returnVal;
@@ -59,7 +61,7 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
+        returnVal.add(BytesToImagePainter.PainterType.BINARY_BLACK_WHITE.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         return returnVal;
     }
@@ -72,7 +74,7 @@ public class TestAndBenchmarkHelper {
         returnVal.add(PainterType.QUATENARY_LAYERED.getPainter());
         returnVal.add(PainterType.SEPTENARY_LAYERED.getPainter());
 
-        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
+        returnVal.add(BytesToImagePainter.PainterType.BINARY_BLACK_WHITE.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.HEXADECIMAL.getPainter());
         return returnVal;

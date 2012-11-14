@@ -38,10 +38,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.jclouds.imagestore.TestAndBenchmarkHelper;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.HexadecimalBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.QuaternaryBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.SeptenaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
@@ -148,8 +144,7 @@ public class ImageGeneratorTest {
                 {
                     IBytesToImagePainter.class, painters.toArray(new IBytesToImagePainter[painters.size()]),
                     IEncoder.class, new IEncoder[] {
-                        // new IEncoder.DummyEncoder(),
-                        new ReedSolomon()
+                        new IEncoder.DummyEncoder(), new ReedSolomon()
 
                     }
                 }
