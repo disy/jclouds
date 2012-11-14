@@ -16,30 +16,30 @@ import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 
+import com.google.common.io.Files;
+
 public class PainterOnHosterTest {
 
     static Random RAN = new Random(12l);
 
     static File csvStore = new File(System.getProperty("user.home"), "failures");
 
-    static File painterStore;
-
     public static void main(String args[]) throws InterruptedException {
 
-        File imageStore = new File(System.getProperty("user.home"), "fileHostImages");
-        imageStore.mkdirs();
+        // File imageStore = new File(System.getProperty("user.home"), "fileHostImages");
+        // imageStore.mkdirs();
 
         final IEncoder dEncoder = new DummyEncoder();
         final String setTitle = "TestSet";
 
-        IImageHost ih = new ImageHostFile(imageStore.getAbsolutePath());
+        IImageHost ih = new ImageHostFile(Files.createTempDir().getAbsolutePath());
 
         ih.clearImageSet(setTitle);
 
-        painterStore = new File(csvStore, ih.toString());
-        painterStore.mkdirs();
+        csvStore.mkdirs();
 
-        Map<String, FileWriter> painterWriter = new HashMap<String, FileWriter>();
+        Map<String, FileWriter> sizeWriters = new HashMap<String, FileWriter>();
+        Map<String, FileWriter> failureWriters = new HashMap<String, FileWriter>();
 
         try {
             for (int i = 10; i <= 20; i++) {
@@ -52,26 +52,39 @@ public class PainterOnHosterTest {
                 List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
                 for (IBytesToImagePainter ip : painters) {
 
-                    FileWriter writer;
-
-                    if (!painterWriter.containsKey(ip.toString())) {
-                        File painter = new File(painterStore, ip.toString() + ".csv");
-                        if (!painter.exists()) {
-                            painter.createNewFile();
+                    if (!sizeWriters.containsKey(ip.toString())) {
+                        File sizes = new File(csvStore, ip.toString() + "Sizes.csv");
+                        if (!sizes.exists()) {
+                            sizes.createNewFile();
                         }
-                        writer = new FileWriter(painter);
-                        writer.write("Input Size");
-                        writer.write(",");
-                        writer.write("Width");
-                        writer.write(",");
-                        writer.write("Height");
-                        writer.write(",");
-                        writer.write("File Size");
-                        writer.write("\n");
-                        writer.flush();
-                        painterWriter.put(ip.toString(), writer);
+                        FileWriter sizeWriter = new FileWriter(sizes);
+                        sizeWriter.write("Input Size");
+                        sizeWriter.write(",");
+                        sizeWriter.write("Width");
+                        sizeWriter.write(",");
+                        sizeWriter.write("Height");
+                        // sizeWriter.write(",");
+                        // sizeWriter.write("File Size");
+                        sizeWriter.write("\n");
+                        sizeWriter.flush();
+                        sizeWriters.put(ip.toString(), sizeWriter);
+
+                        File failures = new File(csvStore, ip.toString() + "Failures.csv");
+                        if (!failures.exists()) {
+                            failures.createNewFile();
+                        }
+
+                        FileWriter failureWriter = new FileWriter(failures);
+                        failureWriter.write("Input Size");
+                        failureWriter.write(",");
+                        failureWriter.write("Correct");
+                        failureWriter.write(",");
+                        failureWriter.write("False");
+                        failureWriter.write("\n");
+                        failureWriter.flush();
+                        failureWriters.put(ip.toString(), failureWriter);
+
                     }
-                    writer = painterWriter.get(ip.toString());
 
                     try {
                         int[] dim =
@@ -90,22 +103,22 @@ public class PainterOnHosterTest {
 
                         final String imageTitle = "painter_" + ip.toString() + "_size_" + i;
 
-                        writer.write(Integer.toString(TESTBYTES.length));
-                        writer.write(",");
-                        writer.write(Integer.toString(bi.getWidth()));
-                        writer.write(",");
-                        writer.write(Integer.toString(bi.getHeight()));
-                        writer.write(",");
+                        sizeWriters.get(ip.toString()).write(Integer.toString(TESTBYTES.length));
+                        sizeWriters.get(ip.toString()).write(",");
+                        sizeWriters.get(ip.toString()).write(Integer.toString(bi.getWidth()));
+                        sizeWriters.get(ip.toString()).write(",");
+                        sizeWriters.get(ip.toString()).write(Integer.toString(bi.getHeight()));
+                        // sizeWriters.get(ip.toString()).write(",");
 
                         if (ih.uploadImage(setTitle, imageTitle, bi)) {
 
                             System.out
                                 .println("time to upload: " + (System.currentTimeMillis() - timeMillis));
 
-                            long fileSize = getFileSize(imageTitle, new File(imageStore, setTitle));
-                            writer.write(Long.toString(fileSize));
-                            writer.write("\n");
-                            writer.flush();
+                            // long fileSize = getFileSize(imageTitle, new File(imageStore, setTitle));
+                            // sizeWriters.get(ip.toString()).write(Long.toString(fileSize));
+                            sizeWriters.get(ip.toString()).write("\n");
+                            sizeWriters.get(ip.toString()).flush();
 
                             BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
 
@@ -115,13 +128,13 @@ public class PainterOnHosterTest {
                                 + (System.currentTimeMillis() - timeMillis));
 
                             // : " works not on " + ih.toString() + "!!"));
-                            compareByteArrays(backB, TESTBYTES);
+                            compareByteArrays(backB, TESTBYTES, failureWriters.get(ip.toString()));
 
                         } else {
                             System.out.println("Upload not successful");
-                            writer.write(Integer.toString(0));
-                            writer.write("\n");
-                            writer.flush();
+                            // writer.write(Integer.toString(0));
+                            sizeWriters.get(ip.toString()).write("\n");
+                            sizeWriters.get(ip.toString()).flush();
 
                         }
                         System.out.println("\n######################################\n");
@@ -131,7 +144,10 @@ public class PainterOnHosterTest {
                 }
             }
 
-            for (FileWriter writer : painterWriter.values()) {
+            for (FileWriter writer : sizeWriters.values()) {
+                writer.close();
+            }
+            for (FileWriter writer : failureWriters.values()) {
                 writer.close();
             }
 
@@ -170,7 +186,7 @@ public class PainterOnHosterTest {
         };
     }
 
-    static void compareByteArrays(byte[] bs1, byte[] bs2) {
+    static void compareByteArrays(byte[] bs1, byte[] bs2, FileWriter writer) {
         int match = 0, notMatch = 0;
         int len = bs1.length > bs2.length ? bs2.length : bs1.length;
 
@@ -193,16 +209,14 @@ public class PainterOnHosterTest {
         }
         System.out.println("\n----------------");
 
-        File forByte = new File(painterStore, Integer.toString(bs1.length) + ".csv");
         try {
-            if (!forByte.exists()) {
-                forByte.createNewFile();
-            }
-            FileWriter writer = new FileWriter(forByte);
+            writer.write(Integer.toString(bs1.length));
+            writer.write(",");
             writer.write(Integer.toString(match));
             writer.write(",");
             writer.write(Integer.toString(notMatch));
-            writer.close();
+            writer.write("\n");
+            writer.flush();
         } catch (IOException exc) {
             exc.printStackTrace();
         }

@@ -393,7 +393,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      */
     @Override
     public String toString() {
-        return "Layered " + numeralSystem;
+        return "Layered" + numeralSystem;
     }
 
     public int getNumSys() {

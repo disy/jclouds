@@ -4,8 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.jclouds.imagestore.ImageStoreConstants;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * This Class offers a byte painter.
@@ -37,37 +43,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
     private final Color[] colors;
 
     /** The image type to be used. */
-    private final int bufferedImageType;
-
-    /** The binary colors. */
-    private static final Color[] BINARY_COLORS = new Color[] {
-        Color.BLACK, Color.WHITE
-    };
-
-    /** The ternary colors. */
-    private static final Color[] TERNARY_COLORS = new Color[] {
-        Color.BLACK, new Color(0.5f, 0.5f, 0.5f), Color.WHITE
-    };
-
-    /** The quaternary colors. */
-    private static final Color[] QUATERNARY_COLORS = new Color[] {
-        Color.BLACK, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.WHITE
-    };
-
-    /** The septenary colors. */
-    private static final Color[] SEPTENARY_COLORS = new Color[] {
-        Color.BLACK, new Color(0.5f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 0.5f, 0.5f),
-        new Color(0.5f, 0.5f, 0.5f), new Color(1f, 0.5f, 0.5f), Color.WHITE
-    };
-
-    /** The hexadecimal colors. */
-    private static final Color[] HEXADECIMAL_COLORS = new Color[] {
-        Color.BLACK, new Color(0.5f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 0.5f, 0.5f),
-        new Color(0.5f, 0.5f, 0.5f), new Color(1f, 0.5f, 0.5f), new Color(0f, 1f, 1f),
-        new Color(0.5f, 1f, 1f), new Color(1f, 1f, 0), new Color(0.25f, 1f, 0.25f),
-        new Color(0.25f, 0.5f, 0.25f), new Color(0.25f, 0, 0.25f), new Color(0.75f, 1f, 0.75f),
-        new Color(0.75f, 0.5f, 0.75f), new Color(0.75f, 0, 0.75f), Color.WHITE
-    };
+    private static final int bufferedImageType = BufferedImage.TYPE_INT_RGB;
 
     public enum PainterType {
 
@@ -86,14 +62,21 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * <li>Picasa</li>
          * </ul>
          */
-        BINARY(2, BINARY_COLORS, BufferedImage.TYPE_INT_RGB),
+        BINARY(2) {
+            @Override
+            public Color[] getColors() {
+                return new Color[] {
+                    Color.BLACK, Color.WHITE
+                };
+            }
+        },
 
         /**
          * This Class offers a byte painter.
          * <p/>
          * Numeral System: Septenary <br/>
-         * Layers: 1 <br/>s
-         * 1 Byte = 3 Pixel <br/>
+         * Layers: 1 <br/>
+         * s 1 Byte = 3 Pixel <br/>
          * 7 colors <br/>
          * <p/>
          * Working with
@@ -106,27 +89,14 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * <li>Facebook</li>
          * </ul>
          */
-        TERNARY(3, TERNARY_COLORS, BufferedImage.TYPE_INT_RGB),
-
-        // /**
-        // * This Class offers a byte painter.
-        // * <p/>
-        // * Numeral System: Septenary <br/>
-        // * Layers: 1 <br/>
-        // * 1 Byte = 3 Pixel <br/>
-        // * 7 colors <br/>
-        // * <p/>
-        // * Working with
-        // * <ul>
-        // * <li>Flickr</li>
-        // * <li>Picasa</li>
-        // * </ul>
-        // * Not working with
-        // * <ul>
-        // * <li>Facebook</li>
-        // * </ul>
-        // */
-        // TERNARY_GREY(3, TERNARY_COLORS, BufferedImage.TYPE_BYTE_GRAY),
+        TERNARY(3) {
+            @Override
+            public Color[] getColors() {
+                return new Color[] {
+                    Color.BLACK, new Color(0.5f, 0.5f, 0.5f), Color.WHITE
+                };
+            }
+        },
 
         /**
          * This Class offers a byte painter.
@@ -143,73 +113,83 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * <li>Picasa</li>
          * </ul>
          */
-        QUARTERNARY(4, QUATERNARY_COLORS, BufferedImage.TYPE_INT_RGB),
-        //
-        // /**
-        // * This Class offers a byte painter.
-        // * <p/>
-        // * Numeral System: Quaternary <br/>
-        // * Layers: 1 <br/>
-        // * 1 Byte = 4 Pixel<br/>
-        // * 4 colors <br/>
-        // * <p/>
-        // * Working with
-        // * <ul>
-        // * <li>Flickr</li>
-        // * <li>Facebook (only if ImmageType is RGB, GREY not working on Facebook)</li>
-        // * <li>Picasa</li>
-        // * </ul>
-        // */
-        // QUARTERNARY_GREY(4, QUATERNARY_COLORS, BufferedImage.TYPE_BYTE_GRAY),
+        QUARTERNARY(4) {
+            @Override
+            public Color[] getColors() {
+                return new Color[] {
+                    Color.BLACK, Color.LIGHT_GRAY, Color.DARK_GRAY, Color.WHITE
+                };
+            }
+        },
 
-            /**
-             * This Class offers a byte painter.
-             * <p/>
-             * Numeral System: Septenary <br/>
-             * Layers: 1 <br/>
-             * 1 Byte = 3 Pixel <br/>
-             * 7 colors <br/>
-             * <p/>
-             * Working with
-             * <ul>
-             * <li>Flickr</li>
-             * <li>Picasa</li>
-             * </ul>
-             * Not working with
-             * <ul>
-             * <li>Facebook</li>
-             * </ul>
-             */
-            SEPTENARY(7, SEPTENARY_COLORS, BufferedImage.TYPE_INT_RGB),
+        /**
+         * This Class offers a byte painter.
+         * <p/>
+         * Numeral System: Septenary <br/>
+         * Layers: 1 <br/>
+         * 1 Byte = 3 Pixel <br/>
+         * 7 colors <br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        SEPTENARY(7) {
+            @Override
+            public Color[] getColors() {
+                return new Color[] {
+                    Color.BLACK, new Color(0.5f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 0.5f, 0.5f),
+                    new Color(0.5f, 0.5f, 0.5f), new Color(1f, 0.5f, 0.5f), Color.WHITE
+                };
+            }
+        },
 
-            /**
-             * This Class offers a byte painter.
-             * <p/>
-             * Numeral System: Hexadecimal <br/>
-             * Layers: 1 <br/>
-             * 1 Byte = 2 Pixel <br/>
-             * 16 colors <br/>
-             * <p/>
-             * Working with
-             * <ul>
-             * <li>Flickr</li>
-             * <li>Picasa</li>
-             * </ul>
-             * Not working with
-             * <ul>
-             * <li>Facebook</li>
-             * </ul>
-             */
-            HEXADECIMAL(16, HEXADECIMAL_COLORS, BufferedImage.TYPE_INT_RGB);
+        /**
+         * This Class offers a byte painter.
+         * <p/>
+         * Numeral System: Hexadecimal <br/>
+         * Layers: 1 <br/>
+         * 1 Byte = 2 Pixel <br/>
+         * 16 colors <br/>
+         * <p/>
+         * Working with
+         * <ul>
+         * <li>Flickr</li>
+         * <li>Picasa</li>
+         * </ul>
+         * Not working with
+         * <ul>
+         * <li>Facebook</li>
+         * </ul>
+         */
+        HEXADECIMAL(16) {
+            @Override
+            public Color[] getColors() {
+                return new Color[] {
+                    Color.BLACK, new Color(0.5f, 0f, 0f), new Color(1f, 0f, 0f), new Color(0f, 0.5f, 0.5f),
+                    new Color(0.5f, 0.5f, 0.5f), new Color(1f, 0.5f, 0.5f), new Color(0f, 1f, 1f),
+                    new Color(0.5f, 1f, 1f), new Color(1f, 1f, 0), new Color(0.25f, 1f, 0.25f),
+                    new Color(0.25f, 0.5f, 0.25f), new Color(0.25f, 0, 0.25f), new Color(0.75f, 1f, 0.75f),
+                    new Color(0.75f, 0.5f, 0.75f), new Color(0.75f, 0, 0.75f), Color.WHITE
+                };
+            }
+        };
 
         /** The numeral system. */
         final int numSys;
 
-        /** The used colors. */
-        final Color[] colors;
-
-        /** The type of the buffered image. */
-        final int bufferedImageType;
+        static Map<Integer, PainterType> PAINTERS = new HashMap<Integer, PainterType>();
+        static {
+            for (PainterType type : PainterType.values()) {
+                PAINTERS.put(type.numSys, type);
+            }
+        }
 
         /**
          * Constructor. Sets the numeral system of a predefined ByteToImagePainter.
@@ -221,10 +201,8 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * @param biType
          *            the buffered image type
          */
-        PainterType(final int pNumSys, final Color[] pcs, final int biType) {
+        PainterType(final int pNumSys) {
             numSys = pNumSys;
-            colors = pcs;
-            bufferedImageType = biType;
         }
 
         /**
@@ -233,20 +211,32 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * @return the IBytesToImagePainter object
          */
         public IBytesToImagePainter getPainter() {
-            return new BytesToImagePainter(numSys, colors, bufferedImageType);
+            return new BytesToImagePainter(numSys);
+        }
+
+        public abstract Color[] getColors();
+
+        public static PainterType getType(int numSys) {
+            if (PAINTERS.containsKey(numSys)) {
+                return PAINTERS.get(numSys);
+            } else {
+                throw new IllegalArgumentException(new StringBuilder("Painter ").append(numSys).append(
+                    " not implemented!").toString());
+            }
         }
 
     }
 
-    public BytesToImagePainter(final int numSys, final Color[] pcs, final int biType) {
-        pixelsPerByte = HBytesToImagePainterHelper.calcPixelsPerBytePerLayer(numSys);
-        numeralSystem = numSys;
-        colors = pcs;
-        bufferedImageType = biType;
+    @Inject
+    public BytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final String numSys) {
+        this(Integer.parseInt(numSys));
     }
 
-    public BytesToImagePainter(final PainterType pt) {
-        this(pt.numSys, pt.colors, pt.bufferedImageType);
+    public BytesToImagePainter(final int numSys) {
+        PainterType type = PainterType.getType(numSys);
+        pixelsPerByte = HBytesToImagePainterHelper.calcPixelsPerBytePerLayer(numSys);
+        numeralSystem = numSys;
+        colors = type.getColors();
     }
 
     /**
@@ -368,7 +358,11 @@ public class BytesToImagePainter implements IBytesToImagePainter {
      */
     @Override
     public String toString() {
-        return "Normal " + numeralSystem;
+        return "Normal" + numeralSystem;
+    }
+
+    public int getNumSys() {
+        return numeralSystem;
     }
 
 }

@@ -7,9 +7,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -18,15 +21,13 @@ import javax.imageio.ImageIO;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
-import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -56,6 +57,14 @@ public class LayeredPainterBenchmark {
     private static final File IMAGESTORE = new File(System.getProperty("user.home"), "imagestore");
 
     private static BlobStore store;
+
+    private static File CSVOUTPUT = new File(System.getProperty("user.home"), "csv");
+
+    private static Map<String, FileWriter> SIZES = new HashMap<String, FileWriter>();
+
+    static {
+        CSVOUTPUT.mkdirs();
+    }
 
     private byte[] data;
 
@@ -116,101 +125,101 @@ public class LayeredPainterBenchmark {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUp")
-    public void upload13() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download13() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload14() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download14() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload15() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download15() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload16() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download16() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload17() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download17() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload18() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download18() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload19() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download19() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload20() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download20() {
-        name--;
-        download();
-    }
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload13() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download13() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload14() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download14() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload15() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download15() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload16() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download16() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload17() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download17() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload18() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download18() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload19() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download19() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload20() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(afterLastRun = "tearDown")
+    // public void download20() {
+    // name--;
+    // download();
+    // }
 
     private void upload() {
         BlobBuilder blobbuilder =
@@ -258,34 +267,53 @@ public class LayeredPainterBenchmark {
 
     private void saveHostedImage() {
         SyncImageBlobStore blobStore = (SyncImageBlobStore)store;
+        String painter = blobStore.getImageGenerator().getPainter().toString();
+        String host = blobStore.getImageHost().getClass().getSimpleName();
 
-        File rawStore =
-            new File(IMAGESTORE.getAbsolutePath(), blobStore.getImageHost().getClass().getSimpleName());
+        File rawStore = new File(IMAGESTORE.getAbsolutePath(), host);
         rawStore.mkdirs();
 
         String imageSetTitle = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
-        String imageTitle =
-            new StringBuilder("grave9283").append(":").append(
-                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":")
-                .toString();
+        String imageTitle = new StringBuilder("grave9283").append(":").append(painter).append(":").toString();
 
         Set<String> images = blobStore.getImageHost().imageSetContent(imageSetTitle);
         int i = 0;
+        long size = 0;
         for (String image : images) {
             if (image.startsWith(imageTitle)) {
                 BufferedImage img = blobStore.getImageHost().downloadImage(imageSetTitle, image);
                 File toStore =
-                    new File(rawStore.getAbsolutePath(), blobStore.getImageGenerator().getPainter()
-                        .toString()
-                        + ":" + (dataFactor + currentRun) + ":" + i + ".png");
-                saveBufferedImage(toStore, img);
+                    new File(rawStore.getAbsolutePath(), painter + ":" + (dataFactor + currentRun) + ":" + i
+                        + ".png");
+                size = size + saveBufferedImage(toStore, img);
                 i++;
             }
         }
 
+        try {
+
+            if (!SIZES.containsKey(painter)) {
+                File file = new File(CSVOUTPUT, painter.toString() + "Sizes.csv");
+
+                FileWriter writer = new FileWriter(file);
+                writer.write("Input Size");
+                writer.write(",");
+                writer.write("File Size");
+                writer.write("\n");
+                SIZES.put(painter, writer);
+
+            }
+            SIZES.get(painter).write(Integer.toString(1 << (dataFactor + currentRun)));
+            SIZES.get(painter).write(",");
+            SIZES.get(painter).write(Long.toString(size));
+            SIZES.get(painter).write("\n");
+            SIZES.get(painter).flush();
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
-    private static void saveBufferedImage(final File file, final BufferedImage img) {
+    private static long saveBufferedImage(final File file, final BufferedImage img) {
         try {
             if (file.exists()) {
                 file.delete();
@@ -294,43 +322,51 @@ public class LayeredPainterBenchmark {
             ImageIO.write(img, "png", fos);
             fos.flush();
             fos.close();
-        } catch (Exception exc) {
-            exc.toString();
+            return file.length();
+        } catch (IOException exc) {
+            throw new RuntimeException(exc);
         }
     }
 
     public static void main(String[] args) {
 
         Class<? extends IImageHost> host = ImageHostFile.class;
-        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
         benchSingleHost(host, painters);
 
-        host = ImageHostGoogleDataApiPicasa.class;
-        painters = TestAndBenchmarkHelper.getAllPainters();
-        benchSingleHost(host, painters);
-
-        host = ImageHostFacebook.class;
-        painters = TestAndBenchmarkHelper.getPaintersForFacebook();
-        benchSingleHost(host, painters);
-
-        host = ImageHostFlickr.class;
-        painters = TestAndBenchmarkHelper.getPaintersForFlickr();
-        benchSingleHost(host, painters);
+        // host = ImageHostGoogleDataApiPicasa.class;
+        // painters = TestAndBenchmarkHelper.getAllPainters();
+        // benchSingleHost(host, painters);
+        //
+        // host = ImageHostFacebook.class;
+        // painters = TestAndBenchmarkHelper.getPaintersForFacebook();
+        // benchSingleHost(host, painters);
+        //
+        // host = ImageHostFlickr.class;
+        // painters = TestAndBenchmarkHelper.getPaintersForFlickr();
+        // benchSingleHost(host, painters);
     }
 
     private static void
         benchSingleHost(Class<? extends IImageHost> host, List<IBytesToImagePainter> painters) {
-        File csvOutput = new File(System.getProperty("user.home"), "csv");
-        csvOutput.mkdirs();
-        
+
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
         for (final IBytesToImagePainter painter : painters) {
+
+            File paintercsv = new File(CSVOUTPUT, painter.toString());
+            paintercsv.mkdirs();
+
             System.out.println("+++++++++++" + host.getSimpleName() + "+++++++++++");
             System.out.println(painter.toString());
             System.out.println("++++++++++++++++++++++++++++++++++++");
             if (painter instanceof LayeredBytesToImagePainter) {
                 int layers = ((LayeredBytesToImagePainter)painter).getNumSys();
+                store =
+                    TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, layers)
+                        .getBlobStore();
+            } else if (painter instanceof BytesToImagePainter) {
+                int layers = ((BytesToImagePainter)painter).getNumSys();
                 store =
                     TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, layers)
                         .getBlobStore();
@@ -342,15 +378,24 @@ public class LayeredPainterBenchmark {
             bench.add(LayeredPainterBenchmark.class);
             BenchmarkResult res = bench.run();
             TabularSummaryOutput output = new TabularSummaryOutput();
-            CSVOutput output2 = new CSVOutput(csvOutput);
+            CSVOutput output2 = new CSVOutput(paintercsv);
             output.visitBenchmark(res);
             output2.visitBenchmark(res);
         }
+
+        for (FileWriter writer : SIZES.values()) {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 100;
+        private final static int RUNS = 2;
         private final static AbstractMeter[] METERS = {
             new TimeMeter(Time.MilliSeconds)
         };

@@ -113,6 +113,6 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
      */
     @Override
     public String toString() {
-        return "DiHectPentHexagon";
+        return "Normal256";
     }
 }

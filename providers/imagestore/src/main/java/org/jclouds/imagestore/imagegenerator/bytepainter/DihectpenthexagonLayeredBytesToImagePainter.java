@@ -174,7 +174,7 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      */
     @Override
     public String toString() {
-        return "DiHectPentHexagonLayered";
+        return "Layered256";
     }
 
 }
