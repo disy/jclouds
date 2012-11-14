@@ -61,7 +61,7 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        returnVal.add(BytesToImagePainter.PainterType.BINARY_BLACK_WHITE.getPainter());
+        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         return returnVal;
     }
@@ -74,7 +74,7 @@ public class TestAndBenchmarkHelper {
         returnVal.add(PainterType.QUATENARY_LAYERED.getPainter());
         returnVal.add(PainterType.SEPTENARY_LAYERED.getPainter());
 
-        returnVal.add(BytesToImagePainter.PainterType.BINARY_BLACK_WHITE.getPainter());
+        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.HEXADECIMAL.getPainter());
         return returnVal;

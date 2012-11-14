@@ -86,13 +86,13 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * <li>Picasa</li>
          * </ul>
          */
-        BINARY_BLACK_WHITE(2, BINARY_COLORS, BufferedImage.TYPE_BYTE_BINARY),
+        BINARY(2, BINARY_COLORS, BufferedImage.TYPE_INT_RGB),
 
         /**
          * This Class offers a byte painter.
          * <p/>
          * Numeral System: Septenary <br/>
-         * Layers: 1 <br/>
+         * Layers: 1 <br/>s
          * 1 Byte = 3 Pixel <br/>
          * 7 colors <br/>
          * <p/>
@@ -108,25 +108,25 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          */
         TERNARY(3, TERNARY_COLORS, BufferedImage.TYPE_INT_RGB),
 
-        /**
-         * This Class offers a byte painter.
-         * <p/>
-         * Numeral System: Septenary <br/>
-         * Layers: 1 <br/>
-         * 1 Byte = 3 Pixel <br/>
-         * 7 colors <br/>
-         * <p/>
-         * Working with
-         * <ul>
-         * <li>Flickr</li>
-         * <li>Picasa</li>
-         * </ul>
-         * Not working with
-         * <ul>
-         * <li>Facebook</li>
-         * </ul>
-         */
-        TERNARY_GREY(3, TERNARY_COLORS, BufferedImage.TYPE_BYTE_GRAY),
+        // /**
+        // * This Class offers a byte painter.
+        // * <p/>
+        // * Numeral System: Septenary <br/>
+        // * Layers: 1 <br/>
+        // * 1 Byte = 3 Pixel <br/>
+        // * 7 colors <br/>
+        // * <p/>
+        // * Working with
+        // * <ul>
+        // * <li>Flickr</li>
+        // * <li>Picasa</li>
+        // * </ul>
+        // * Not working with
+        // * <ul>
+        // * <li>Facebook</li>
+        // * </ul>
+        // */
+        // TERNARY_GREY(3, TERNARY_COLORS, BufferedImage.TYPE_BYTE_GRAY),
 
         /**
          * This Class offers a byte painter.
@@ -144,7 +144,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * </ul>
          */
         QUARTERNARY(4, QUATERNARY_COLORS, BufferedImage.TYPE_INT_RGB),
-
+        //
         // /**
         // * This Class offers a byte painter.
         // * <p/>
@@ -368,7 +368,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
      */
     @Override
     public String toString() {
-        return "Normal " + numeralSystem + ": image-type: " + bufferedImageType;
+        return "Normal " + numeralSystem;
     }
 
 }
