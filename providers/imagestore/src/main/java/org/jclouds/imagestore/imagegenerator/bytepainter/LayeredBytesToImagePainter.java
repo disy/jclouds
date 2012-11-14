@@ -141,6 +141,11 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
             numSys = pNumSys;
         }
 
+        /**
+         * Returns a IBytesToImagePainter object with the given enum params.
+         * 
+         * @return the IBytesToImagePainter object
+         */
         public IBytesToImagePainter getPainter() {
             return new LayeredBytesToImagePainter(numSys);
         }
@@ -153,6 +158,12 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
     /** The different pixel colors. */
     private final Color[][] colors;
 
+    /**
+     * Constructor. Generates a layered byte painter with the given numeral system.
+     * 
+     * @param numSys
+     *            the numeral system
+     */
     @Inject
     public LayeredBytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final String numSys) {
         this(Integer.parseInt(numSys));
@@ -377,10 +388,18 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
         return byteColors;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
-        return "Layered" + numeralSystem;
+        return "Layered " + numeralSystem;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getNumSys() {
         return numeralSystem;
     }

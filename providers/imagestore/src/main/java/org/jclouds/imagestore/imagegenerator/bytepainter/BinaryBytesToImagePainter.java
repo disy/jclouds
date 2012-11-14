@@ -221,8 +221,20 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         return '0';
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         return "Binary";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumSys() {
+        return NUMERAL_SYSTEM;
     }
     
 }
