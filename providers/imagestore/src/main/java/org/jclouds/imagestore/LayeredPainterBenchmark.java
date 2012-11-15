@@ -82,15 +82,15 @@ public class LayeredPainterBenchmark {
         store.createContainerInLocation(null, new StringBuilder("grave9283").append(dataFactor + currentRun)
             .toString());
         saveOrigImage();
-        //stabilizing the system
+        // stabilizing the system
         upload();
         name++;
         upload();
         name++;
     }
-    
+
     public void downloadSetUp() {
-        //stabilizing the system
+        // stabilizing the system
         name--;
         download();
         download();
@@ -107,7 +107,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download10() {
         name--;
         download();
@@ -119,7 +119,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download11() {
         name--;
         download();
@@ -131,7 +131,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download12() {
         name--;
         download();
@@ -143,7 +143,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download13() {
         name--;
         download();
@@ -155,7 +155,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download14() {
         name--;
         download();
@@ -167,7 +167,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download15() {
         name--;
         download();
@@ -179,7 +179,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download16() {
         name--;
         download();
@@ -191,7 +191,7 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
     public void download17() {
         name--;
         download();
@@ -203,35 +203,36 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    @Bench(afterLastRun = "tearDown")
-    public void download18() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload19() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download19() {
-        name--;
-        download();
-    }
-
-    @Bench(beforeFirstRun = "setUp")
-    public void upload20() {
-        upload();
-        name++;
-    }
-
-    @Bench(afterLastRun = "tearDown")
-    public void download20() {
-        name--;
-        download();
-    }
+    //
+    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
+    // public void download18() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload19() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
+    // public void download19() {
+    // name--;
+    // download();
+    // }
+    //
+    // @Bench(beforeFirstRun = "setUp")
+    // public void upload20() {
+    // upload();
+    // name++;
+    // }
+    //
+    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
+    // public void download20() {
+    // name--;
+    // download();
+    // }
 
     private void upload() {
         String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
@@ -410,7 +411,7 @@ public class LayeredPainterBenchmark {
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 2;
+        private final static int RUNS = 5;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();
