@@ -74,18 +74,15 @@ public class BytesToImagePainter implements IBytesToImagePainter {
         /**
          * This Class offers a byte painter.
          * <p/>
-         * Numeral System: Septenary <br/>
+         * Numeral System: Ternary <br/>
          * Layers: 1 <br/>
-         * s 1 Byte = 3 Pixel <br/>
-         * 7 colors <br/>
+         * 1 Byte = 6 Pixel <br/>
+         * 3 colors <br/>
          * <p/>
          * Working with
          * <ul>
          * <li>Flickr</li>
          * <li>Picasa</li>
-         * </ul>
-         * Not working with
-         * <ul>
          * <li>Facebook</li>
          * </ul>
          */
@@ -184,6 +181,8 @@ public class BytesToImagePainter implements IBytesToImagePainter {
         /** The numeral system. */
         final int numSys;
 
+        /** All painters. */
+
         static Map<Integer, PainterType> PAINTERS = new HashMap<Integer, PainterType>();
         static {
             for (PainterType type : PainterType.values()) {
@@ -196,10 +195,6 @@ public class BytesToImagePainter implements IBytesToImagePainter {
          * 
          * @param pNumSys
          *            the numeral system
-         * @param pcs
-         *            the colors to be used
-         * @param biType
-         *            the buffered image type
          */
         PainterType(final int pNumSys) {
             numSys = pNumSys;
@@ -228,10 +223,21 @@ public class BytesToImagePainter implements IBytesToImagePainter {
     }
 
     @Inject
+    /**
+     * Constructor. Creates a byte-painter with the given numeral system.
+     * 
+     * @param numSys the numeral system
+     */
     public BytesToImagePainter(@Named(ImageStoreConstants.PROPERTY_LAYERS) final String numSys) {
         this(Integer.parseInt(numSys));
     }
 
+    /**
+     * Constructor. Creates a byte-painter with the given numeral system.
+     * 
+     * @param numSys
+     *            the numeral system
+     */
     public BytesToImagePainter(final int numSys) {
         PainterType type = PainterType.getType(numSys);
         pixelsPerByte = HBytesToImagePainterHelper.calcPixelsPerBytePerLayer(numSys);
@@ -361,6 +367,11 @@ public class BytesToImagePainter implements IBytesToImagePainter {
         return "Normal" + numeralSystem;
     }
 
+    /**
+     * Returns the numeral system.
+     * 
+     * @return the numeral system
+     */
     public int getNumSys() {
         return numeralSystem;
     }
