@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -23,7 +24,6 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
@@ -82,6 +82,18 @@ public class LayeredPainterBenchmark {
         store.createContainerInLocation(null, new StringBuilder("grave9283").append(dataFactor + currentRun)
             .toString());
         saveOrigImage();
+        //stabilizing the system
+        upload();
+        name++;
+        upload();
+        name++;
+    }
+    
+    public void downloadSetUp() {
+        //stabilizing the system
+        name--;
+        download();
+        download();
     }
 
     public void tearDown() {
@@ -125,126 +137,130 @@ public class LayeredPainterBenchmark {
         download();
     }
 
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload13() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download13() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload14() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download14() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload15() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download15() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload16() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download16() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload17() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download17() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload18() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download18() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload19() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download19() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload20() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(afterLastRun = "tearDown")
-    // public void download20() {
-    // name--;
-    // download();
-    // }
+    @Bench(beforeFirstRun = "setUp")
+    public void upload13() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download13() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload14() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download14() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload15() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download15() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload16() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download16() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload17() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download17() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload18() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download18() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload19() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download19() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload20() {
+        upload();
+        name++;
+    }
+
+    @Bench(afterLastRun = "tearDown")
+    public void download20() {
+        name--;
+        download();
+    }
 
     private void upload() {
-        BlobBuilder blobbuilder =
-            store.blobBuilder(new StringBuilder("grave9283").append(":").append(
+        String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
+        String blobname =
+            new StringBuilder("grave9283").append(":").append(
                 ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
-                name).toString());
+                name).toString();
+
+        BlobBuilder blobbuilder = store.blobBuilder(blobname);
         Blob blob = blobbuilder.build();
         blob.setPayload(data);
-        store.putBlob(new StringBuilder("grave9283").append(dataFactor + currentRun).toString(), blob);
+        store.putBlob(container, blob);
 
     }
 
     private void download() {
-        Blob blob =
-            store.getBlob(new StringBuilder("grave9283").append(dataFactor + currentRun).toString(),
-                new StringBuilder("grave9283").append(":").append(
-                    ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":")
-                    .append(name).toString());
+        String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
+        String blobname =
+            new StringBuilder("grave9283").append(":").append(
+                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
+                name).toString();
+        Blob blob = store.getBlob(container, blobname);
         InputStream in = blob.getPayload().getInput();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             ByteStreams.copy(in, out);
             data = out.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -353,7 +369,6 @@ public class LayeredPainterBenchmark {
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
         for (final IBytesToImagePainter painter : painters) {
-
             File paintercsv = new File(CSVOUTPUT, painter.toString());
             paintercsv.mkdirs();
 
@@ -396,14 +411,15 @@ public class LayeredPainterBenchmark {
     static class BenchmarkConf extends AbstractConfig {
 
         private final static int RUNS = 2;
-        private final static AbstractMeter[] METERS = {
-            new TimeMeter(Time.MilliSeconds)
-        };
-        private final static AbstractOutput[] OUTPUT = {
-        // new TabularSummaryOutput()
-            };
+        private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
+
+        private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();
         private final static KindOfArrangement ARRAN = KindOfArrangement.NoArrangement;
         private final static double GCPROB = 1.0d;
+
+        static {
+            METERS.add(new TimeMeter(Time.MilliSeconds));
+        };
 
         /**
          * Public constructor.
