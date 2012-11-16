@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jclouds.imagestore;
+package org.jclouds.imagestore.benchmarks;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
+import org.jclouds.imagestore.SyncImageBlobStore;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;

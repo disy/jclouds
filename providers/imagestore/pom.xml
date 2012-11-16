@@ -29,7 +29,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>org.jclouds.imagestore.LayeredPainterBenchmark</mainClass>
+                            <mainClass>org.jclouds.imagestore.benchmarks.LayeredPainterBenchmark</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

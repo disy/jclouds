@@ -270,7 +270,7 @@ public class AWSBenchmark {
         BlobStoreContext context =
             new BlobStoreContextFactory().createContext("aws-s3", awsCredentials[0], awsCredentials[1]);
         store = context.getBlobStore();
-        File paintercsv = new File(CSVOUTPUT, "azureblob");
+        File paintercsv = new File(CSVOUTPUT, "aws");
         paintercsv.mkdirs();
         Benchmark bench = new Benchmark(new BenchmarkConf());
         bench.add(AWSBenchmark.class);
