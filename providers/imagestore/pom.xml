@@ -74,8 +74,16 @@
             <artifactId>jclouds-blobstore</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- <dependency> <groupId>org.jclouds.provider</groupId> <artifactId>aws-s3</artifactId> 
-            <version>${project.version}</version> </dependency> -->
+        <dependency>
+            <groupId>org.jclouds.provider</groupId>
+            <artifactId>aws-s3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jclouds.provider</groupId>
+            <artifactId>azureblob</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.jclouds.api</groupId>
             <artifactId>filesystem</artifactId>

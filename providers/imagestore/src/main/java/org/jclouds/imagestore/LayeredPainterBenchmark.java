@@ -203,36 +203,35 @@ public class LayeredPainterBenchmark {
         name++;
     }
 
-    //
-    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
-    // public void download18() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload19() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
-    // public void download19() {
-    // name--;
-    // download();
-    // }
-    //
-    // @Bench(beforeFirstRun = "setUp")
-    // public void upload20() {
-    // upload();
-    // name++;
-    // }
-    //
-    // @Bench(beforeFirstRun="downloadSetUp",afterLastRun = "tearDown")
-    // public void download20() {
-    // name--;
-    // download();
-    // }
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
+    public void download18() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload19() {
+        upload();
+        name++;
+    }
+
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
+    public void download19() {
+        name--;
+        download();
+    }
+
+    @Bench(beforeFirstRun = "setUp")
+    public void upload20() {
+        upload();
+        name++;
+    }
+
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown")
+    public void download20() {
+        name--;
+        download();
+    }
 
     private void upload() {
         String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
@@ -349,23 +348,6 @@ public class LayeredPainterBenchmark {
 
         Class<? extends IImageHost> host = ImageHostFile.class;
         List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
-        benchSingleHost(host, painters);
-
-        // host = ImageHostGoogleDataApiPicasa.class;
-        // painters = TestAndBenchmarkHelper.getAllPainters();
-        // benchSingleHost(host, painters);
-        //
-        // host = ImageHostFacebook.class;
-        // painters = TestAndBenchmarkHelper.getPaintersForFacebook();
-        // benchSingleHost(host, painters);
-        //
-        // host = ImageHostFlickr.class;
-        // painters = TestAndBenchmarkHelper.getPaintersForFlickr();
-        // benchSingleHost(host, painters);
-    }
-
-    private static void
-        benchSingleHost(Class<? extends IImageHost> host, List<IBytesToImagePainter> painters) {
 
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
@@ -406,12 +388,11 @@ public class LayeredPainterBenchmark {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 5;
+        private final static int RUNS = 10;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();
