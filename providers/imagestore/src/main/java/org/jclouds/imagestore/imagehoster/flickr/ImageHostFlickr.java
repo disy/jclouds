@@ -88,9 +88,9 @@ public class ImageHostFlickr implements IImageHost {
             fl = foa.getAuthenticatedFlickrInstance();
             userId = foa.getUser().getId();
         } catch (IOException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (FlickrException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         fup = new FlickrUploader(fl);
         fdown = new FlickrDownloader(fl, userId);
