@@ -181,24 +181,33 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         if (imageExists(imageSetTitle, imageTitle)) {
             return false;
         }
-        PhotoEntry myPhoto = new PhotoEntry();
-        myPhoto.setTitle(new PlainTextConstruct(imageTitle));
-        try {
-            URL toPost = new URL(entry.getFeedLink().getHref());
 
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", os);
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
 
-            MediaByteArraySource myMedia = new MediaByteArraySource(os.toByteArray(), "image/png");
-            myPhoto.setMediaSource(myMedia);
+            PhotoEntry myPhoto = new PhotoEntry();
+            myPhoto.setTitle(new PlainTextConstruct(imageTitle));
+            try {
+                URL toPost = new URL(entry.getFeedLink().getHref());
 
-            service.insert(toPost, myPhoto);
-            return true;
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (ServiceException exc) {
-            throw new RuntimeException(exc);
-        }
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", os);
+
+                MediaByteArraySource myMedia = new MediaByteArraySource(os.toByteArray(), "image/png");
+                myPhoto.setMediaSource(myMedia);
+
+                service.insert(toPost, myPhoto);
+                return true;
+            } catch (IOException exc) {
+                thrown = exc;
+            } catch (ServiceException exc) {
+                thrown = exc;
+            }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
 
     }
 
@@ -207,16 +216,24 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public BufferedImage downloadImage(String imageSetTitle, String imageTitle) {
-        PhotoEntry myPhoto = getPhotoByNameForDownload(imageSetTitle, imageTitle);
-        try {
-            if (myPhoto == null) {
-                return null;
+        // hack to try it multiple times in a row
+        int i = 10;
+        Exception thrown = null;
+        do {
+            i--;
+            PhotoEntry myPhoto = getPhotoByNameForDownload(imageSetTitle, imageTitle);
+            try {
+                if (myPhoto == null) {
+                    return null;
+                }
+                String source = myPhoto.getMediaContents().get(0).getUrl();
+                return ImageIO.read(new URL(source));
+            } catch (IOException exc) {
+                thrown = new RuntimeException(exc);
             }
-            String source = myPhoto.getMediaContents().get(0).getUrl();
-            return ImageIO.read(new URL(source));
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        }
+        } while (thrown != null && i >= 0);
+        throw new RuntimeException(thrown);
+
     }
 
     /**

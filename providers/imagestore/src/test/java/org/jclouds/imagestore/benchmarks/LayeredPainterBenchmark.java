@@ -27,6 +27,7 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.perfidix.AbstractConfig;
@@ -54,7 +55,7 @@ public class LayeredPainterBenchmark {
     private static final Random RAN = new Random(12l);
 
     // //SETTINGS TO SET MANUALLY
-    private static Class<? extends IEncoder> ENCODER = IEncoder.DummyEncoder.class;
+    private static Class<? extends IEncoder> ENCODER = ReedSolomon.class;
     private static final File IMAGESTORE = new File(System.getProperty("user.home"), "imagestore");
 
     private static BlobStore store;
@@ -353,7 +354,7 @@ public class LayeredPainterBenchmark {
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
         for (final IBytesToImagePainter painter : painters) {
-            File paintercsv = new File(CSVOUTPUT, "noencoder"+painter.toString());
+            File paintercsv = new File(CSVOUTPUT, "reed"+painter.toString());
             paintercsv.mkdirs();
 
             System.out.println("+++++++++++" + host.getSimpleName() + "+++++++++++");
