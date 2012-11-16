@@ -76,6 +76,14 @@ public class TestAndBenchmarkHelper {
         return returnVal;
     }
 
+    public static List<IBytesToImagePainter> getNormalPaintersForFlickr() {
+        List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
+        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
+            returnVal.add(type.getPainter());
+        }
+        return returnVal;
+    }
+    
     public static List<IBytesToImagePainter> getPaintersForFlickr() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
 

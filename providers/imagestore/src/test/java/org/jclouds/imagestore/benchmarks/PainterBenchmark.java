@@ -212,7 +212,7 @@ public class PainterBenchmark {
 
     public static void main(String[] args) {
         File csvStore = new File(System.getProperty("user.home"), "painters");
-        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getNormalPainters();
 
         IEncoder encoder = new IEncoder.DummyEncoder();
 
@@ -239,7 +239,7 @@ public class PainterBenchmark {
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 3;
+        private final static int RUNS = 5;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();
