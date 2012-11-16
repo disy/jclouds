@@ -353,7 +353,7 @@ public class LayeredPainterBenchmark {
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
         for (final IBytesToImagePainter painter : painters) {
-            File paintercsv = new File(CSVOUTPUT, painter.toString());
+            File paintercsv = new File(CSVOUTPUT, "noencoder"+painter.toString());
             paintercsv.mkdirs();
 
             System.out.println("+++++++++++" + host.getSimpleName() + "+++++++++++");
@@ -393,7 +393,7 @@ public class LayeredPainterBenchmark {
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 1;
+        private final static int RUNS = 10;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();

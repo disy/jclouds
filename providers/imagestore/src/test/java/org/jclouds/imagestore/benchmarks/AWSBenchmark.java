@@ -92,7 +92,8 @@ public class AWSBenchmark {
         upload();
         name++;
     }
-
+    
+    @Bench(beforeFirstRun = "downloadSetUp")
     public void download10() {
         name--;
         download();
