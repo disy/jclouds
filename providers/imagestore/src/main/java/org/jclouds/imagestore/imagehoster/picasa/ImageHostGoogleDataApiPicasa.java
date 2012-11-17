@@ -95,22 +95,28 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public boolean createImageSet(String imageSetTitle) {
-        try {
-            if (getAlbumByName(imageSetTitle) == null) {
-                AlbumEntry myAlbum = new AlbumEntry();
-                myAlbum.setTitle(new PlainTextConstruct(imageSetTitle));
-                service.insert(new URL(ROOTURL), myAlbum);
-                return true;
-            } else {
-                return false;
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            try {
+                if (getAlbumByName(imageSetTitle) == null) {
+                    AlbumEntry myAlbum = new AlbumEntry();
+                    myAlbum.setTitle(new PlainTextConstruct(imageSetTitle));
+                    service.insert(new URL(ROOTURL), myAlbum);
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException exc) {
+                thrown = exc;
+            } catch (IOException exc) {
+                thrown = exc;
+            } catch (ServiceException exc) {
+                thrown = exc;
             }
-        } catch (MalformedURLException exc) {
-            throw new RuntimeException(exc);
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (ServiceException exc) {
-            throw new RuntimeException(exc);
-        }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -135,18 +141,25 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public boolean deleteImage(String imageSetTitle, String imageTitle) {
-        PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
-        if (entry != null) {
-            try {
-                entry.delete();
-                return true;
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            } catch (ServiceException exc) {
-                throw new RuntimeException(exc);
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
+            if (entry != null) {
+                try {
+                    entry.delete();
+                    return true;
+                } catch (IOException exc) {
+                    thrown = exc;
+                } catch (ServiceException exc) {
+                    thrown = exc;
+                }
+            } else {
+                return false;
             }
-        }
-        return false;
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -154,18 +167,25 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public boolean deleteImageSet(String imageSetTitle) {
-        AlbumEntry entry = getAlbumByName(imageSetTitle);
-        if (entry != null) {
-            try {
-                entry.delete();
-                return true;
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            } catch (ServiceException exc) {
-                throw new RuntimeException(exc);
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            AlbumEntry entry = getAlbumByName(imageSetTitle);
+            if (entry != null) {
+                try {
+                    entry.delete();
+                    return true;
+                } catch (IOException exc) {
+                    thrown = exc;
+                } catch (ServiceException exc) {
+                    thrown = exc;
+                }
+            } else {
+                return false;
             }
-        }
-        return false;
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -241,23 +261,29 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
      */
     @Override
     public Set<String> imageSetContent(String imageSetTitle) {
-        Set<String> returnVal = new HashSet<String>();
+
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
 
         AlbumEntry entry = getAlbumByName(imageSetTitle);
-        try {
-            if (entry != null) {
-                AlbumFeed feed = entry.getFeed("photo");
-                for (PhotoEntry photo : feed.getPhotoEntries()) {
-                    returnVal.add(photo.getTitle().getPlainText());
+        do {
+            try {
+                Set<String> returnVal = new HashSet<String>();
+                if (entry != null) {
+                    AlbumFeed feed = entry.getFeed("photo");
+                    for (PhotoEntry photo : feed.getPhotoEntries()) {
+                        returnVal.add(photo.getTitle().getPlainText());
+                    }
                 }
+                return returnVal;
+            } catch (IOException exc) {
+                thrown = exc;
+            } catch (ServiceException exc) {
+                thrown = exc;
             }
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (ServiceException exc) {
-            throw new RuntimeException(exc);
-        }
-
-        return returnVal;
+        } while (i >= 10);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -274,19 +300,25 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     private final PhotoEntry getPhotoByNameNormal(String albumTitle, String imageTitle) {
         AlbumEntry entry = getAlbumByName(albumTitle);
         if (entry != null) {
-            try {
-                AlbumFeed feed = entry.getFeed("photo");
-                for (PhotoEntry photo : feed.getPhotoEntries()) {
-                    if (photo.getTitle().getPlainText().equals(imageTitle)) {
-                        return photo;
+            // hack to try it multiple times in a row
+            int i = 10;
+            Exception thrown = null;
+            do {
+                try {
+                    AlbumFeed feed = entry.getFeed("photo");
+                    for (PhotoEntry photo : feed.getPhotoEntries()) {
+                        if (photo.getTitle().getPlainText().equals(imageTitle)) {
+                            return photo;
+                        }
                     }
+                    return null;
+                } catch (IOException exc) {
+                    thrown = exc;
+                } catch (ServiceException exc) {
+                    thrown = exc;
                 }
-                return null;
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            } catch (ServiceException exc) {
-                throw new RuntimeException(exc);
-            }
+            } while (i >= 0);
+            throw new RuntimeException(thrown);
         } else {
             return null;
         }
@@ -296,20 +328,26 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     private final PhotoEntry getPhotoByNameForDownload(String albumTitle, String imageTitle) {
         AlbumEntry entry = getAlbumByName(albumTitle);
         if (entry != null) {
-            try {
-                URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
-                AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
-                for (PhotoEntry photo : feed.getPhotoEntries()) {
-                    if (photo.getTitle().getPlainText().equals(imageTitle)) {
-                        return photo;
+            // hack to try it multiple times in a row
+            int i = 10;
+            Exception thrown = null;
+            do {
+                try {
+                    URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
+                    AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
+                    for (PhotoEntry photo : feed.getPhotoEntries()) {
+                        if (photo.getTitle().getPlainText().equals(imageTitle)) {
+                            return photo;
+                        }
                     }
+                    return null;
+                } catch (IOException exc) {
+                    thrown = exc;
+                } catch (ServiceException exc) {
+                    thrown = exc;
                 }
-                return null;
-            } catch (IOException exc) {
-                throw new RuntimeException(exc);
-            } catch (ServiceException exc) {
-                throw new RuntimeException(exc);
-            }
+            } while (i >= 0);
+            throw new RuntimeException(thrown);
         } else {
             return null;
         }
@@ -317,24 +355,29 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
     }
 
     private final AlbumEntry getAlbumByName(String albumTitle) {
-        try {
-            URL feedUrl = new URL(ROOTURL + "?kind=album");
-            UserFeed myUserFeed = service.getFeed(feedUrl, UserFeed.class);
+        // hack to try it multiple times in a row
+        int i = 10;
+        Exception thrown = null;
+        do {
+            try {
+                URL feedUrl = new URL(ROOTURL + "?kind=album");
+                UserFeed myUserFeed = service.getFeed(feedUrl, UserFeed.class);
 
-            for (AlbumEntry myAlbum : myUserFeed.getAlbumEntries()) {
-                if (myAlbum.getTitle().getPlainText().equals(albumTitle)) {
-                    return myAlbum;
+                for (AlbumEntry myAlbum : myUserFeed.getAlbumEntries()) {
+                    if (myAlbum.getTitle().getPlainText().equals(albumTitle)) {
+                        return myAlbum;
+                    }
                 }
+                return null;
+            } catch (MalformedURLException exc) {
+                thrown = exc;
+            } catch (IOException exc) {
+                thrown = exc;
+            } catch (ServiceException exc) {
+                thrown = exc;
             }
-            return null;
-        } catch (MalformedURLException exc) {
-            throw new RuntimeException(exc);
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (ServiceException exc) {
-            throw new RuntimeException(exc);
-        }
-
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /** Global instance of the JSON factory. */
