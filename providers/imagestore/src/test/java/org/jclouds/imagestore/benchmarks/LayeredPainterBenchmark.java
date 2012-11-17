@@ -27,10 +27,8 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
-import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -81,9 +79,6 @@ public class LayeredPainterBenchmark {
         name = 0;
         setUpData(dataFactor + currentRun);
         currentRun++;
-        store.deleteContainer(new StringBuilder("grave9283").append(dataFactor + currentRun).toString());
-        store.createContainerInLocation(null, new StringBuilder("grave9283").append(dataFactor + currentRun)
-            .toString());
         saveOrigImage();
         // stabilizing the system
         upload();
@@ -93,13 +88,21 @@ public class LayeredPainterBenchmark {
     }
 
     public void setupEachUpload() {
-        name++;
+        String name =
+        new StringBuilder("benchContainer").append(":").append(
+            ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(currentRun).append(":").append(this.name).toString();
+        if (store.containerExists(name)) {
+            store.clearContainer(name);
+        } else {
+            store.createContainerInLocation(null, name);
+        }
+        this.name++;
     }
 
     public void setupEachDownload() {
         name--;
     }
-    
+
     public void downloadSetUp() {
         // stabilizing the system
         name--;
@@ -109,140 +112,136 @@ public class LayeredPainterBenchmark {
 
     public void tearDown() {
         saveHostedImage();
-        store.deleteContainer(new StringBuilder("grave9283").append(dataFactor + currentRun).toString());
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload10() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download10() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload11() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download11() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload12() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download12() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload13() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download13() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload14() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download14() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload15() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download15() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload16() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download16() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload17() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download17() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload18() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download18() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload19() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download19() {
         download();
     }
 
-    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun="setupEachUpload")
+    @Bench(beforeFirstRun = "setUpFirst", beforeEachRun = "setupEachUpload")
     public void upload20() {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun="setupEachDownload")
+    @Bench(beforeFirstRun = "downloadSetUp", afterLastRun = "tearDown", beforeEachRun = "setupEachDownload")
     public void download20() {
         download();
     }
 
     private void upload() {
-        String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
-        String blobname =
-            new StringBuilder("grave9283").append(":").append(
-                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
-                name).toString();
+        String name =
+        new StringBuilder("benchContainer").append(":").append(
+            ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(currentRun).append(":").append(this.name).toString();
 
-        BlobBuilder blobbuilder = store.blobBuilder(blobname);
+        BlobBuilder blobbuilder = store.blobBuilder(name);
         Blob blob = blobbuilder.build();
         blob.setPayload(data);
-        store.putBlob(container, blob);
+        store.putBlob(name, blob);
 
     }
 
     private void download() {
-        String container = new StringBuilder("grave9283").append(dataFactor + currentRun).toString();
-        String blobname =
-            new StringBuilder("grave9283").append(":").append(
-                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
-                name).toString();
-        Blob blob = store.getBlob(container, blobname);
+        String name =
+            new StringBuilder("benchContainer").append(":").append(
+                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(currentRun).append(":").append(this.name).toString();
+
+        Blob blob = store.getBlob(name, name);
         InputStream in = blob.getPayload().getInput();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -382,7 +381,7 @@ public class LayeredPainterBenchmark {
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 5;
+        private final static int RUNS = 2;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();
