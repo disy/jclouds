@@ -29,6 +29,7 @@ import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
@@ -335,7 +336,7 @@ public class LayeredPainterBenchmark {
 
     public static void main(String[] args) {
 
-        Class<? extends IImageHost> host = ImageHostFile.class;
+        Class<? extends IImageHost> host = ImageHostFacebook.class;
         List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
 
         System.out.println("=================================");

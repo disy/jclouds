@@ -70,12 +70,6 @@ public class TestAndBenchmarkHelper {
         return returnVal;
     }
 
-    public static List<IBytesToImagePainter> getPaintersForFacebook() {
-        List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
-        returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
-        return returnVal;
-    }
 
     public static List<IBytesToImagePainter> getNormalPaintersForFlickr() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
@@ -85,7 +79,7 @@ public class TestAndBenchmarkHelper {
         return returnVal;
     }
     
-    public static List<IBytesToImagePainter> getNormalPaintersForFacebook() {
+    public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
         returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.TERNARY.getPainter());

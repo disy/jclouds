@@ -97,13 +97,23 @@ public class ImageHostFacebook implements IImageHost {
         final StringBuilder builder = new StringBuilder("SELECT src FROM photo_src WHERE photo_id = \"");
         builder.append(ph.object_id);
         builder.append("\" ORDER BY width DESC LIMIT 1");
-
-        final List<FqlBigPhotoURL> bigURLL = fbClient.executeQuery(builder.toString(), FqlBigPhotoURL.class);
-
-        if (bigURLL.size() > 0) {
-            return bigURLL.get(0);
-        }
-        return null;
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                final List<FqlBigPhotoURL> bigURLL =
+                    fbClient.executeQuery(builder.toString(), FqlBigPhotoURL.class);
+                if (bigURLL.size() > 0) {
+                    return bigURLL.get(0);
+                } else {
+                    return null;
+                }
+            } catch (RuntimeException exc) {
+                thrown = exc;
+            }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -117,14 +127,24 @@ public class ImageHostFacebook implements IImageHost {
         final String query =
             "SELECT object_id, photo_count FROM album WHERE name = \"" + imageSetTitle
                 + "\" AND owner = me()";
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                final List<FqlAlbum> albums = fbClient.executeQuery(query, FqlAlbum.class);
 
-        final List<FqlAlbum> albums = fbClient.executeQuery(query, FqlAlbum.class);
+                if (albums.size() > 0) {
+                    return albums.get(0);
+                } else {
+                    return null;
+                }
 
-        if (albums.size() > 0) {
-            return albums.get(0);
-        }
-
-        return null;
+            } catch (RuntimeException exc) {
+                thrown = exc;
+            }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -145,8 +165,17 @@ public class ImageHostFacebook implements IImageHost {
             builder.append(imageTitle);
         }
         builder.append("\" AND owner = me()");
-
-        return fbClient.executeQuery(builder.toString(), FqlPhoto.class);
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                return fbClient.executeQuery(builder.toString(), FqlPhoto.class);
+            } catch (RuntimeException exc) {
+                thrown = exc;
+            }
+        } while (i >= 10);
+        throw thrown;
     }
 
     /**
@@ -180,32 +209,40 @@ public class ImageHostFacebook implements IImageHost {
      */
     @Override
     public boolean createImageSet(final String imageSetTitle) {
-        try {
-            FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
-            if (album == null) {
-                fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
-                album = getFacebookImageSetFql(imageSetTitle);
-                fbClient.publish(album.object_id + "/photos", FacebookType.class, BinaryAttachment.with(
-                    MARKERFORSET + ".png", HImageHostHelper.getInputStreamFromImage(DUMMYIMAGE)), Parameter
-                    .with("name", MARKERFORSET));
-                return true;
-            } else {
-                if (album.photo_count == 0) {
-                    String imageSetId = getFacebookImageSetId(imageSetTitle);
-                    return fbClient.publish(
-                        imageSetId + "/photos",
-                        FacebookType.class,
-                        BinaryAttachment.with(MARKERFORSET + ".png", HImageHostHelper
-                            .getInputStreamFromImage(DUMMYIMAGE)), Parameter.with("name", MARKERFORSET))
-                        .getId() != null;
-
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                FqlAlbum album = getFacebookImageSetFql(imageSetTitle);
+                if (album == null) {
+                    fbClient.publish("me/albums", Album.class, Parameter.with("name", imageSetTitle));
+                    album = getFacebookImageSetFql(imageSetTitle);
+                    fbClient.publish(album.object_id + "/photos", FacebookType.class, BinaryAttachment.with(
+                        MARKERFORSET + ".png", HImageHostHelper.getInputStreamFromImage(DUMMYIMAGE)),
+                        Parameter.with("name", MARKERFORSET));
+                    return true;
                 } else {
-                    return false;
+                    if (album.photo_count == 0) {
+                        String imageSetId = getFacebookImageSetId(imageSetTitle);
+                        return fbClient.publish(
+                            imageSetId + "/photos",
+                            FacebookType.class,
+                            BinaryAttachment.with(MARKERFORSET + ".png", HImageHostHelper
+                                .getInputStreamFromImage(DUMMYIMAGE)), Parameter.with("name", MARKERFORSET))
+                            .getId() != null;
+
+                    } else {
+                        return false;
+                    }
                 }
+            } catch (IOException e) {
+                thrown = new RuntimeException(e);
+            } catch (RuntimeException exc) {
+                thrown = exc;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -255,8 +292,17 @@ public class ImageHostFacebook implements IImageHost {
         if (imageId.isEmpty()) {
             return false;
         }
-
-        return fbClient.deleteObject(imageId);
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                return fbClient.deleteObject(imageId);
+            } catch (RuntimeException exc) {
+                thrown = exc;
+            }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -275,12 +321,21 @@ public class ImageHostFacebook implements IImageHost {
 
         // Instead, uploading dummy as only picture in album
         if (clearImageSet(imageSetTitle)) {
-
-            List<FqlPhoto> markerPhotos = getFacebookImageFql(imageSetId, MARKERFORSET);
-            if (!markerPhotos.isEmpty()) {
-                fbClient.deleteObject(markerPhotos.get(0).object_id);
-            }
-            return true;
+            int i = 10;
+            RuntimeException thrown = null;
+            do {
+                i--;
+                try {
+                    List<FqlPhoto> markerPhotos = getFacebookImageFql(imageSetId, MARKERFORSET);
+                    if (!markerPhotos.isEmpty()) {
+                        fbClient.deleteObject(markerPhotos.get(0).object_id);
+                    }
+                    return true;
+                } catch (RuntimeException exc) {
+                    thrown = exc;
+                }
+            } while (i >= 0);
+            throw thrown;
         } else {
             return false;
         }
@@ -305,19 +360,24 @@ public class ImageHostFacebook implements IImageHost {
             return false;
         }
 
-        // upload image to facebook
-        try {
-            fbClient.publish(imageSetId + "/photos", FacebookType.class,
-                BinaryAttachment.with(imageTitle + ".png", HImageHostHelper.getInputStreamFromImage(image)),
-                Parameter.with("name", imageTitle)).getId();
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (FacebookOAuthException exc) {
-            exc.printStackTrace();
-            return false;
-        }
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                fbClient.publish(
+                    imageSetId + "/photos",
+                    FacebookType.class,
+                    BinaryAttachment.with(imageTitle + ".png", HImageHostHelper
+                        .getInputStreamFromImage(image)), Parameter.with("name", imageTitle)).getId();
+                return true;
+            } catch (IOException e) {
+                thrown = new RuntimeException(e);
+            } catch (FacebookOAuthException exc) {
+                thrown = exc;
+            }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -339,13 +399,19 @@ public class ImageHostFacebook implements IImageHost {
         final FqlPhoto fPh = photos.get(0);
         final FqlBigPhotoURL bfURL = getBigPhotoURL(fPh);
 
-        try {
-            return ImageIO.read(new URL(bfURL.src));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                return ImageIO.read(new URL(bfURL.src));
+            } catch (MalformedURLException e) {
+                thrown = new RuntimeException(e);
+            } catch (IOException e) {
+                thrown = new RuntimeException(e);
+            }
+        } while (i >= 0);
+        throw thrown;
     }
 
     /**
@@ -374,12 +440,22 @@ public class ImageHostFacebook implements IImageHost {
             return false;
 
         final List<FqlPhoto> photos = getFacebookImageFql(imageSetId, "");
+        int i = 10;
+        RuntimeException thrown = null;
+        do {
+            i--;
+            try {
+                for (FqlPhoto ph : photos) {
+                    if (!ph.caption.equals(MARKERFORSET)) {
+                        fbClient.deleteObject(ph.object_id);
 
-        for (FqlPhoto ph : photos) {
-            if (!ph.caption.equals(MARKERFORSET)) {
-                fbClient.deleteObject(ph.object_id);
+                    }
+                }
+                return true;
+            } catch (RuntimeException exc) {
+                thrown = exc;
             }
-        }
-        return true;
+        } while (i >= 0);
+        throw thrown;
     }
 }
