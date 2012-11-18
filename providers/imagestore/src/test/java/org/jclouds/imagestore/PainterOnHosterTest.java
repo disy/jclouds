@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 import org.jclouds.imagestore.benchmarks.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
+import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
@@ -32,10 +34,10 @@ public class PainterOnHosterTest {
         // File imageStore = new File(System.getProperty("user.home"), "fileHostImages");
         // imageStore.mkdirs();
 
-        final IEncoder dEncoder = new DummyEncoder();
+        final IEncoder dEncoder = new ReedSolomon();
         final String setTitle = "TestSet";
 
-        IImageHost ih = new ImageHostFacebook();
+        IImageHost ih = new ImageHostFlickr();
 
         ih.clearImageSet(setTitle);
 
@@ -52,7 +54,7 @@ public class PainterOnHosterTest {
 
                 System.out.println("\n<<<<<<<<<<<<< " + i + " >>>>>>>>>>>>>>\n");
 
-                List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getAllPainters();
+                List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getLayeredPainters();
                 for (IBytesToImagePainter ip : painters) {
 
                     if (!sizeWriters.containsKey(ip.toString())) {
@@ -112,35 +114,37 @@ public class PainterOnHosterTest {
                         sizeWriters.get(ip.toString()).write(",");
                         sizeWriters.get(ip.toString()).write(Integer.toString(bi.getHeight()));
                         // sizeWriters.get(ip.toString()).write(",");
+                        synchronized (System.out) {
 
-                        if (ih.uploadImage(setTitle, imageTitle, bi)) {
+                            if (ih.uploadImage(setTitle, imageTitle, bi)) {
 
-                            System.out
-                                .println("time to upload: " + (System.currentTimeMillis() - timeMillis));
+                                System.out.println("time to upload: "
+                                    + (System.currentTimeMillis() - timeMillis));
 
-                            // long fileSize = getFileSize(imageTitle, new File(imageStore, setTitle));
-                            // sizeWriters.get(ip.toString()).write(Long.toString(fileSize));
-                            sizeWriters.get(ip.toString()).write("\n");
-                            sizeWriters.get(ip.toString()).flush();
+                                // long fileSize = getFileSize(imageTitle, new File(imageStore, setTitle));
+                                // sizeWriters.get(ip.toString()).write(Long.toString(fileSize));
+                                sizeWriters.get(ip.toString()).write("\n");
+                                sizeWriters.get(ip.toString()).flush();
 
-                            BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
+                                BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
 
-                            byte[] backB = ig.getBytesFromImage(backImage);
+                                byte[] backB = ig.getBytesFromImage(backImage);
 
-                            System.out.println("time to upload and download: "
-                                + (System.currentTimeMillis() - timeMillis));
+                                System.out.println("time to upload and download: "
+                                    + (System.currentTimeMillis() - timeMillis));
 
-                            // : " works not on " + ih.toString() + "!!"));
-                            compareByteArrays(backB, TESTBYTES, failureWriters.get(ip.toString()));
+                                // : " works not on " + ih.toString() + "!!"));
+                                compareByteArrays(backB, TESTBYTES, failureWriters.get(ip.toString()));
 
-                        } else {
-                            System.out.println("Upload not successful");
-                            // writer.write(Integer.toString(0));
-                            sizeWriters.get(ip.toString()).write("\n");
-                            sizeWriters.get(ip.toString()).flush();
+                            } else {
+                                System.out.println("Upload not successful");
+                                // writer.write(Integer.toString(0));
+                                sizeWriters.get(ip.toString()).write("\n");
+                                sizeWriters.get(ip.toString()).flush();
 
+                            }
+                            System.out.println("\n######################################\n");
                         }
-                        System.out.println("\n######################################\n");
                     } catch (RuntimeException exc) {
                         exc.printStackTrace();
                     }
@@ -172,6 +176,7 @@ public class PainterOnHosterTest {
 
     static int[] getWidhtAndHeight(final float pixelPerByte, final int inputLength,
         final int maxImageHostWidth, final int maxImageHostHeight) {
+
         int w = maxImageHostWidth;
         int h = (int)((inputLength + 4) * pixelPerByte / (float)w) + 1;
 
@@ -187,9 +192,11 @@ public class PainterOnHosterTest {
         return new int[] {
             w, h
         };
+
     }
 
     static void compareByteArrays(byte[] bs1, byte[] bs2, FileWriter writer) {
+
         int match = 0, notMatch = 0;
         int len = bs1.length > bs2.length ? bs2.length : bs1.length;
 
@@ -225,8 +232,6 @@ public class PainterOnHosterTest {
         }
         if (notMatch > 0) {
             System.err.println("Matches: " + match + " Errors: " + notMatch);
-        } else {
-
         }
 
     }

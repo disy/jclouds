@@ -99,6 +99,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         Exception thrown = null;
         int i = 10;
         do {
+            i--;
             try {
                 if (getAlbumByName(imageSetTitle) == null) {
                     AlbumEntry myAlbum = new AlbumEntry();
@@ -145,6 +146,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         Exception thrown = null;
         int i = 10;
         do {
+            i--;
             PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
             if (entry != null) {
                 try {
@@ -171,6 +173,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         Exception thrown = null;
         int i = 10;
         do {
+            i--;
             AlbumEntry entry = getAlbumByName(imageSetTitle);
             if (entry != null) {
                 try {
@@ -207,7 +210,6 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         int i = 10;
         do {
             i--;
-
             PhotoEntry myPhoto = new PhotoEntry();
             myPhoto.setTitle(new PlainTextConstruct(imageTitle));
             try {
@@ -268,6 +270,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
         AlbumEntry entry = getAlbumByName(imageSetTitle);
         do {
+            i--;
             try {
                 Set<String> returnVal = new HashSet<String>();
                 if (entry != null) {
@@ -304,6 +307,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             int i = 10;
             Exception thrown = null;
             do {
+                i--;
                 try {
                     AlbumFeed feed = entry.getFeed("photo");
                     for (PhotoEntry photo : feed.getPhotoEntries()) {
@@ -332,6 +336,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             int i = 10;
             Exception thrown = null;
             do {
+                i--;
                 try {
                     URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
                     AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
@@ -359,6 +364,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         int i = 10;
         Exception thrown = null;
         do {
+            i--;
             try {
                 URL feedUrl = new URL(ROOTURL + "?kind=album");
                 UserFeed myUserFeed = service.getFeed(feedUrl, UserFeed.class);

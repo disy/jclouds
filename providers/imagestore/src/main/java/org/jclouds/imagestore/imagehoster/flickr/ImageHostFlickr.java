@@ -109,21 +109,29 @@ public class ImageHostFlickr implements IImageHost {
      * @return the flickr Photo
      */
     private Photo getFlickrImage(final String imageSetId, final String imageTitle) {
-        try {
-            final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-            for (final Photo ph : pl) {
-                if (ph.getTitle().equals(imageTitle)) {
-                    return ph;
+
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                for (final Photo ph : pl) {
+                    if (ph.getTitle().equals(imageTitle)) {
+                        return ph;
+                    }
                 }
+                return null;
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
             }
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        }
-        return null;
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -134,21 +142,28 @@ public class ImageHostFlickr implements IImageHost {
      * @return the flickr Photoset
      */
     private Photoset getFlickrImageSet(final String imageSetTitle) {
-        try {
-            final Collection<Photoset> pc = psi.getList(userId).getPhotosets();
-            for (final Photoset ps : pc) {
-                if (ps.getTitle().equals(imageSetTitle)) {
-                    return ps;
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                final Collection<Photoset> pc = psi.getList(userId).getPhotosets();
+                for (final Photoset ps : pc) {
+                    if (ps.getTitle().equals(imageSetTitle)) {
+                        return ps;
+                    }
                 }
+                return null;
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
             }
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        }
-        return null;
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -194,20 +209,27 @@ public class ImageHostFlickr implements IImageHost {
      * @return the Photoset
      */
     private Photoset createImageSetAndGetSet(final String imageSetTitle) {
-        if (imageSetExists(imageSetTitle))
+        if (imageSetExists(imageSetTitle)) {
             return null;
+        }
 
         final String dummyID = uploadImage(MARKERFORSET, DUMMYIMAGE);
-        try {
-            return psi.create(imageSetTitle, "", dummyID);
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        }
-        return null;
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                return psi.create(imageSetTitle, "", dummyID);
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
+            }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -237,16 +259,23 @@ public class ImageHostFlickr implements IImageHost {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
         final String imageId = getFlickrImageId(imageSetId, imageTitle);
         if (imageExists(imageSetTitle, imageTitle)) {
-            try {
-                poi.delete(imageId);
-                return true;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (FlickrException e) {
-                throw new RuntimeException(e);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+            // hack to try it multiple times in a row
+            Exception thrown = null;
+            int i = 10;
+            do {
+                i--;
+                try {
+                    poi.delete(imageId);
+                    return true;
+                } catch (IOException e) {
+                    thrown = e;
+                } catch (FlickrException e) {
+                    thrown = e;
+                } catch (JSONException e) {
+                    thrown = e;
+                }
+            } while (i >= 0);
+            throw new RuntimeException(thrown);
         }
         return false;
     }
@@ -261,19 +290,26 @@ public class ImageHostFlickr implements IImageHost {
         if (imageSetId.isEmpty())
             return false;
 
-        try {
-            final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-            for (final Photo ph : pl) {
-                poi.delete(ph.getId());
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                for (final Photo ph : pl) {
+                    poi.delete(ph.getId());
+                }
+                return true;
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
             }
-            return true;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (FlickrException e) {
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -290,18 +326,24 @@ public class ImageHostFlickr implements IImageHost {
         if (ps == null) {
             ps = getFlickrImageSet(imageSetTitle);
         }
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                psi.addPhoto(ps.getId(), imageId);
+                return true;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
+            } catch (IOException e) {
+                thrown = e;
+            }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
 
-        try {
-            psi.addPhoto(ps.getId(), imageId);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        } catch (IOException e) {
-            new RuntimeException(e);
-        }
-
-        return true;
     }
 
     /**
@@ -311,31 +353,43 @@ public class ImageHostFlickr implements IImageHost {
     public BufferedImage downloadImage(final String imageSetTitle, final String imageTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
         final Photo ph = getFlickrImage(imageSetId, imageTitle);
-        try {
-            return fdown.getImageAsBufferedImage(ph);
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (JSONException e) {
-            new RuntimeException(e);
-        } catch (NullPointerException e) {
-            return null;
-        }
-        return null;
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                return fdown.getImageAsBufferedImage(ph);
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
+            } catch (NullPointerException e) {
+                return null;
+            }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     private String uploadImage(final String imageTitle, final BufferedImage image) {
-        try {
-            return fup.uploadImage(imageTitle, image, meta);
-        } catch (IOException e) {
-            new RuntimeException(e);
-        } catch (FlickrException e) {
-            new RuntimeException(e);
-        } catch (SAXException e) {
-            new RuntimeException(e);
-        }
-        return null;
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                return fup.uploadImage(imageTitle, image, meta);
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (SAXException e) {
+                thrown = e;
+            }
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -351,23 +405,28 @@ public class ImageHostFlickr implements IImageHost {
             return returnVal;
         }
 
-        try {
-            PhotoList list = psi.getPhotos(ps.getId(), 1000, 0);
-            for (Photo photo : list) {
-                if (!photo.getTitle().equals(MARKERFORSET)) {
-                    returnVal.add(photo.getTitle());
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                PhotoList list = psi.getPhotos(ps.getId(), 1000, 0);
+                for (Photo photo : list) {
+                    if (!photo.getTitle().equals(MARKERFORSET)) {
+                        returnVal.add(photo.getTitle());
+                    }
                 }
-
+                return returnVal;
+            } catch (IOException exc) {
+                thrown = exc;
+            } catch (FlickrException exc) {
+                thrown = exc;
+            } catch (JSONException exc) {
+                thrown = exc;
             }
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
-        } catch (FlickrException exc) {
-            throw new RuntimeException(exc);
-        } catch (JSONException exc) {
-            throw new RuntimeException(exc);
-        }
-
-        return returnVal;
+        } while (i >= 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
@@ -377,22 +436,29 @@ public class ImageHostFlickr implements IImageHost {
     public boolean clearImageSet(final String imageSetTitle) {
         final String imageSetId = getFlickrImageSetId(imageSetTitle);
 
-        try {
-            if (!imageSetId.isEmpty()) {
-                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
-                for (final Photo ph : pl) {
-                    psi.removePhoto(imageSetId, ph.getId());
+        // hack to try it multiple times in a row
+        Exception thrown = null;
+        int i = 10;
+        do {
+            i--;
+            try {
+                if (!imageSetId.isEmpty()) {
+                    final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                    for (final Photo ph : pl) {
+                        psi.removePhoto(imageSetId, ph.getId());
+                    }
+                    return true;
                 }
-                return true;
+                return false;
+            } catch (IOException e) {
+                thrown = e;
+            } catch (FlickrException e) {
+                thrown = e;
+            } catch (JSONException e) {
+                thrown = e;
             }
-            return false;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (FlickrException e) {
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        } while (i > 0);
+        throw new RuntimeException(thrown);
     }
 
     /**
