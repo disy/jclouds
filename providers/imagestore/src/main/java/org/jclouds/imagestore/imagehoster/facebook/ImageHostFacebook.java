@@ -30,9 +30,9 @@ public class ImageHostFacebook implements IImageHost {
     private static final String MARKERFORSET = "MARKER";
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 720;
+    private static final int MAX_IMAGE_WIDTH = 2048;
     /** The maximum image height. */
-    private static final int MAX_IMAGE_HEIGHT = 720;
+    private static final int MAX_IMAGE_HEIGHT = 2048;
     /** The FacebookClient instance. */
     private FacebookClient fbClient;
 

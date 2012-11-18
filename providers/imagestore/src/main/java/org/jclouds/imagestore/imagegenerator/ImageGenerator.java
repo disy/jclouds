@@ -26,6 +26,7 @@
  */
 package org.jclouds.imagestore.imagegenerator;
 
+import java.awt.color.CMMException;
 import java.awt.image.BufferedImage;
 
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
@@ -103,7 +104,8 @@ public class ImageGenerator {
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
         final int w = maxImageHostWidth;
-        final int h = (int)((byteArrayLength * bp.pixelsPerByte() + getStartPixel()) / (float)w) + 1;
+        int computedHeight = (int)((byteArrayLength * bp.pixelsPerByte() + getStartPixel()) / (float)w) + 1;
+        final int h = computedHeight < 5 ? 5 : computedHeight;
 
         if (h > maxImageHostHeight) {
             try {
@@ -158,6 +160,7 @@ public class ImageGenerator {
 
     /**
      * Returns the current byte painter.
+     * 
      * @return the byte painter
      */
     public IBytesToImagePainter getPainter() {
