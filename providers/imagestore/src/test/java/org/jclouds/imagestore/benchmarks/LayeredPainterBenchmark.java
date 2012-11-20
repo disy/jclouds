@@ -4,6 +4,7 @@
 package org.jclouds.imagestore.benchmarks;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageFilter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,7 +29,9 @@ import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
+import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -84,7 +87,8 @@ public class LayeredPainterBenchmark {
         currentRun++;
         saveOrigImage();
         // stabilizing the system
-        uploadEach();
+        store.deleteContainer(containerName);
+        store.createContainerInLocation(null, containerName);
         upload();
         name++;
         upload();
@@ -92,21 +96,16 @@ public class LayeredPainterBenchmark {
 
     public void uploadEach() {
         this.name++;
-        if (store.containerExists(containerName)) {
-            store.clearContainer(containerName);
-        } else {
-            store.createContainerInLocation(null, containerName);
-        }
     }
 
     public void downloadFirst() {
+        store.deleteContainer(containerName);
+        store.createContainerInLocation(null, containerName);
+        name = 0;
+        upload();
         // stabilizing the system
         download();
         download();
-    }
-
-    public void downloadEach() {
-        name--;
     }
 
     private void upload() {
@@ -114,18 +113,17 @@ public class LayeredPainterBenchmark {
             new StringBuilder(((SyncImageBlobStore)store).getImageGenerator().getPainter().toString())
                 .append(":").append(currentRun).append(":").append(this.name).toString();
 
-        BlobBuilder blobbuilder = store.blobBuilder(containerName);
+        BlobBuilder blobbuilder = store.blobBuilder(name);
         Blob blob = blobbuilder.build();
         blob.setPayload(data);
-        store.putBlob(name, blob);
+        store.putBlob(containerName, blob);
 
     }
 
     private void download() {
         String name =
-            new StringBuilder("benchContainer").append(":").append(
-                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
-                currentRun).append(":").append(this.name).toString();
+            new StringBuilder(((SyncImageBlobStore)store).getImageGenerator().getPainter().toString())
+                .append(":").append(currentRun).append(":").append(this.name).toString();
 
         Blob blob = store.getBlob(containerName, name);
         InputStream in = blob.getPayload().getInput();
@@ -147,7 +145,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download10() {
         download();
     }
@@ -157,7 +155,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download11() {
         download();
     }
@@ -167,7 +165,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download12() {
         download();
     }
@@ -177,7 +175,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download13() {
         download();
     }
@@ -187,7 +185,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download14() {
         download();
     }
@@ -197,7 +195,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download15() {
         download();
     }
@@ -207,7 +205,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download16() {
         download();
     }
@@ -217,7 +215,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download17() {
         download();
     }
@@ -227,7 +225,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download18() {
         download();
     }
@@ -237,7 +235,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download19() {
         download();
     }
@@ -247,7 +245,7 @@ public class LayeredPainterBenchmark {
         upload();
     }
 
-    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast", beforeEachRun = "downloadEach")
+    @Bench(beforeFirstRun = "downloadFirst", afterLastRun = "downloadLast")
     public void download20() {
         download();
     }
@@ -278,9 +276,8 @@ public class LayeredPainterBenchmark {
         rawStore.mkdirs();
 
         String name =
-            new StringBuilder("benchContainer").append(":").append(
-                ((SyncImageBlobStore)store).getImageGenerator().getPainter().toString()).append(":").append(
-                currentRun).append(":").append(this.name).toString();
+            new StringBuilder(((SyncImageBlobStore)store).getImageGenerator().getPainter().toString())
+                .append(":").append(currentRun).append(":").append(this.name).toString();
 
         Set<String> images = blobStore.getImageHost().imageSetContent(containerName);
         int i = 0;
@@ -336,7 +333,7 @@ public class LayeredPainterBenchmark {
 
     public static void main(String[] args) {
 
-        Class<? extends IImageHost> host = ImageHostFile.class;
+        Class<? extends IImageHost> host = ImageHostFacebook.class;
         List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
 
         System.out.println("=================================");
