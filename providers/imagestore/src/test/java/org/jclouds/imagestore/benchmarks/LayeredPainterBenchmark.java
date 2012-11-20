@@ -4,7 +4,6 @@
 package org.jclouds.imagestore.benchmarks;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageFilter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,9 +28,7 @@ import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
-import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.imagehoster.picasa.ImageHostGoogleDataApiPicasa;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -333,8 +330,8 @@ public class LayeredPainterBenchmark {
 
     public static void main(String[] args) {
 
-        Class<? extends IImageHost> host = ImageHostFacebook.class;
-        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
+        Class<? extends IImageHost> host = ImageHostFlickr.class;
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFlickr();
 
         System.out.println("=================================");
         System.out.println(host.getSimpleName());
@@ -386,7 +383,7 @@ public class LayeredPainterBenchmark {
 
     static class BenchmarkConf extends AbstractConfig {
 
-        private final static int RUNS = 5;
+        private final static int RUNS = 50;
         private final static Set<AbstractMeter> METERS = new HashSet<AbstractMeter>();
 
         private final static Set<AbstractOutput> OUTPUT = new HashSet<AbstractOutput>();

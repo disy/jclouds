@@ -70,15 +70,6 @@ public class TestAndBenchmarkHelper {
         return returnVal;
     }
 
-
-    public static List<IBytesToImagePainter> getNormalPaintersForFlickr() {
-        List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
-            returnVal.add(type.getPainter());
-        }
-        return returnVal;
-    }
-    
     public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
         returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
@@ -86,20 +77,17 @@ public class TestAndBenchmarkHelper {
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         return returnVal;
     }
-    
-    
-    
+
     public static List<IBytesToImagePainter> getPaintersForFlickr() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
+        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
+            returnVal.add(type.getPainter());
+        }
 
-        returnVal.add(PainterType.BINARY_LAYERED.getPainter());
+        returnVal.add(PainterType.BINARY.getPainter());
         returnVal.add(PainterType.TERNARY.getPainter());
-        returnVal.add(PainterType.QUATENARY_LAYERED.getPainter());
-        returnVal.add(PainterType.SEPTENARY_LAYERED.getPainter());
+        returnVal.add(PainterType.QUATENARY.getPainter());
 
-        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
-        returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
-        returnVal.add(BytesToImagePainter.PainterType.HEXADECIMAL.getPainter());
         return returnVal;
     }
 }

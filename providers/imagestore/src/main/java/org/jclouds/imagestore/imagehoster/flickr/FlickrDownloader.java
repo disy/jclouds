@@ -136,6 +136,8 @@ public class FlickrDownloader {
                     + ((REST)transport).getProxyCredentials());
             }
         }
+        conn.setConnectTimeout(1000);
+        conn.setReadTimeout(1000);
         conn.connect();
         return conn.getInputStream();
     }

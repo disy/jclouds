@@ -46,7 +46,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
          * <li>Facebook</li>
          * </ul>
          */
-        BINARY_LAYERED(2),
+        BINARY(2),
 
         /**
          * The TernaryLayeredBytesToImagePainter.
@@ -86,7 +86,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
          * <li>Facebook</li>
          * </ul>
          */
-        QUATENARY_LAYERED(4),
+        QUATENARY(4),
 
         /**
          * The SeptenaryLayeredBytesToImagePainter.
@@ -106,7 +106,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
          * <li>Facebook</li>
          * </ul>
          * */
-        SEPTENARY_LAYERED(7),
+        SEPTENARY(7),
 
         /**
          * HexadecimalLayeredBytesToImagePainter.
@@ -126,7 +126,7 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
          * <li>Facebook</li>
          * </ul>
          */
-        HEXADECIMAL_LAYERED(16);
+        HEXADECIMAL(16);
 
         /** The numeral system. */
         final int numSys;

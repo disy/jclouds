@@ -26,7 +26,7 @@ public class TestImageGenerator {
         new Random(16l).nextBytes(data);
 
         ImageGenerator generator =
-            new ImageGenerator(LayeredBytesToImagePainter.PainterType.BINARY_LAYERED.getPainter(),
+            new ImageGenerator(LayeredBytesToImagePainter.PainterType.BINARY.getPainter(),
                 new IEncoder.DummyEncoder(), 8, 5);
 
         BufferedImage img = generator.createImageFromBytes(data);
