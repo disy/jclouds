@@ -5,6 +5,7 @@ package org.jclouds.imagestore;
 
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
+import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 
 /**
  * @author Sebastian Graf, University of Konstanz
@@ -13,11 +14,11 @@ import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 public class DeleteAllImageSets {
 
     public static void main(String[] args) {
-        IImageHost hoster = new ImageHostFacebook();
-        for(int i = 2; i<=256; i=i*2) {
-            for(int j = 2; j<=21; j++) {
-                for(int k = 0; k<=52; k++) {
-                    final StringBuilder builder = new StringBuilder("benchContainer:Normal");
+        IImageHost hoster = new ImageHostFlickr();
+        for (int i = 2; i <= 256; i = i * 2) {
+            for (int j = 1; j <= 21; j++) {
+                for (int k = 0; k <= 52; k++) {
+                    final StringBuilder builder = new StringBuilder("benchContainer:Layered");
                     builder.append(i);
                     builder.append(":");
                     builder.append(j);
@@ -30,7 +31,7 @@ public class DeleteAllImageSets {
                 }
             }
         }
+
     }
-   
 
 }

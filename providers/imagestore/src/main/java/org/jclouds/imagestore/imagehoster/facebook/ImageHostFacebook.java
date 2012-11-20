@@ -2,8 +2,11 @@ package org.jclouds.imagestore.imagehoster.facebook;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -404,7 +407,16 @@ public class ImageHostFacebook implements IImageHost {
         do {
             i--;
             try {
-                return ImageIO.read(new URL(bfURL.src));
+                URL url = new URL(bfURL.src);
+                URLConnection con = url.openConnection();
+                con.setConnectTimeout(1000);
+                con.setReadTimeout(1000);
+                InputStream stream = con.getInputStream();
+                BufferedImage img = ImageIO.read(stream);
+                stream.close();
+                return img;
+            } catch (SocketTimeoutException e) {
+                thrown = new RuntimeException(e);
             } catch (MalformedURLException e) {
                 thrown = new RuntimeException(e);
             } catch (IOException e) {
