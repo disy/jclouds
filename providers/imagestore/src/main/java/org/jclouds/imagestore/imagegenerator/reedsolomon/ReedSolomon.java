@@ -18,7 +18,7 @@ public class ReedSolomon implements IEncoder {
     private final static ReedSolomonDecoder decoder = new ReedSolomonDecoder(field);
 
     // must be something between 1 and 248 (256 -8)
-    private final static int mEcSize = 100;
+    private final static int mEcSize = 2;
 
     /**
      * {@inheritDoc}

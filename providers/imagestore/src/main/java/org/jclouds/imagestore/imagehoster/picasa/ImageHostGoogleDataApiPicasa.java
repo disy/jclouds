@@ -57,6 +57,9 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
 
     private final PicasawebService service;
 
+    public static int failureCounter = 0;
+    public static int requestCounter = 0;
+
     public ImageHostGoogleDataApiPicasa() {
         try {
 
@@ -102,6 +105,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             i--;
             try {
                 if (getAlbumByName(imageSetTitle) == null) {
+                    requestCounter++;
                     AlbumEntry myAlbum = new AlbumEntry();
                     myAlbum.setTitle(new PlainTextConstruct(imageSetTitle));
                     service.insert(new URL(ROOTURL), myAlbum);
@@ -110,10 +114,13 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                     return false;
                 }
             } catch (MalformedURLException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (IOException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (ServiceException exc) {
+                failureCounter++;
                 thrown = exc;
             }
         } while (i >= 0);
@@ -150,11 +157,14 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             PhotoEntry entry = getPhotoByNameNormal(imageSetTitle, imageTitle);
             if (entry != null) {
                 try {
+                    requestCounter++;
                     entry.delete();
                     return true;
                 } catch (IOException exc) {
+                    failureCounter++;
                     thrown = exc;
                 } catch (ServiceException exc) {
+                    failureCounter++;
                     thrown = exc;
                 }
             } else {
@@ -177,11 +187,14 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             AlbumEntry entry = getAlbumByName(imageSetTitle);
             if (entry != null) {
                 try {
+                    requestCounter++;
                     entry.delete();
                     return true;
                 } catch (IOException exc) {
+                    failureCounter++;
                     thrown = exc;
                 } catch (ServiceException exc) {
+                    failureCounter++;
                     thrown = exc;
                 }
             } else {
@@ -213,6 +226,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             PhotoEntry myPhoto = new PhotoEntry();
             myPhoto.setTitle(new PlainTextConstruct(imageTitle));
             try {
+                requestCounter++;
                 URL toPost = new URL(entry.getFeedLink().getHref());
 
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -224,8 +238,10 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                 service.insert(toPost, myPhoto);
                 return true;
             } catch (IOException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (ServiceException exc) {
+                failureCounter++;
                 thrown = exc;
             }
         } while (i >= 0);
@@ -245,12 +261,14 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             i--;
             PhotoEntry myPhoto = getPhotoByNameForDownload(imageSetTitle, imageTitle);
             try {
+                requestCounter++;
                 if (myPhoto == null) {
                     return null;
                 }
                 String source = myPhoto.getMediaContents().get(0).getUrl();
                 return ImageIO.read(new URL(source));
             } catch (IOException exc) {
+                failureCounter++;
                 thrown = new RuntimeException(exc);
             }
         } while (thrown != null && i >= 0);
@@ -272,6 +290,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         do {
             i--;
             try {
+                requestCounter++;
                 Set<String> returnVal = new HashSet<String>();
                 if (entry != null) {
                     AlbumFeed feed = entry.getFeed("photo");
@@ -281,8 +300,10 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                 }
                 return returnVal;
             } catch (IOException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (ServiceException exc) {
+                failureCounter++;
                 thrown = exc;
             }
         } while (i >= 10);
@@ -309,6 +330,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             do {
                 i--;
                 try {
+                    requestCounter++;
                     AlbumFeed feed = entry.getFeed("photo");
                     for (PhotoEntry photo : feed.getPhotoEntries()) {
                         if (photo.getTitle().getPlainText().equals(imageTitle)) {
@@ -317,8 +339,10 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                     }
                     return null;
                 } catch (IOException exc) {
+                    failureCounter++;
                     thrown = exc;
                 } catch (ServiceException exc) {
+                    failureCounter++;
                     thrown = exc;
                 }
             } while (i >= 0);
@@ -338,6 +362,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
             do {
                 i--;
                 try {
+                    requestCounter++;
                     URL url = new URL(ROOTURL + "/albumid/" + entry.getGphotoId() + "?imgmax=d");
                     AlbumFeed feed = service.getFeed(url, AlbumFeed.class);
                     for (PhotoEntry photo : feed.getPhotoEntries()) {
@@ -347,8 +372,10 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                     }
                     return null;
                 } catch (IOException exc) {
+                    failureCounter++;
                     thrown = exc;
                 } catch (ServiceException exc) {
+                    failureCounter++;
                     thrown = exc;
                 }
             } while (i >= 0);
@@ -366,6 +393,7 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
         do {
             i--;
             try {
+                requestCounter++;
                 URL feedUrl = new URL(ROOTURL + "?kind=album");
                 UserFeed myUserFeed = service.getFeed(feedUrl, UserFeed.class);
 
@@ -376,10 +404,13 @@ public class ImageHostGoogleDataApiPicasa implements IImageHost {
                 }
                 return null;
             } catch (MalformedURLException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (IOException exc) {
+                failureCounter++;
                 thrown = exc;
             } catch (ServiceException exc) {
+                failureCounter++;
                 thrown = exc;
             }
         } while (i >= 0);
