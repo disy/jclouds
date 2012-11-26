@@ -73,8 +73,10 @@
         <module>trystack-nova</module>
         <module>rackspace-cloudservers-us</module>
         <module>rackspace-cloudservers-uk</module>
-		<module>imagestore</module>
+        <module>rackspace-cloudblockstorage-us</module>
+        <module>rackspace-cloudblockstorage-uk</module>
         <module>aws-sqs</module>
         <module>glesys</module>
+		<module>imagestore</module>
     </modules>
 </project>
