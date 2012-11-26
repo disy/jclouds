@@ -50,8 +50,8 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
      * {@inheritDoc}
      */
     @Override
-    public float pixelsPerByte() {
-        return PIXELS_PER_BYTE_PER_LAYER / (float)LAYERS;
+    public int getPixelsPerByte() {
+        return PIXELS_PER_BYTE_PER_LAYER;
     }
 
     /**

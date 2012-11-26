@@ -47,7 +47,7 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
      * {@inheritDoc}
      */
     @Override
-    public float pixelsPerByte() {
+    public int getPixelsPerByte() {
         return PIXELS_PER_BYTE;
     }
 

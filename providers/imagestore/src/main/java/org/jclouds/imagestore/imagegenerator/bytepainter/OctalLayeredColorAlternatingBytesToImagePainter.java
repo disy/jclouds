@@ -31,7 +31,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         .generate3LayeredUniformlyDistributedColors(NUMERAL_SYSTEM);
 
     /** Bytes needed per pixel. */
-    public static final float BYTES_PER_PIXEL = 1;
+    public static final int BYTES_PER_PIXEL = 1;
 
     /**
      * {@inheritDoc}
@@ -45,7 +45,7 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
      * {@inheritDoc}
      */
     @Override
-    public float pixelsPerByte() {
+    public int getPixelsPerByte() {
         return BYTES_PER_PIXEL;
     }
 

@@ -84,7 +84,7 @@ public class ImageGenerator {
         numeralSystemBp = bp.getNumeralSystem();
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
-        final float ppb = bp.pixelsPerByte();
+        final float ppb = bp.getPixelsPerByte();
         int numberOfBytesInPicture = (int)((maxImageHostHeight - 1) * maxImageHostWidth / ppb);
         maxBytesPerImage = numberOfBytesInPicture - enc.getNumbersOfBytesWasted(numberOfBytesInPicture);
     }
@@ -111,7 +111,17 @@ public class ImageGenerator {
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
         final int w = maxImageHostWidth;
-        int computedHeight = (int)((byteArrayLength * bp.pixelsPerByte() + HEADER_OFFSET) / (float)w) + 1;
+        final int ppb = bp.getPixelsPerByte();
+        int pix = byteArrayLength * ppb;
+
+        // if layered byte painter calculate pixels needed
+        if (layeredBp) {
+            pix = (int)(pix / 3d);
+            final int mod = pix % ppb;
+            pix += mod;
+        }
+
+        int computedHeight = (int)((pix + HEADER_OFFSET) / (double)w) + 1;
         final int h = computedHeight < 5 ? 5 : computedHeight;
 
         if (h > maxImageHostHeight) {

@@ -43,11 +43,11 @@ public interface IBytesToImagePainter {
     int getImageType();
 
     /**
-     * Returns the number of pixels needed per byte.
+     * Returns the number of pixels needed per byte in one layer.
      * 
      * @return The number of pixels needed per byte.
      */
-    float pixelsPerByte();
+    int getPixelsPerByte();
 
     /**
      * Stores bytes in an image.

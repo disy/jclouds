@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 public class ImageHostFile implements IImageHost {
 
     /** The maximum image width. */
-    private static final int MAX_IMAGE_WIDTH = 2048;
+    private static final int MAX_IMAGE_WIDTH = 8;
 
     /** The maximum image height. */
     private static final int MAX_IMAGE_HEIGHT = 2048;

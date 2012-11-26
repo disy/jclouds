@@ -204,8 +204,8 @@ public class LayeredBytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public float pixelsPerByte() {
-        return pixelsPerBytePerLayer / (float)LAYERS;
+    public int getPixelsPerByte() {
+        return pixelsPerBytePerLayer;
     }
 
     /**

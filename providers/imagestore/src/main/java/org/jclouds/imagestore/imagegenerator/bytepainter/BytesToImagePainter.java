@@ -268,7 +268,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
      * {@inheritDoc}
      */
     @Override
-    public float pixelsPerByte() {
+    public int getPixelsPerByte() {
         return pixelsPerByte;
     }
 
