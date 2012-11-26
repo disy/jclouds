@@ -104,7 +104,7 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
                 // the difference between start position and pixels visited
                 final int psPix = pix - startP;
-                
+
                 if (psPix < 0)
                     continue;
 
@@ -183,12 +183,15 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
 
                 // the difference between start position and pixels visited
                 final int psPix = pix - startP;
-                
+
                 if (psPix < 0)
                     continue;
 
-                if (pix >= endP)
+                if (pix >= endP) {
+                    byte b = (byte)Integer.parseInt(binary, NUMERAL_SYSTEM);
+                    li.add(b);
                     return HBytesToImagePainterHelper.arrayListToByteArray(li);
+                }
 
                 binary += getNumeralValueFromPixelColor(img.getRGB(x, y));
 
@@ -220,13 +223,29 @@ public class BinaryBytesToImagePainter implements IBytesToImagePainter {
         }
         return '0';
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return "Binary";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumeralSystem() {
+        return NUMERAL_SYSTEM;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLayered() {
+        return false;
     }
 
 }

@@ -43,7 +43,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
     private final Color[] colors;
 
     /** The image type to be used. */
-    private static final int bufferedImageType = BufferedImage.TYPE_INT_RGB;
+    private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
     public enum PainterType {
 
@@ -182,7 +182,6 @@ public class BytesToImagePainter implements IBytesToImagePainter {
         final int numSys;
 
         /** All painters. */
-
         static Map<Integer, PainterType> PAINTERS = new HashMap<Integer, PainterType>();
         static {
             for (PainterType type : PainterType.values()) {
@@ -209,9 +208,21 @@ public class BytesToImagePainter implements IBytesToImagePainter {
             return new BytesToImagePainter(numSys);
         }
 
+        /**
+         * Returns the used colors.
+         * 
+         * @return the colors
+         */
         public abstract Color[] getColors();
 
-        public static PainterType getType(int numSys) {
+        /**
+         * Returns painter from given numeral system.
+         * 
+         * @param numSys
+         *            the numeral system
+         * @return the painter with given numeral system
+         */
+        public static PainterType getType(final int numSys) {
             if (PAINTERS.containsKey(numSys)) {
                 return PAINTERS.get(numSys);
             } else {
@@ -250,7 +261,7 @@ public class BytesToImagePainter implements IBytesToImagePainter {
      */
     @Override
     public int getImageType() {
-        return bufferedImageType;
+        return BUFFERED_IMAGE_TYPE;
     }
 
     /**
@@ -368,12 +379,19 @@ public class BytesToImagePainter implements IBytesToImagePainter {
     }
 
     /**
-     * Returns the numeral system.
-     * 
-     * @return the numeral system
+     * {@inheritDoc}
      */
-    public int getNumSys() {
+    @Override
+    public int getNumeralSystem() {
         return numeralSystem;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLayered() {
+        return false;
     }
 
 }

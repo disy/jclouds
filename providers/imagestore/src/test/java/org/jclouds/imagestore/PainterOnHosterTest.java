@@ -10,18 +10,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-import javax.xml.ws.FaultAction;
-
 import org.jclouds.imagestore.benchmarks.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagegenerator.IEncoder.DummyEncoder;
+import org.jclouds.imagestore.imagegenerator.ImageExtractor;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
-import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 
 import com.google.common.io.Files;
 
@@ -36,12 +33,14 @@ public class PainterOnHosterTest {
         // File imageStore = new File(System.getProperty("user.home"), "fileHostImages");
         // imageStore.mkdirs();
 
-        final IEncoder dEncoder = new IEncoder.DummyEncoder();
+        final IEncoder dEncoder = new ReedSolomon();
+        final ImageExtractor ie = new ImageExtractor();
         final String setTitle = "TestSet";
 
-        IImageHost ih = new ImageHostFacebook();
+        IImageHost ih = new ImageHostFile(Files.createTempDir().getAbsolutePath());
 
         ih.clearImageSet(setTitle);
+       
 
         csvStore.mkdirs();
         Map<String, FileWriter> writers = new HashMap<String, FileWriter>();
@@ -104,7 +103,7 @@ public class PainterOnHosterTest {
 
                                 BufferedImage backImage = ih.downloadImage(setTitle, imageTitle);
                                 try {
-                                    byte[] backB = ig.getBytesFromImage(backImage);
+                                    byte[] backB = ie.getBytesFromImage(backImage);
 
                                     System.out.println("time to upload and download: "
                                         + (System.currentTimeMillis() - timeMillis));
@@ -194,8 +193,8 @@ public class PainterOnHosterTest {
 
                         match++;
                     } else {
-                        // System.out.print("\n" + i + ". not match " + bs1[i] + " != " + bs2[i]
-                        // + " !!!!!!!!!!!!!!!!!!!!!!!!");
+                         System.out.print("\n" + i + ". not match " + bs1[i] + " != " + bs2[i]
+                         + " !!!!!!!!!!!!!!!!!!!!!!!!");
                         notMatch++;
                     }
                 }

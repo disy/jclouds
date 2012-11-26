@@ -6,8 +6,30 @@ import java.util.ArrayList;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 
+/**
+ * This Class offers a byte painter.
+ * <p/>
+ * Numeral System: 256 <br/>
+ * Layers: 1 <br/>
+ * 1 Byte = 1 Pixel <br/>
+ * 256 grey-colors <br/>
+ * <p/>
+ * Working with
+ * <ul>
+ * <li>Picasa</li>
+ * </ul>
+ * Not working with
+ * <ul>
+ * <li>Facebook</li>
+ * <li>Flickr</li>
+ * </ul>
+ * 
+ * @author Wolfgang Miller, University of Konstanz
+ */
 public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The numeral system. */
+    private static final int NUMERAL_SYSTEM = 256;
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_BYTE_GRAY;
     /** Pixels needed per Byte. */
@@ -33,7 +55,7 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
      * {@inheritDoc}
      */
     @Override
-    public BufferedImage storeBytesInImage(BufferedImage image, byte[] bs, int startP, int endP) {
+    public BufferedImage storeBytesInImage(final BufferedImage image, final byte[] bs, final int startP, final int endP) {
 
         final int w = image.getWidth();
         final int h = image.getHeight();
@@ -108,11 +130,28 @@ public class DihectpenthexagonBytesToImagePainter implements IBytesToImagePainte
         }
         return HBytesToImagePainterHelper.arrayListToByteArray(li);
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return "Normal256";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumeralSystem() {
+        return NUMERAL_SYSTEM;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLayered() {
+        return false;
     }
 }

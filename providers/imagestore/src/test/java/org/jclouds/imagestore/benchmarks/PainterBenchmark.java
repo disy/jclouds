@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
+import org.jclouds.imagestore.imagegenerator.ImageExtractor;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
@@ -34,6 +35,8 @@ public class PainterBenchmark {
     private static final Random RAN = new Random(12l);
 
     private static ImageGenerator generator;
+    
+    private final static ImageExtractor extractor = new ImageExtractor();
 
     private byte[] data;
 
@@ -200,7 +203,7 @@ public class PainterBenchmark {
     }
 
     private void decode() {
-        data = generator.getBytesFromImage(image);
+        data = extractor.getBytesFromImage(image);
     }
 
     private void setUpData(int size) {

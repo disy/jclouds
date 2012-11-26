@@ -226,5 +226,20 @@ public class OctalLayeredColorAlternatingBytesToImagePainter implements IBytesTo
         return "OctalLayeredColorAlternating";
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumeralSystem() {
+        return NUMERAL_SYSTEM;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLayered() {
+        return true;
+    }
 
 }

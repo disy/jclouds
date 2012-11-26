@@ -29,6 +29,8 @@ import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
  */
 public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImagePainter {
 
+    /** The numeral system. */
+    private static final int NUMERAL_SYSTEM = 256;
     /** The image type to be used. */
     private static final int BUFFERED_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     /** Pixels needed per Byte in one layer. */
@@ -175,6 +177,22 @@ public class DihectpenthexagonLayeredBytesToImagePainter implements IBytesToImag
     @Override
     public String toString() {
         return "Layered256";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getNumeralSystem() {
+        return NUMERAL_SYSTEM;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLayered() {
+        return true;
     }
 
 }

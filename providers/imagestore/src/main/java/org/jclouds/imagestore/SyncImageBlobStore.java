@@ -54,6 +54,7 @@ import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
+import org.jclouds.imagestore.imagegenerator.ImageExtractor;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.io.Payload;
@@ -71,12 +72,15 @@ import com.google.inject.Injector;
  */
 public class SyncImageBlobStore implements BlobStore {
 
-    private final static String DEL = "%";
+    /** The Delimiter. */
+    private static final String DEL = "%";
 
     /** The image host instance. */
     private final IImageHost ih;
     /** The image generator instance. */
     private final ImageGenerator ig;
+    /** The image extractor instance. */
+    private final ImageExtractor ie;
     /** The blob builder. */
     private BlobBuilder bb;
 
@@ -87,6 +91,12 @@ public class SyncImageBlobStore implements BlobStore {
      *            The class-name of the image host to be used.
      * @param pBytePainter
      *            The image generator to be used.
+     * @param pLayers
+     *            the layers
+     * @param pEncoder
+     *            the encoder
+     * @param pStorageParameter
+     *            the storage parameters
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InstantiationException
@@ -106,6 +116,7 @@ public class SyncImageBlobStore implements BlobStore {
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
         IEncoder encoder = inj.getInstance(IEncoder.class);
         ig = new ImageGenerator(painter, encoder, ih.getMaxImageWidth(), ih.getMaxImageHeight());
+        ie = new ImageExtractor();
 
         try {
             bb = new BlobBuilderImpl(new JCECrypto());
@@ -272,7 +283,7 @@ public class SyncImageBlobStore implements BlobStore {
                 finished = true;
             } else {
                 try {
-                    stream.write(ig.getBytesFromImage(bi));
+                    stream.write(ie.getBytesFromImage(bi));
                 } catch (final IOException exc) {
                     throw new RuntimeException(exc);
                 }
@@ -305,10 +316,20 @@ public class SyncImageBlobStore implements BlobStore {
         }
     }
 
+    /**
+     * Returns the used image host.
+     * 
+     * @return the image host
+     */
     public IImageHost getImageHost() {
         return ih;
     }
 
+    /**
+     * Returns the used image generator.
+     * 
+     * @return the image generator
+     */
     public ImageGenerator getImageGenerator() {
         return ig;
     }

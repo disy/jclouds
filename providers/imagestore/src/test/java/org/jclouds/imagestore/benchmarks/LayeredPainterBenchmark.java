@@ -343,12 +343,12 @@ public class LayeredPainterBenchmark {
             System.out.println(painter.toString());
             System.out.println("++++++++++++++++++++++++++++++++++++");
             if (painter instanceof LayeredBytesToImagePainter) {
-                int layers = ((LayeredBytesToImagePainter)painter).getNumSys();
+                int layers = ((LayeredBytesToImagePainter)painter).getNumeralSystem();
                 store =
                     TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, layers)
                         .getBlobStore();
             } else if (painter instanceof BytesToImagePainter) {
-                int layers = ((BytesToImagePainter)painter).getNumSys();
+                int layers = ((BytesToImagePainter)painter).getNumeralSystem();
                 store =
                     TestAndBenchmarkHelper.createContext(host, painter.getClass(), ENCODER, layers)
                         .getBlobStore();

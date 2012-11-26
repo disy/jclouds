@@ -124,6 +124,9 @@ public class ReedSolomon implements IEncoder {
         return returnVal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumbersOfBytesWasted(int numberOfEntireBytes) {
         return (int)(mEcSize * Math.ceil(new Double(numberOfEntireBytes) / new Double(field.getSize())));
@@ -131,6 +134,14 @@ public class ReedSolomon implements IEncoder {
 
     public String toString() {
         return "ReedSolomon";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDummy() {
+        return false;
     }
 
 }

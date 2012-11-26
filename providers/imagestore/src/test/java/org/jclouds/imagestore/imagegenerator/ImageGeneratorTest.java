@@ -75,7 +75,7 @@ public class ImageGeneratorTest {
     // }
 
     static {
-        RAWFILEBYTES = new byte[4288];
+        RAWFILEBYTES = new byte[2000];
         // RAWFILEBYTES = new byte[200];
         new Random(12l).nextBytes(RAWFILEBYTES);
     }
@@ -122,7 +122,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "allPainters", groups = "remoteTests")
+    @Test(dataProvider = "allPainters", groups = "remoteTests", enabled = false)
     public void testOnPicasa(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -169,7 +169,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "flickrPainters", groups = "remoteTests")
+    @Test(dataProvider = "flickrPainters", groups = "remoteTests", enabled = false)
     public void testOnFlickr(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -216,7 +216,7 @@ public class ImageGeneratorTest {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    @Test(dataProvider = "facebookPainters", groups = "remoteTests")
+    @Test(dataProvider = "facebookPainters", groups = "remoteTests", enabled = false)
     public void testOnFacebook(final Class<IBytesToImagePainter> painterClazz,
         final IBytesToImagePainter[] painters, final Class<IEncoder> encoderClazz, final IEncoder[] encoders)
         throws NoSuchAlgorithmException, CertificateException, IOException, InstantiationException,
@@ -267,6 +267,8 @@ public class ImageGeneratorTest {
         final IImageHost... hosts) throws NoSuchAlgorithmException, CertificateException, IOException,
         InstantiationException, IllegalAccessException, ClassNotFoundException {
 
+        final ImageExtractor extractor = new ImageExtractor();
+
         for (IImageHost host : hosts) {
             host.deleteImageSet(CONTAINER);
             for (IEncoder enc : encoders) {
@@ -277,7 +279,7 @@ public class ImageGeneratorTest {
                     final String blobName = "blob_" + System.currentTimeMillis();
                     assertTrue(host.uploadImage(CONTAINER, blobName, imageToSend));
 
-                    byte[] toCheck = generator.getBytesFromImage(imageToSend);
+                    byte[] toCheck = extractor.getBytesFromImage(imageToSend);
 
                     if (!Arrays.equals(RAWFILEBYTES, toCheck)) {
                         fail(new StringBuilder("Failed: ImageHost: ").append(host.toString()).append(
@@ -286,7 +288,7 @@ public class ImageGeneratorTest {
                     }
 
                     final BufferedImage imageReceived = host.downloadImage(CONTAINER, blobName);
-                    byte[] receivedBytes = generator.getBytesFromImage(imageReceived);
+                    byte[] receivedBytes = extractor.getBytesFromImage(imageReceived);
 
                     if (!Arrays.equals(RAWFILEBYTES, receivedBytes)) {
                         fail(new StringBuilder("Failed: ImageHost: ").append(host.toString()).append(

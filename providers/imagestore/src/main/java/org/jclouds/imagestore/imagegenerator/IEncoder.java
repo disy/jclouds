@@ -19,6 +19,8 @@ public interface IEncoder {
     int getNumbersOfBytesWasted(int numberOfEntireBytes);
 
     String toString();
+    
+    boolean isDummy();
 
     static class DummyEncoder implements IEncoder {
         /**
@@ -37,6 +39,9 @@ public interface IEncoder {
             return param;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int getNumbersOfBytesWasted(int numberOfEntireBytes) {
             return 0;
@@ -44,6 +49,14 @@ public interface IEncoder {
 
         public String toString() {
             return "DummyEncoder";
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isDummy() {
+            return true;
         }
 
     }

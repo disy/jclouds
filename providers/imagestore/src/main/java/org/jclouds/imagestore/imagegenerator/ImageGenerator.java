@@ -30,32 +30,36 @@ import java.awt.color.CMMException;
 import java.awt.image.BufferedImage;
 
 import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import static org.jclouds.imagestore.imagegenerator.HImageGenerationHelper.HEADER_OFFSET;
+import static org.jclouds.imagestore.imagegenerator.HImageGenerationHelper.ROBUST_PAINTER;
 
 import com.google.inject.Inject;
 
 /**
- * This class is used to generate images from byte arrays or vice versa with specified byte painter.
+ * This class is used to generate images from byte arrays with specified byte painter.
  * 
  * @author Wolfgang Miller
  */
 public class ImageGenerator {
 
-    /** The robust painter. */
-    private final IBytesToImagePainter robustPainter = new BinaryBytesToImagePainter();
     /** The bytes to image painter. */
     private final IBytesToImagePainter bp;
     /** Encoder for applying operations on the bytes. */
     private final IEncoder enc;
     /** The image type for the given bytes to image painter. */
     private final int imageType;
-    /** The byte array header offset. */
-    private static final int HEADER_OFFSET = 4;
     /** The maximum image width for the specific image host. */
     private final int maxImageHostWidth;
     /** The maximum image height for the specific image host. */
     private final int maxImageHostHeight;
     /** The maximum bytes that can be stored in one image. */
     private final int maxBytesPerImage;
+    /** True if used painter uses layers. */
+    private final boolean layeredBp;
+    /** The used numeral system. */
+    private final int numeralSystemBp;
+    /** True if error correction is used. */
+    private final boolean ecc;
 
     /**
      * Instantiates a new image generator.
@@ -74,7 +78,10 @@ public class ImageGenerator {
         final int ihMaxWidth, final int ihMaxHeight) {
         bp = bytePainter;
         enc = encoder;
+        ecc = !enc.isDummy();
         imageType = bp.getImageType();
+        layeredBp = bp.isLayered();
+        numeralSystemBp = bp.getNumeralSystem();
         maxImageHostHeight = ihMaxHeight;
         maxImageHostWidth = ihMaxWidth;
         final float ppb = bp.pixelsPerByte();
@@ -104,7 +111,7 @@ public class ImageGenerator {
      */
     private int[] getImageWidthAndHeight(final int byteArrayLength) {
         final int w = maxImageHostWidth;
-        int computedHeight = (int)((byteArrayLength * bp.pixelsPerByte() + getStartPixel()) / (float)w) + 1;
+        int computedHeight = (int)((byteArrayLength * bp.pixelsPerByte() + HEADER_OFFSET) / (float)w) + 1;
         final int h = computedHeight < 5 ? 5 : computedHeight;
 
         if (h > maxImageHostHeight) {
@@ -133,20 +140,9 @@ public class ImageGenerator {
         byte[] toStore = enc.encode(bs);
         int[] dim = getImageWidthAndHeight(toStore.length);
         final BufferedImage bi = createBufferedImage(dim[0], dim[1]);
-        saveArrayLengthInFirst4Bytes(bi, toStore.length);
-        return bp.storeBytesInImage(bi, toStore, getStartPixel(), getEndPixel(bi));
-    }
 
-    /**
-     * Extracts bytes from given image.
-     * 
-     * @param image
-     *            The image.
-     * @return The bytes extracted from the given image.
-     */
-    public byte[] getBytesFromImage(final BufferedImage image) {
-        byte[] getFromImage = getOriginalArray(image);
-        return enc.decode(getFromImage);
+        saveDecodeInformationInFirst4Bytes(bi, toStore.length, numeralSystemBp, layeredBp, ecc);
+        return bp.storeBytesInImage(bi, toStore, HEADER_OFFSET, HImageGenerationHelper.getEndPixel(bi));
     }
 
     /**
@@ -174,60 +170,23 @@ public class ImageGenerator {
      *            the BufferedImage.
      * @param length
      *            the length of the byte array to be stored in the image
+     * @param numSys
+     *            the numeral system
+     * @param layered
+     *            true if layered painter
+     * @param ecc
+     *            true if painter uses ecc
      */
-    private void saveArrayLengthInFirst4Bytes(final BufferedImage bi, final int length) {
-        final byte[] bss = new byte[] {
-            (byte)length, (byte)(length >> 8), (byte)(length >> 16), (byte)(length >> 24)
-        };
-        robustPainter.storeBytesInImage(bi, bss, 0, getStartPixel());
-    }
-
-    /**
-     * Extracts the original array from the image.
-     * 
-     * @param bi
-     *            the image with the stored byte array
-     * @return the original byte array.
-     */
-    private byte[] getOriginalArray(final BufferedImage bi) {
-
-        final byte[] bal = robustPainter.getBytesFromImage(bi, 0, getStartPixel());
-        final int b1 = (int)bal[0] & 0xFF;
-        final int b2 = (int)bal[1] & 0xFF;
-        final int b3 = (int)bal[2] & 0xFF;
-        final int b4 = (int)bal[3] & 0xFF;
-        final int oLength = b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
-
-        byte[] bs = bp.getBytesFromImage(bi, getStartPixel(), getEndPixel(bi));
-
-        byte[] bss;
-        if (oLength < 0 || oLength > bs.length - HEADER_OFFSET) {
-            bss = new byte[0];
-        } else {
-            bss = new byte[oLength];
-            System.arraycopy(bs, 0, bss, 0, oLength);
-        }
-        return bss;
-    }
-
-    /**
-     * Returns the pixel where the image starts.
-     * 
-     * @return the pixel where the image starts
-     * */
-    private int getStartPixel() {
-        return (int)(robustPainter.pixelsPerByte() * HEADER_OFFSET);
-    }
-
-    /**
-     * Returns the pixel where the image ends.
-     * 
-     * @param bi
-     *            the BufferedImage
-     * @return The pixel where the image ends
-     */
-    private int getEndPixel(final BufferedImage bi) {
-        return bi.getHeight() * bi.getWidth();
+    private void saveDecodeInformationInFirst4Bytes(final BufferedImage bi, final int length,
+        final int numSys, final boolean layered, final boolean ecc) {
+        final byte[] bss =
+            new byte[] {
+                (byte)length, (byte)(length >> 8), (byte)(length >> 16), (byte)(length >> 24),
+                (byte)(numSys - 1),
+                /* move bits to the leftmost of the byte */
+                (byte)((layered ? (1 << 6) : 0) + (ecc ? (1 << 7) : 0))
+            };
+        ROBUST_PAINTER.storeBytesInImage(bi, bss, 0, HEADER_OFFSET);
     }
 
 }

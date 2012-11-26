@@ -35,8 +35,8 @@ import com.google.inject.Injector;
 
 public class AsyncImageBlobStore implements AsyncBlobStore {
 
-
-    private final static String DEL = "%";
+    /** The Delimiter. */
+    private static final String DEL = "%";
 
     /** The image host instance. */
     private final IImageHost ih;
@@ -81,7 +81,6 @@ public class AsyncImageBlobStore implements AsyncBlobStore {
         }
     }
 
-    
     /**
      * {@inheritDoc}
      */

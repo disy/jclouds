@@ -85,4 +85,18 @@ public interface IBytesToImagePainter {
      */
     String toString();
 
+    /**
+     * Returns the numeral system used by the painter.
+     * 
+     * @return the numeral system
+     */
+    int getNumeralSystem();
+
+    /**
+     * Returns true if the painter uses layers, false if not.
+     * 
+     * @return true if layered painter
+     */
+    boolean isLayered();
+
 }
