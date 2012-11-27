@@ -13,18 +13,15 @@ import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.blobstore.domain.BlobMetadata;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
-import org.jclouds.blobstore.domain.internal.BlobBuilderImpl;
 import org.jclouds.blobstore.options.CreateContainerOptions;
 import org.jclouds.blobstore.options.GetOptions;
 import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
-import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.javax.annotation.Nullable;
 
@@ -35,15 +32,8 @@ import com.google.inject.Injector;
 
 public class AsyncImageBlobStore implements AsyncBlobStore {
 
-    /** The Delimiter. */
-    private static final String DEL = "%";
-
     /** The image host instance. */
     private final IImageHost ih;
-    /** The image generator instance. */
-    private final ImageGenerator ig;
-    /** The blob builder. */
-    private BlobBuilder bb;
 
     /**
      * ImageBlobStore constructor.
@@ -70,15 +60,6 @@ public class AsyncImageBlobStore implements AsyncBlobStore {
         ih = inj.getInstance(IImageHost.class);
         IBytesToImagePainter painter = inj.getInstance(IBytesToImagePainter.class);
         IEncoder encoder = inj.getInstance(IEncoder.class);
-        ig = new ImageGenerator(painter, encoder, ih.getMaxImageWidth(), ih.getMaxImageHeight());
-
-        try {
-            bb = new BlobBuilderImpl(new JCECrypto());
-        } catch (NoSuchAlgorithmException e) {
-            new RuntimeException(e);
-        } catch (CertificateException e) {
-            new RuntimeException(e);
-        }
     }
 
     /**

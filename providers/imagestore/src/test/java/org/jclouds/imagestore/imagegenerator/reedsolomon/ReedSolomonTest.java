@@ -14,18 +14,16 @@ import org.testng.annotations.Test;
  */
 public class ReedSolomonTest {
     final static Random ran = new Random(12l);
-    // size + ec must be under 256 whereas
-    final static int size = 240;
-    final static int ecBytes = 16;
+
     // bytes to corrupt must be at most halb of ec-bytes
     final static int toCorrupt = 8;
-    static byte[] data = new byte[size];
+    static byte[] data = new byte[226];
     static int[][] corruptedBytes = new int[2][toCorrupt];
     static {
         ran.nextBytes(data);
         for (int i = 0; i < toCorrupt; i++) {
             corruptedBytes[0][i] = ran.nextInt(data.length);
-            corruptedBytes[1][i] = ran.nextInt(256);
+            corruptedBytes[1][i] = ran.nextInt(data.length);
         }
     }
 
@@ -40,6 +38,8 @@ public class ReedSolomonTest {
 
     @Test
     public void testInt() throws ReedSolomonException {
+        // size + ec must be under 256 whereas
+        final int ecBytes = 16;
 
         int[] bytes = ReedSolomon.castToInt(data);
         int[] encoded = new int[bytes.length + ecBytes];
@@ -55,7 +55,7 @@ public class ReedSolomonTest {
 
     @Test
     public void testSplitter() {
-        int multipleSize = ran.nextInt(20) * size + ran.nextInt(size);
+        int multipleSize = ran.nextInt(20) * 226 + ran.nextInt(226);
         data = new byte[multipleSize];
         ran.nextBytes(data);
         testByte();

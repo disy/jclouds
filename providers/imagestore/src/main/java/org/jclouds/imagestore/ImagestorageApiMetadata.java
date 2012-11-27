@@ -8,9 +8,6 @@ import org.jclouds.imagestore.config.ImagestoreContextModule;
 
 public class ImagestorageApiMetadata extends BaseApiMetadata {
 
-    /** The serialVersionUID */
-    private static final long serialVersionUID = -7092309348450484397L;
-
     public static Builder builder() {
         return new Builder();
     }

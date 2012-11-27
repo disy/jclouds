@@ -4,7 +4,6 @@
 package org.jclouds.imagestore;
 
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
 
 /**

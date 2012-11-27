@@ -17,7 +17,6 @@ import org.jclouds.imagestore.imagegenerator.ImageExtractor;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 
 import com.google.common.io.Files;
@@ -74,7 +73,7 @@ public class PainterOnHosterTest {
                     }
                     try {
 
-                        float ppb = ip.pixelsPerByte();
+                        float ppb = ip.getPixelsPerByte();
                         System.out.println("painter " + ip.toString());
 
                         ImageGenerator ig =

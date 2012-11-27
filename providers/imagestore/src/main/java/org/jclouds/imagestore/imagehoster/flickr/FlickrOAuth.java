@@ -26,15 +26,15 @@
  */
 package org.jclouds.imagestore.imagehoster.flickr;
 
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_APP_KEY;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_CALLBACK_URL;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PERMISSION;
-import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_NAME;
-import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_URI;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_TOKEN;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_TOKEN_SECRET;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_USERNAME;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROPKEY_USER_ID;
-import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_APP_KEY;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_NAME;
+import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_PROP_FILE_URI;
 import static org.jclouds.imagestore.ImageStoreConstants.FLICKR_SHARED_SECRET;
 
 import java.io.BufferedReader;
@@ -113,9 +113,9 @@ public class FlickrOAuth {
      *             Signals that an I/O exception has occurred.
      */
     private void loadFlickrProperties() throws IOException {
-        File userStore =
-            new File(System.getProperty("user.home"), new StringBuilder(".imagecredentials").append(
-                File.separator).append("flickr.properties").toString());
+        // File userStore =
+        // new File(System.getProperty("user.home"), new StringBuilder(".imagecredentials").append(
+        // File.separator).append("flickr.properties").toString());
         // if (userStore.exists()) {
         // fp.load(new FileInputStream(userStore));
         // } else {

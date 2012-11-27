@@ -35,7 +35,8 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.benchmarks.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
+import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
@@ -128,14 +129,16 @@ public class BlobContextTester {
                 {
                     BlobStoreContext.class,
                     new BlobStoreContext[] {
-//                        TestAndBenchmarkHelper.createContext(ImageHostFacebook.class,
-//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
+                        TestAndBenchmarkHelper.createContext(ImageHostFacebook.class,
+                            BytesToImagePainter.PainterType.QUARTERNARY.getPainter().getClass(),
+                            IEncoder.DummyEncoder.class),
                         TestAndBenchmarkHelper.createContext(ImageHostFile.class,
-                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
-//                        TestAndBenchmarkHelper.createContext(ImageHostGoogleDataApiPicasa.class,
-//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
-//                        TestAndBenchmarkHelper.createContext(ImageHostFlickr.class,
-//                            BinaryBytesToImagePainter.class, IEncoder.DummyEncoder.class),
+                            BytesToImagePainter.PainterType.HEXADECIMAL.getPainter().getClass(), IEncoder.DummyEncoder.class),
+                        TestAndBenchmarkHelper.createContext(ImageHostGoogleDataApiPicasa.class,
+                            BytesToImagePainter.PainterType.HEXADECIMAL.getPainter().getClass(), IEncoder.DummyEncoder.class),
+                        TestAndBenchmarkHelper.createContext(ImageHostFlickr.class,
+                            BytesToImagePainter.PainterType.HEXADECIMAL.getPainter().getClass(),
+                            IEncoder.DummyEncoder.class),
                     }
                 }
             };

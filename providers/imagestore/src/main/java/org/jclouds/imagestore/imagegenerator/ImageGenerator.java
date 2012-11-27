@@ -26,12 +26,10 @@
  */
 package org.jclouds.imagestore.imagegenerator;
 
-import java.awt.color.CMMException;
-import java.awt.image.BufferedImage;
-
-import org.jclouds.imagestore.imagegenerator.bytepainter.BinaryBytesToImagePainter;
 import static org.jclouds.imagestore.imagegenerator.HImageGenerationHelper.HEADER_OFFSET;
 import static org.jclouds.imagestore.imagegenerator.HImageGenerationHelper.ROBUST_PAINTER;
+
+import java.awt.image.BufferedImage;
 
 import com.google.inject.Inject;
 

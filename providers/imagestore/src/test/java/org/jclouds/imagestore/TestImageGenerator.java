@@ -10,10 +10,7 @@ import javax.imageio.ImageIO;
 
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
-import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.bytepainter.DihectpenthexagonLayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
-import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 
 public class TestImageGenerator {
 
