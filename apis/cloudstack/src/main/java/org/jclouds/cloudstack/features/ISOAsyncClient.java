@@ -25,6 +25,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.jclouds.Fallbacks.EmptySetOnNotFoundOr404;
+import org.jclouds.Fallbacks.NullOnNotFoundOr404;
 import org.jclouds.cloudstack.domain.AsyncCreateResponse;
 import org.jclouds.cloudstack.domain.ExtractMode;
 import org.jclouds.cloudstack.domain.ISO;
@@ -37,11 +39,11 @@ import org.jclouds.cloudstack.options.ListISOsOptions;
 import org.jclouds.cloudstack.options.RegisterISOOptions;
 import org.jclouds.cloudstack.options.UpdateISOOptions;
 import org.jclouds.cloudstack.options.UpdateISOPermissionsOptions;
+import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.OnlyElement;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.rest.annotations.SelectJson;
-import org.jclouds.rest.annotations.SkipEncoding;
 import org.jclouds.rest.annotations.Unwrap;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -56,7 +58,6 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 @RequestFilters(AuthenticationFilter.class)
 @QueryParams(keys = "response", values = "json")
-@SkipEncoding({'/', ','})
 public interface ISOAsyncClient {
 
    /**
@@ -95,6 +96,7 @@ public interface ISOAsyncClient {
    @QueryParams(keys = { "command", "listAll" }, values = { "listIsos", "true" })
    @SelectJson("iso")
    @OnlyElement
+   @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<ISO> getISO(@QueryParam("id") String id);
 
    /**
@@ -107,6 +109,7 @@ public interface ISOAsyncClient {
    @Consumes(MediaType.APPLICATION_JSON)
    @QueryParams(keys = { "command", "listAll" }, values = { "listIsos", "true" })
    @SelectJson("iso")
+   @Fallback(EmptySetOnNotFoundOr404.class)
    ListenableFuture<Set<ISO>> listISOs(ListISOsOptions... options);
 
    /**
@@ -122,7 +125,8 @@ public interface ISOAsyncClient {
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @QueryParams(keys = "command", values = "registerIso")
-   @Unwrap
+   @SelectJson("iso")
+   @OnlyElement
    ListenableFuture<ISO> registerISO(@QueryParam("name") String name, @QueryParam("displaytext") String displayText, @QueryParam("url") String url, @QueryParam("zoneid") String zoneId, RegisterISOOptions... options);
 
    /**

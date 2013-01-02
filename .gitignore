@@ -16,3 +16,5 @@ TAGS
 .metadata/
 atlassian-ide-plugin.xml
 flickr.properties
+.DS_Store
+

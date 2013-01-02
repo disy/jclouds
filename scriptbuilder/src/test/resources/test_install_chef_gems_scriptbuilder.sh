@@ -140,7 +140,7 @@ function installRuby() {
   if ! hash ruby 2>/dev/null; then
     if which dpkg &> /dev/null; then
       apt-get-update
-      apt-get install -y ruby ruby1.8-dev build-essential
+      apt-get install -y ruby ruby-dev build-essential
     elif which rpm &> /dev/null; then
       # Disable chef from the base repo (http://tickets.opscode.com/browse/CHEF-2906)
       sed -i "s/\[base\]/\0\n\exclude=ruby*/g" /etc/yum.repos.d/CentOS-Base.repo
@@ -163,6 +163,7 @@ END_OF_JCLOUDS_SCRIPT
 	trap 'echo $?>$INSTANCE_HOME/rc' 0 1 2 3 15
 	setupPublicCurl || exit 1
 	installRuby || exit 1
+	if ! hash gem 2>/dev/null; then
 	(
 	mkdir /tmp/$$
 	curl -q -s -S -L --connect-timeout 10 --max-time 600 --retry 20 -X GET  http://production.cf.rubygems.org/rubygems/rubygems-1.8.10.tgz |(mkdir -p /tmp/$$ &&cd /tmp/$$ &&tar -xpzf -)
@@ -173,10 +174,11 @@ END_OF_JCLOUDS_SCRIPT
 	ruby setup.rb --no-format-executable
 	rm -fr /tmp/rubygems
 	)
+	fi
 	gem update --system
 	gem update --no-rdoc --no-ri
 	
-	gem install ohai chef --no-rdoc --no-ri
+	gem install chef -v '>= 10.16.4' --no-rdoc --no-ri
 	
 END_OF_JCLOUDS_SCRIPT
    

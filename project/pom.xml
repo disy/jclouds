@@ -232,12 +232,12 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-security</artifactId>
-                <version>8.1.7.v20120910</version>
+                <version>8.1.8.v20121106</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>8.1.7.v20120910</version>
+                <version>8.1.8.v20121106</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -384,6 +384,10 @@
                         <ignoredResource>test.jks</ignoredResource>
                         <ignoredResource>CreateInternetService-options-test.xml</ignoredResource>
                         <ignoredResource>.gitattributes</ignoredResource>
+                        <ignoredResource>OSGI-OPT/bnd.bnd</ignoredResource>
+                        <!-- For bouncycastle -->
+                        <ignoredResource>META-INF/BCKEY.DSA</ignoredResource>
+                        <ignoredResource>META-INF/BCKEY.SF</ignoredResource>
                     </ignoredResources>
                     <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
                 </configuration>
