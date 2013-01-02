@@ -46,6 +46,11 @@ public class ImagestorageApiMetadata extends BaseApiMetadata {
             return new ImagestorageApiMetadata(this);
         }
 
+        @Override
+        protected org.jclouds.apis.internal.BaseApiMetadata.Builder self() {
+            return this;
+        }
+
     }
 
 }

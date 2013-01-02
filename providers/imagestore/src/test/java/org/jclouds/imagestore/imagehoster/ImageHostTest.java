@@ -75,7 +75,7 @@ public class ImageHostTest {
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    @Test(dataProvider = "remoteHosts", groups = "remoteTests")
+    @Test(dataProvider = "remoteHosts", groups = "remoteTests", enabled=false)
     public void test(Class<IImageHost> clazz, IImageHost[] pHandlers) throws IOException {
         check(clazz, pHandlers);
     }
@@ -181,7 +181,7 @@ public class ImageHostTest {
         Object[][] returnVal = {
             {
                 IImageHost.class, new IImageHost[] {
-                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostGoogleDataApiPicasa()
+//                    new ImageHostFlickr(), new ImageHostFacebook(), new ImageHostGoogleDataApiPicasa()
                 }
             }
         };

@@ -49,7 +49,6 @@ import org.jclouds.blobstore.options.GetOptions;
 import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.domain.Location;
-import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.filesystem.reference.FilesystemConstants;
 import org.jclouds.imagestore.config.BytePainterAndHosterModule;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
@@ -118,13 +117,7 @@ public class SyncImageBlobStore implements BlobStore {
         ig = new ImageGenerator(painter, encoder, ih.getMaxImageWidth(), ih.getMaxImageHeight());
         ie = new ImageExtractor();
 
-        try {
-            bb = new BlobBuilderImpl(new JCECrypto());
-        } catch (NoSuchAlgorithmException e) {
-            new RuntimeException(e);
-        } catch (CertificateException e) {
-            new RuntimeException(e);
-        }
+        bb = new BlobBuilderImpl();
     }
 
     /**
