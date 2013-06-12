@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
 import java.util.Map;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -69,6 +68,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#list
     */
+   @Named("volumetype:list")
    @GET
    @SelectJson("volume_types")
    @Fallback(EmptyFluentIterableOnNotFoundOr404.class)
@@ -78,6 +78,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#get
     */
+   @Named("volumetype:get")
    @GET
    @Path("/{id}")
    @SelectJson("volume_type")
@@ -87,6 +88,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#create
     */
+   @Named("volumetype:create")
    @POST
    @SelectJson("volume_type")
    @Produces(MediaType.APPLICATION_JSON)
@@ -96,6 +98,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#delete
     */
+   @Named("volumetype:delete")
    @DELETE
    @Path("/{id}")
    @Fallback(FalseOnNotFoundOr404.class)
@@ -104,6 +107,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#getExtraSpecs(String)
     */
+   @Named("volumetype:getextraspecs")
    @GET
    @SelectJson("extra_specs")
    @Path("/{id}/extra_specs")
@@ -113,6 +117,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#updateExtraSpecs(String, java.util.Map)
     */
+   @Named("volumetype:udpateextraspecs")
    @POST
    @Path("/{id}/extra_specs")
    @Produces(MediaType.APPLICATION_JSON)
@@ -123,6 +128,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#getExtraSpec(String, String)
     */
+   @Named("volumetype:getextraspec")
    @GET
    @Path("/{id}/extra_specs/{key}")
    @Unwrap
@@ -132,6 +138,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#updateExtraSpec(String, String, String)
     */
+   @Named("volumetype:updateextraspec")
    @PUT
    @Path("/{id}/extra_specs/{key}")
    @Produces(MediaType.APPLICATION_JSON)
@@ -144,6 +151,7 @@ public interface VolumeTypeAsyncApi {
    /**
     * @see VolumeTypeApi#deleteExtraSpec(String, String)
     */
+   @Named("volumetype:deleteextraspec")
    @DELETE
    @Path("/{id}/extra_specs/{key}")
    @Fallback(FalseOnNotFoundOr404.class)

@@ -1,27 +1,25 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.atmos;
 
+import static org.jclouds.reflect.Reflection2.method;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -50,12 +48,14 @@ import org.jclouds.http.functions.ReleasePayloadAndReturn;
 import org.jclouds.http.options.GetOptions;
 import org.jclouds.rest.ConfiguresRestClient;
 import org.jclouds.rest.internal.BaseAsyncClientTest;
+import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.Invokable;
 import com.google.inject.Module;
-
 /**
  * Tests behavior of {@code AtmosAsyncClient}
  * 
@@ -68,8 +68,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    private BlobToObject blobToObject;
 
    public void testListDirectories() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("listDirectories", ListOptions[].class);
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "listDirectories", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://accesspoint.atmosonline.com/rest/namespace HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": text/xml\n");
@@ -83,8 +83,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testListDirectory() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("listDirectory", String.class, ListOptions[].class);
-      HttpRequest request = processor.createRequest(method, "directory");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "listDirectory", String.class, ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("directory"));
 
       assertRequestLineEquals(request, "GET https://accesspoint.atmosonline.com/rest/namespace/directory/ HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": text/xml\n");
@@ -98,8 +98,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testListDirectoriesOptions() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("listDirectories", ListOptions[].class);
-      HttpRequest request = processor.createRequest(method, new ListOptions().limit(1).token("asda"));
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "listDirectories", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(new ListOptions().limit(1).token("asda")));
 
       assertRequestLineEquals(request, "GET https://accesspoint.atmosonline.com/rest/namespace HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": text/xml\nx-emc-limit: 1\nx-emc-token: asda\n");
@@ -113,8 +113,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testListDirectoryOptions() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("listDirectory", String.class, ListOptions[].class);
-      HttpRequest request = processor.createRequest(method, "directory", new ListOptions().limit(1).token("asda"));
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "listDirectory", String.class, ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("directory", new ListOptions().limit(1).token("asda")));
 
       assertRequestLineEquals(request, "GET https://accesspoint.atmosonline.com/rest/namespace/directory/ HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": text/xml\nx-emc-limit: 1\nx-emc-token: asda\n");
@@ -128,8 +128,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testCreateDirectory() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("createDirectory", String.class, PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "createDirectory", String.class, PutOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir"));
 
       assertRequestLineEquals(request, "POST https://accesspoint.atmosonline.com/rest/namespace/dir/ HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
@@ -143,8 +143,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testCreateDirectoryOptions() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("createDirectory", String.class, PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir", PutOptions.Builder.publicRead());
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "createDirectory", String.class, PutOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir", PutOptions.Builder.publicRead()));
 
       assertRequestLineEquals(request, "POST https://accesspoint.atmosonline.com/rest/namespace/dir/ HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT
@@ -159,13 +159,13 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testCreateFile() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("createFile", String.class, AtmosObject.class,
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "createFile", String.class, AtmosObject.class,
                PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir", blobToObject
-               .apply(BindBlobToMultipartFormTest.TEST_BLOB));
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir", blobToObject
+               .apply(BindBlobToMultipartFormTest.TEST_BLOB)));
 
       assertRequestLineEquals(request, "POST https://accesspoint.atmosonline.com/rest/namespace/dir/hello HTTP/1.1");
-      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
+      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\nExpect: 100-continue\n");
       assertPayloadEquals(request, "hello", "text/plain", false);
 
       assertResponseParserClassEquals(method, request, ParseURIFromListOrLocationHeaderIf20x.class);
@@ -176,14 +176,14 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testCreateFileOptions() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("createFile", String.class, AtmosObject.class,
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "createFile", String.class, AtmosObject.class,
                PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir", blobToObject
-               .apply(BindBlobToMultipartFormTest.TEST_BLOB), PutOptions.Builder.publicRead());
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir", blobToObject
+               .apply(BindBlobToMultipartFormTest.TEST_BLOB), PutOptions.Builder.publicRead()));
 
       assertRequestLineEquals(request, "POST https://accesspoint.atmosonline.com/rest/namespace/dir/hello HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT
-               + ": */*\nx-emc-groupacl: other=READ\nx-emc-useracl: root=FULL_CONTROL\n");
+               + ": */*\nExpect: 100-continue\nx-emc-groupacl: other=READ\nx-emc-useracl: root=FULL_CONTROL\n");
       assertPayloadEquals(request, "hello", "text/plain", false);
 
       assertResponseParserClassEquals(method, request, ParseURIFromListOrLocationHeaderIf20x.class);
@@ -194,13 +194,13 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testUpdateFile() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("updateFile", String.class, AtmosObject.class,
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "updateFile", String.class, AtmosObject.class,
                PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir", blobToObject
-               .apply(BindBlobToMultipartFormTest.TEST_BLOB));
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir", blobToObject
+               .apply(BindBlobToMultipartFormTest.TEST_BLOB)));
 
       assertRequestLineEquals(request, "PUT https://accesspoint.atmosonline.com/rest/namespace/dir/hello HTTP/1.1");
-      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
+      assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\nExpect: 100-continue\n");
       assertPayloadEquals(request, "hello", "text/plain", false);
 
       assertResponseParserClassEquals(method, request, ReleasePayloadAndReturn.class);
@@ -211,14 +211,14 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testUpdateFileOptions() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("updateFile", String.class, AtmosObject.class,
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "updateFile", String.class, AtmosObject.class,
                PutOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir", blobToObject
-               .apply(BindBlobToMultipartFormTest.TEST_BLOB), PutOptions.Builder.publicRead());
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir", blobToObject
+               .apply(BindBlobToMultipartFormTest.TEST_BLOB), PutOptions.Builder.publicRead()));
 
       assertRequestLineEquals(request, "PUT https://accesspoint.atmosonline.com/rest/namespace/dir/hello HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT
-               + ": */*\nx-emc-groupacl: other=READ\nx-emc-useracl: root=FULL_CONTROL\n");
+               + ": */*\nExpect: 100-continue\nx-emc-groupacl: other=READ\nx-emc-useracl: root=FULL_CONTROL\n");
       assertPayloadEquals(request, "hello", "text/plain", false);
 
       assertResponseParserClassEquals(method, request, ReleasePayloadAndReturn.class);
@@ -229,8 +229,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testReadFile() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("readFile", String.class, GetOptions[].class);
-      HttpRequest request = processor.createRequest(method, "dir/file");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "readFile", String.class, GetOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir/file"));
 
       assertRequestLineEquals(request, "GET https://accesspoint.atmosonline.com/rest/namespace/dir/file HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
@@ -244,8 +244,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testGetSystemMetadata() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("getSystemMetadata", String.class);
-      HttpRequest request = processor.createRequest(method, "dir/file");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "getSystemMetadata", String.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir/file"));
 
       assertRequestLineEquals(request, "HEAD https://accesspoint.atmosonline.com/rest/namespace/dir/file HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
@@ -259,8 +259,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testDeletePath() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("deletePath", String.class);
-      HttpRequest request = processor.createRequest(method, "dir/file");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "deletePath", String.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir/file"));
 
       assertRequestLineEquals(request, "DELETE https://accesspoint.atmosonline.com/rest/namespace/dir/file HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
@@ -274,8 +274,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testIsPublic() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("isPublic", String.class);
-      HttpRequest request = processor.createRequest(method, "dir/file");
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "isPublic", String.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("dir/file"));
 
       assertRequestLineEquals(request, "HEAD https://accesspoint.atmosonline.com/rest/namespace/dir/file HTTP/1.1");
       assertNonPayloadHeadersEqual(request, HttpHeaders.ACCEPT + ": */*\n");
@@ -289,8 +289,8 @@ public class AtmosAsyncClientTest extends BaseAsyncClientTest<AtmosAsyncClient> 
    }
 
    public void testNewObject() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = AtmosAsyncClient.class.getMethod("newObject");
-      assertEquals(method.getReturnType(), AtmosObject.class);
+      Invokable<?, ?> method = method(AtmosAsyncClient.class, "newObject");
+      assertEquals(method.getReturnType().getRawType(), AtmosObject.class);
    }
 
    @Override

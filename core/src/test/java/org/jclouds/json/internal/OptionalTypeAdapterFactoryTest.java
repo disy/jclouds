@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.json.internal;
 
@@ -42,7 +40,7 @@ public class OptionalTypeAdapterFactoryTest {
     * Simple type with an Optional field
     */
    static class SimpleBean {
-      private Optional<String> value;
+      private final Optional<String> value;
       private final String someOtherValue;
 
       public SimpleBean(Optional<String> value, String someOtherValue) {
@@ -51,6 +49,7 @@ public class OptionalTypeAdapterFactoryTest {
       }
 
       // Required to ensure GSON doesn't initialize our Optional to null!
+      @SuppressWarnings("unused")
       private SimpleBean() {
          this.value = Optional.absent();
          this.someOtherValue = null;
@@ -64,22 +63,9 @@ public class OptionalTypeAdapterFactoryTest {
          return someOtherValue;
       }
 
-      @Override
-      public int hashCode() {
-         return Objects.hashCode(value, someOtherValue);
-      }
-
-      @Override
-      public boolean equals(Object that) {
-         if (that == null || that.getClass() != getClass())
-            return false;
-         SimpleBean other = (SimpleBean) that;
-         return Objects.equal(value, other.value) && Objects.equal(someOtherValue, other.someOtherValue);
-      }
-
-      @Override
-      public String toString() {
-         return Objects.toStringHelper("SimpleBean").add("value", value).add("someOtherValue", someOtherValue).toString();
+      public boolean equals(Object other) {
+         SimpleBean that = SimpleBean.class.cast(other);
+         return Objects.equal(value, that.value) && Objects.equal(someOtherValue, that.someOtherValue);
       }
    }
 

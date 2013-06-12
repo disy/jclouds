@@ -1,24 +1,23 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.filesystem.strategy.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.io.BaseEncoding.base16;
 
 import java.io.File;
@@ -208,7 +207,9 @@ public class FilesystemStorageStrategyImpl implements LocalStorageStrategy {
          return eTag;
       } catch (IOException ex) {
          if (outputFile != null) {
-            outputFile.delete();
+            if (!outputFile.delete()) {
+               logger.debug("Could not delete %s", outputFile);
+            }
          }
          throw ex;
       } finally {
@@ -223,7 +224,9 @@ public class FilesystemStorageStrategyImpl implements LocalStorageStrategy {
       String fileName = buildPathStartingFromBaseDir(container, blobKey);
       logger.debug("Deleting blob %s", fileName);
       File fileToBeDeleted = new File(fileName);
-      fileToBeDeleted.delete();
+      if (!fileToBeDeleted.delete()) {
+         logger.debug("Could not delete %s", fileToBeDeleted);
+      }
 
       // now examine if the key of the blob is a complex key (with a directory structure)
       // and eventually remove empty directory
@@ -404,12 +407,15 @@ public class FilesystemStorageStrategyImpl implements LocalStorageStrategy {
       String parentPath = file.getParent();
       // no need to manage "/" parentPath, because "/" cannot be used as start
       // char of blobkey
-      if (null != parentPath || "".equals(parentPath)) {
+      if (!isNullOrEmpty(parentPath)) {
          // remove parent directory only it's empty
          File directory = new File(buildPathStartingFromBaseDir(container, parentPath));
          String[] children = directory.list();
          if (null == children || children.length == 0) {
-            directory.delete();
+            if (!directory.delete()) {
+               logger.debug("Could not delete %s", directory);
+               return;
+            }
             // recursively call for removing other path
             removeDirectoriesTreeOfBlobKey(container, parentPath);
          }

@@ -1,24 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
-import java.lang.reflect.Method;
+import static org.jclouds.reflect.Reflection2.method;
 
 import org.jclouds.Fallbacks.EmptySetOnNotFoundOr404;
 import org.jclouds.Fallbacks.NullOnNotFoundOr404;
@@ -36,11 +34,13 @@ import org.jclouds.http.HttpRequest;
 import org.jclouds.http.functions.ParseFirstJsonValueNamed;
 import org.jclouds.http.functions.ReleasePayloadAndReturn;
 import org.jclouds.http.functions.UnwrapOnlyJsonValue;
+import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
+import com.google.common.reflect.Invokable;
 /**
  * Tests the behaviour of SnapshotAsyncClient.
  * 
@@ -53,8 +53,8 @@ import com.google.common.collect.ImmutableSet;
 public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<SnapshotAsyncClient> {
 
    public void testCreateSnapshot() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("createSnapshot", String.class, CreateSnapshotOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method, 5);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "createSnapshot", String.class, CreateSnapshotOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(5));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=createSnapshot&volumeid=5 HTTP/1.1");
@@ -69,8 +69,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testCreateSnapshotOptions() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("createSnapshot", String.class, CreateSnapshotOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method, 5, CreateSnapshotOptions.Builder.accountInDomain("acc", "7").policyId("9"));
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "createSnapshot", String.class, CreateSnapshotOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(5, CreateSnapshotOptions.Builder.accountInDomain("acc", "7").policyId("9")));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=createSnapshot&volumeid=5&account=acc&domainid=7&policyid=9 HTTP/1.1");
@@ -85,8 +85,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testListSnapshots() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("listSnapshots", ListSnapshotsOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "listSnapshots", ListSnapshotsOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=listSnapshots&listAll=true HTTP/1.1");
@@ -101,8 +101,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testGetSnapshot() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("getSnapshot", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, 5);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "getSnapshot", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(5));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=listSnapshots&listAll=true&id=5 HTTP/1.1");
@@ -118,8 +118,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testListSnapshotsOptions() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("listSnapshots", ListSnapshotsOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method, ListSnapshotsOptions.Builder.accountInDomain("acc", "7").id("5").interval(Snapshot.Interval.MONTHLY).isRecursive(true).keyword("fred").name("fred's snapshot").snapshotType(Snapshot.Type.RECURRING).volumeId("11"));
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "listSnapshots", ListSnapshotsOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(ListSnapshotsOptions.Builder.accountInDomain("acc", "7").id("5").interval(Snapshot.Interval.MONTHLY).isRecursive(true).keyword("fred").name("fred's snapshot").snapshotType(Snapshot.Type.RECURRING).volumeId("11")));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=listSnapshots&listAll=true&account=acc&domainid=7&id=5&intervaltype=MONTHLY&isrecursive=true&keyword=fred&name=fred%27s%20snapshot&snapshottype=RECURRING&volumeid=11 HTTP/1.1");
@@ -134,8 +134,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testDeleteSnapshot() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("deleteSnapshot", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, 14);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "deleteSnapshot", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(14));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=deleteSnapshot&id=14 HTTP/1.1");
@@ -149,12 +149,21 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
       checkFilters(httpRequest);
    }
 
-   public void testCreateSnapshotPolicy() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("createSnapshotPolicy", SnapshotPolicySchedule.class, String.class, String.class, String.class);
-      HttpRequest httpRequest = processor.createRequest(method, SnapshotPolicySchedules.monthly(5, 6, 7), 10, "UTC", 12);
+   HttpRequest extractIso = HttpRequest.builder().method("GET")
+                                       .endpoint("http://localhost:8080/client/api")
+                                       .addQueryParam("response", "json")
+                                       .addQueryParam("command", "createSnapshotPolicy")
+                                       .addQueryParam("maxsnaps", "10")
+                                       .addQueryParam("timezone", "UTC")
+                                       .addQueryParam("volumeid", "12")
+                                       .addQueryParam("intervaltype", "MONTHLY")
+                                       .addQueryParam("schedule", "07%3A06%3A05").build();
 
-      assertRequestLineEquals(httpRequest,
-            "GET http://localhost:8080/client/api?response=json&command=createSnapshotPolicy&timezone=UTC&maxsnaps=10&volumeid=12&intervaltype=MONTHLY&schedule=07%3A06%3A05 HTTP/1.1");
+   public void testCreateSnapshotPolicy() throws NoSuchMethodException {
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "createSnapshotPolicy", SnapshotPolicySchedule.class, String.class, String.class, String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(SnapshotPolicySchedules.monthly(5, 6, 7), 10, "UTC", 12));
+
+      assertRequestLineEquals(httpRequest,extractIso.getRequestLine());
       assertNonPayloadHeadersEqual(httpRequest, "Accept: application/json\n");
       assertPayloadEquals(httpRequest, null, null, false);
 
@@ -166,8 +175,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testDeleteSnapshotPolicy() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("deleteSnapshotPolicy", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, 7);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "deleteSnapshotPolicy", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(7));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=deleteSnapshotPolicies&id=7 HTTP/1.1");
@@ -182,9 +191,9 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testDeleteSnapshotPolicies() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("deleteSnapshotPolicies", Iterable.class);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "deleteSnapshotPolicies", Iterable.class);
       Iterable<String> ids = ImmutableSet.of("3", "5", "7");
-      HttpRequest httpRequest = processor.createRequest(method, ids);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(ids));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=deleteSnapshotPolicies&ids=3,5,7 HTTP/1.1");
@@ -199,8 +208,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testListSnapshotPolicies() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("listSnapshotPolicies", String.class, ListSnapshotPoliciesOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method, 10);
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "listSnapshotPolicies", String.class, ListSnapshotPoliciesOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(10));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=listSnapshotPolicies&listAll=true&volumeid=10 HTTP/1.1");
@@ -215,8 +224,8 @@ public class SnapshotAsyncClientTest extends BaseCloudStackAsyncClientTest<Snaps
    }
 
    public void testListSnapshotPoliciesOptions() throws NoSuchMethodException {
-      Method method = SnapshotAsyncClient.class.getMethod("listSnapshotPolicies", String.class, ListSnapshotPoliciesOptions[].class);
-      HttpRequest httpRequest = processor.createRequest(method, 10, ListSnapshotPoliciesOptions.Builder.accountInDomain("fred", "4").keyword("bob"));
+      Invokable<?, ?> method = method(SnapshotAsyncClient.class, "listSnapshotPolicies", String.class, ListSnapshotPoliciesOptions[].class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(10, ListSnapshotPoliciesOptions.Builder.accountInDomain("fred", "4").keyword("bob")));
 
       assertRequestLineEquals(httpRequest,
             "GET http://localhost:8080/client/api?response=json&command=listSnapshotPolicies&listAll=true&volumeid=10&account=fred&domainid=4&keyword=bob HTTP/1.1");

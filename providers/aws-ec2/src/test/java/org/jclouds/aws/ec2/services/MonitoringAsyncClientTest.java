@@ -1,32 +1,32 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.services;
 
+import static org.jclouds.reflect.Reflection2.method;
+
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 
 import org.jclouds.aws.ec2.xml.MonitoringStateHandler;
-import org.jclouds.http.HttpRequest;
 import org.jclouds.http.functions.ParseSax;
+import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.Lists;
+import com.google.common.reflect.Invokable;
 /**
  * Tests behavior of {@code MonitoringAsyncClient}
  * 
@@ -37,9 +37,9 @@ import org.testng.annotations.Test;
 public class MonitoringAsyncClientTest extends BaseAWSEC2AsyncClientTest<MonitoringAsyncClient> {
 
    public void testUnmonitorInstances() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = MonitoringAsyncClient.class.getMethod("unmonitorInstancesInRegion", String.class, String.class,
-            Array.newInstance(String.class, 0).getClass());
-      HttpRequest request = processor.createRequest(method, null, "instance1", "instance2");
+      Invokable<?, ?> method = method(MonitoringAsyncClient.class, "unmonitorInstancesInRegion", String.class, String.class,
+            String[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, Lists.<Object> newArrayList(null, "instance1", "instance2"));
 
       assertRequestLineEquals(request, "POST https://ec2.us-east-1.amazonaws.com/ HTTP/1.1");
       String payload = "Action=UnmonitorInstances&InstanceId.0=instance1&InstanceId.1=instance2";
@@ -54,9 +54,9 @@ public class MonitoringAsyncClientTest extends BaseAWSEC2AsyncClientTest<Monitor
    }
 
    public void testMonitorInstances() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = MonitoringAsyncClient.class.getMethod("monitorInstancesInRegion", String.class, String.class,
-            Array.newInstance(String.class, 0).getClass());
-      HttpRequest request = processor.createRequest(method, null, "instance1", "instance2");
+      Invokable<?, ?> method = method(MonitoringAsyncClient.class, "monitorInstancesInRegion", String.class, String.class,
+            String[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, Lists.<Object> newArrayList(null, "instance1", "instance2"));
 
       assertRequestLineEquals(request, "POST https://ec2.us-east-1.amazonaws.com/ HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Host: ec2.us-east-1.amazonaws.com\n");

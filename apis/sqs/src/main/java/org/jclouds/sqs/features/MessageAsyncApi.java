@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.sqs.features;
 
@@ -74,7 +72,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#delete(String)
     */
-   @Named("sqs:DeleteMessage")
+   @Named("DeleteMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteMessage")
@@ -84,7 +82,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#delete(Map)
     */
-   @Named("sqs:DeleteMessageBatch")
+   @Named("DeleteMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteMessageBatch")
@@ -95,7 +93,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#delete(Iterable)
     */
-   @Named("sqs:DeleteMessageBatch")
+   @Named("DeleteMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteMessageBatch")
@@ -106,7 +104,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#changeVisibility(String, int)
     */
-   @Named("sqs:ChangeMessageVisibility")
+   @Named("ChangeMessageVisibility")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ChangeMessageVisibility")
@@ -116,7 +114,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#changeVisibility(Table)
     */
-   @Named("sqs:ChangeMessageVisibilityBatch")
+   @Named("ChangeMessageVisibilityBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ChangeMessageVisibilityBatch")
@@ -127,7 +125,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#changeVisibility(Map)
     */
-   @Named("sqs:ChangeMessageVisibilityBatch")
+   @Named("ChangeMessageVisibilityBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ChangeMessageVisibilityBatch")
@@ -138,7 +136,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#changeVisibility(Map, int)
     */
-   @Named("sqs:ChangeMessageVisibilityBatch")
+   @Named("ChangeMessageVisibilityBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ChangeMessageVisibilityBatch")
@@ -151,7 +149,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#changeVisibility(Iterable, int)
     */
-   @Named("sqs:ChangeMessageVisibilityBatch")
+   @Named("ChangeMessageVisibilityBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ChangeMessageVisibilityBatch")
@@ -164,7 +162,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#send(String)
     */
-   @Named("sqs:SendMessage")
+   @Named("SendMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessage")
@@ -174,7 +172,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#send(String, SendMessageOptions)
     */
-   @Named("sqs:SendMessage")
+   @Named("SendMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessage")
@@ -184,7 +182,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#sendWithDelays(Table)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -196,7 +194,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#sendWithDelays(Map)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -208,7 +206,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#sendWithDelay(Map, int)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -221,7 +219,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#sendWithDelay(Iterable, int)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -233,7 +231,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#send(Map)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -244,7 +242,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#send(Iterable)
     */
-   @Named("sqs:SendMessageBatch")
+   @Named("SendMessageBatch")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SendMessageBatch")
@@ -255,7 +253,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#receive()
     */
-   @Named("sqs:ReceiveMessage")
+   @Named("ReceiveMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ReceiveMessage")
@@ -265,7 +263,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#receive(ReceiveMessageOptions)
     */
-   @Named("sqs:ReceiveMessage")
+   @Named("ReceiveMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ReceiveMessage")
@@ -275,7 +273,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#receive(int)
     */
-   @Named("sqs:ReceiveMessage")
+   @Named("ReceiveMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ReceiveMessage")
@@ -285,7 +283,7 @@ public interface MessageAsyncApi {
    /**
     * @see MessageApi#receive(int, ReceiveMessageOptions)
     */
-   @Named("sqs:ReceiveMessage")
+   @Named("ReceiveMessage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ReceiveMessage")

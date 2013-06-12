@@ -1,33 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.jclouds.Constants.PROPERTY_API_VERSION;
 import static org.jclouds.Constants.PROPERTY_RELAX_HOSTNAME;
-import static org.jclouds.Constants.PROPERTY_TIMEOUTS_PREFIX;
 import static org.jclouds.aws.reference.AWSConstants.PROPERTY_AUTH_TAG;
 import static org.jclouds.aws.reference.AWSConstants.PROPERTY_HEADER_TAG;
-import static org.jclouds.blobstore.reference.BlobStoreConstants.DIRECTORY_SUFFIX_FOLDER;
 import static org.jclouds.blobstore.reference.BlobStoreConstants.PROPERTY_BLOBSTORE_DIRECTORY_SUFFIX;
 import static org.jclouds.blobstore.reference.BlobStoreConstants.PROPERTY_USER_METADATA_PREFIX;
+import static org.jclouds.reflect.Reflection2.typeToken;
 import static org.jclouds.s3.reference.S3Constants.PROPERTY_S3_SERVICE_PATH;
 import static org.jclouds.s3.reference.S3Constants.PROPERTY_S3_VIRTUAL_HOST_BUCKETS;
 
@@ -35,7 +29,6 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.jclouds.apis.ApiMetadata;
-import org.jclouds.rest.RestContext;
 import org.jclouds.rest.internal.BaseRestApiMetadata;
 import org.jclouds.s3.blobstore.S3BlobStoreContext;
 import org.jclouds.s3.blobstore.config.S3BlobStoreContextModule;
@@ -65,7 +58,12 @@ import com.google.inject.Module;
  */
 public class S3ApiMetadata extends BaseRestApiMetadata {
    
-   public static final TypeToken<RestContext<? extends S3Client,? extends  S3AsyncClient>> CONTEXT_TOKEN = new TypeToken<RestContext<? extends S3Client,? extends  S3AsyncClient>>() {
+   /**
+    * @deprecated please use {@code org.jclouds.ContextBuilder#buildClient(S3Client.class)} as
+    *             {@link S3AsyncClient} interface will be removed in jclouds 1.7.
+    */
+   @Deprecated
+   public static final TypeToken<org.jclouds.rest.RestContext<? extends S3Client, ? extends S3AsyncClient>> CONTEXT_TOKEN = new TypeToken<org.jclouds.rest.RestContext<? extends S3Client, ? extends S3AsyncClient>>() {
       private static final long serialVersionUID = 1L;
    };
 
@@ -84,24 +82,18 @@ public class S3ApiMetadata extends BaseRestApiMetadata {
 
    public static Properties defaultProperties() {
       Properties properties = BaseRestApiMetadata.defaultProperties();
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "default", SECONDS.toMillis(90) + "");
-      // 512KB/s for max size of 5GB
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "S3Client.getObject", SECONDS.toMillis(5242880 / 512) + "");
-      // 128KB/s for max size of 5GB
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "S3Client.putObject", SECONDS.toMillis(5242880 / 128) + "");
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "S3Client.copyObject", MINUTES.toMillis(10) + "");
-      properties.setProperty(PROPERTY_API_VERSION, S3AsyncClient.VERSION);
       properties.setProperty(PROPERTY_AUTH_TAG, "AWS");
       properties.setProperty(PROPERTY_HEADER_TAG, S3Headers.DEFAULT_AMAZON_HEADERTAG);
       properties.setProperty(PROPERTY_S3_SERVICE_PATH, "/");
       properties.setProperty(PROPERTY_S3_VIRTUAL_HOST_BUCKETS, "true");
       properties.setProperty(PROPERTY_RELAX_HOSTNAME, "true");
-      properties.setProperty(PROPERTY_BLOBSTORE_DIRECTORY_SUFFIX, DIRECTORY_SUFFIX_FOLDER);
+      properties.setProperty(PROPERTY_BLOBSTORE_DIRECTORY_SUFFIX, "/");
       properties.setProperty(PROPERTY_USER_METADATA_PREFIX, String.format("x-${%s}-meta-", PROPERTY_HEADER_TAG));
       return properties;
    }
    
-   public static abstract class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+   public abstract static class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+      @SuppressWarnings("deprecation")
       protected Builder() {
          this(S3Client.class, S3AsyncClient.class);
       }
@@ -114,10 +106,10 @@ public class S3ApiMetadata extends BaseRestApiMetadata {
          .credentialName("Secret Access Key")
          .defaultEndpoint("https://s3.amazonaws.com")
          .documentation(URI.create("http://docs.amazonwebservices.com/AmazonS3/latest/API"))
-         .version(S3AsyncClient.VERSION)
+         .version("2006-03-01")
          .defaultProperties(S3ApiMetadata.defaultProperties())
          .context(CONTEXT_TOKEN)
-         .view(TypeToken.of(S3BlobStoreContext.class))
+         .view(typeToken(S3BlobStoreContext.class))
          .defaultModules(ImmutableSet.<Class<? extends Module>>of(S3RestClientModule.class, S3BlobStoreContextModule.class));
       }
 

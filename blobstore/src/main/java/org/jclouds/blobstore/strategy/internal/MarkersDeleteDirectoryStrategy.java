@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore.strategy.internal;
 
@@ -23,8 +21,6 @@ import static org.jclouds.concurrent.FutureIterables.awaitCompletion;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Resource;
@@ -41,6 +37,8 @@ import org.jclouds.logging.Logger;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.inject.Inject;
 
 /**
@@ -68,7 +66,7 @@ public class MarkersDeleteDirectoryStrategy implements DeleteDirectoryStrategy {
 
    private final AsyncBlobStore ablobstore;
    private final BlobStore blobstore;
-   private final ExecutorService userExecutor;
+   private final ListeningExecutorService userExecutor;
    @Resource
    @Named(BlobStoreConstants.BLOBSTORE_LOGGER)
    protected Logger logger = Logger.NULL;
@@ -81,7 +79,7 @@ public class MarkersDeleteDirectoryStrategy implements DeleteDirectoryStrategy {
 
    @Inject
    MarkersDeleteDirectoryStrategy(
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService userExecutor,
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor,
             AsyncBlobStore ablobstore, BlobStore blobstore) {
       this.userExecutor = userExecutor;
       this.ablobstore = ablobstore;
@@ -94,7 +92,7 @@ public class MarkersDeleteDirectoryStrategy implements DeleteDirectoryStrategy {
       for (String suffix : BlobStoreConstants.DIRECTORY_SUFFIXES) {
          names.add(directory + suffix);
       }
-      Map<String, Future<?>> responses = Maps.newHashMap();
+      Map<String, ListenableFuture<?>> responses = Maps.newHashMap();
       for (String name : names) {
          responses.put(name, ablobstore.removeBlob(containerName, name));
       }

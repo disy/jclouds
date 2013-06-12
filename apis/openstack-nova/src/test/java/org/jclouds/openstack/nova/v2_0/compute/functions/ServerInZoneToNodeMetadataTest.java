@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.compute.functions;
 
@@ -143,6 +141,9 @@ public class ServerInZoneToNodeMetadataTest {
       assertNotNull(convertedNodeMetadata.getUserMetadata());
       assertEquals(convertedNodeMetadata.getUserMetadata(),
             ImmutableMap.<String, String> of("Server Label", "Web Head 1", "Image Version", "2.1"));
+      
+      URI expectedURI = URI.create("http://servers.api.openstack.org/v1.1/1234/servers/52415800-8b69-11e0-9b19-734f6f006e54");
+      assertEquals(convertedNodeMetadata.getUri(), expectedURI);
    }
 
    @Test
@@ -167,6 +168,8 @@ public class ServerInZoneToNodeMetadataTest {
 
       assertEquals(convertedNodeMetadata.getLocation(), zone);
 
+      URI expectedURI = URI.create("https://az-1.region-a.geo-1.compute.hpcloudsvc.com/v1.1/37936628937291/servers/71752");
+      assertEquals(convertedNodeMetadata.getUri(), expectedURI);
    }
 
    public Server expectedServer() {

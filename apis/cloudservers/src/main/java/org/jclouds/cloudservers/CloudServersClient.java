@@ -1,23 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudservers;
 
+import java.io.Closeable;
 import java.util.Set;
 import javax.ws.rs.PathParam;
 
@@ -44,7 +43,7 @@ import org.jclouds.cloudservers.options.RebuildServerOptions;
  * @see <a href="http://docs.rackspacecloud.com/servers/api/cs-devguide-latest.pdf" />
  * @author Adrian Cole
  */
-public interface CloudServersClient {
+public interface CloudServersClient extends Closeable {
    /**
     * All accounts, by default, have a preconfigured set of thresholds (or limits) to manage
     * capacity and prevent abuse of the system. The system recognizes two kinds of limits: rate

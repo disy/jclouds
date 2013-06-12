@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.sqs.internal;
 
@@ -28,11 +26,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jclouds.apis.BaseContextLiveTest;
-import org.jclouds.rest.RestContext;
+import org.jclouds.apis.BaseApiLiveTest;
 import org.jclouds.sqs.SQSApi;
-import org.jclouds.sqs.SQSApiMetadata;
-import org.jclouds.sqs.SQSAsyncApi;
 import org.jclouds.sqs.domain.Message;
 import org.jclouds.sqs.features.QueueApi;
 import org.testng.annotations.AfterClass;
@@ -41,7 +36,6 @@ import org.testng.annotations.Test;
 import com.google.common.base.Splitter;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Sets;
-import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.Atomics;
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -50,7 +44,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * @author Adrian Cole
  */
 @Test(groups = "live")
-public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, SQSAsyncApi>> {
+public class BaseSQSApiLiveTest extends BaseApiLiveTest<SQSApi> {
 
    protected String prefix = System.getProperty("user.name") + "-sqs";
 
@@ -65,27 +59,22 @@ public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, 
    }
 
    protected String recreateQueueInRegion(String queueName, String region) {
-      QueueApi api = api().getQueueApiForRegion(region);
-      URI result = api.get(queueName);
+      QueueApi queueApi = api.getQueueApiForRegion(region);
+      URI result = queueApi.get(queueName);
       if (result != null) {
-         api.delete(result);
+         queueApi.delete(result);
       }
-      URI queue = api.create(queueName);
+      URI queue = queueApi.create(queueName);
       assertQueueInList(region, queue);
       queues.add(queue);
       return queueName;
-   }
-
-   @Override
-   protected TypeToken<RestContext<SQSApi, SQSAsyncApi>> contextType() {
-      return SQSApiMetadata.CONTEXT_TOKEN;
    }
 
    protected String assertPolicyPresent(final URI queue) {
       final AtomicReference<String> policy = Atomics.newReference();
       assertEventually(new Runnable() {
          public void run() {
-            String policyForAuthorizationByAccount = api().getQueueApi().getAttribute(queue, "Policy");
+            String policyForAuthorizationByAccount = api.getQueueApi().getAttribute(queue, "Policy");
 
             assertNotNull(policyForAuthorizationByAccount);
             policy.set(policyForAuthorizationByAccount);
@@ -97,7 +86,7 @@ public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, 
    protected void assertNoPermissions(final URI queue) {
       assertEventually(new Runnable() {
          public void run() {
-            String policy = api().getQueueApi().getAttribute(queue, "Policy");
+            String policy = api.getQueueApi().getAttribute(queue, "Policy");
             assertTrue(policy == null || policy.indexOf("\"Statement\":[]") != -1, policy);
          }
       });
@@ -106,7 +95,7 @@ public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, 
    protected void assertNoMessages(final URI queue) {
       assertEventually(new Runnable() {
          public void run() {
-            Message message = api().getMessageApiForQueue(queue).receive();
+            Message message = api.getMessageApiForQueue(queue).receive();
             assertNull(message, "message: " + message + " left in queue " + queue);
          }
       });
@@ -116,7 +105,7 @@ public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, 
       final URI finalQ = queue;
       assertEventually(new Runnable() {
          public void run() {
-            FluentIterable<URI> result = api().getQueueApiForRegion(region).list();
+            FluentIterable<URI> result = api.getQueueApiForRegion(region).list();
             assertNotNull(result);
             assert result.size() >= 1 : result;
             assertTrue(result.contains(finalQ), finalQ + " not in " + result);
@@ -152,15 +141,10 @@ public class BaseSQSApiLiveTest extends BaseContextLiveTest<RestContext<SQSApi, 
 
    @Override
    @AfterClass(groups = "live")
-   protected void tearDownContext() {
+   protected void tearDown() {
       for (URI queue : queues) {
-         api().getQueueApi().delete(queue);
+         api.getQueueApi().delete(queue);
       }
-      super.tearDownContext();
+      super.tearDown();
    }
-
-   protected SQSApi api() {
-      return context.getApi();
-   }
-
 }

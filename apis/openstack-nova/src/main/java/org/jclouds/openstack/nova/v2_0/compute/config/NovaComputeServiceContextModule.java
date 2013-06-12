@@ -1,30 +1,29 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.compute.config;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.jclouds.openstack.nova.v2_0.config.NovaProperties.AUTO_ALLOCATE_FLOATING_IPS;
 import static org.jclouds.openstack.nova.v2_0.config.NovaProperties.AUTO_GENERATE_KEYPAIRS;
 import static org.jclouds.openstack.nova.v2_0.config.NovaProperties.TIMEOUT_SECURITYGROUP_PRESENT;
+import static org.jclouds.util.Predicates2.retry;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Named;
@@ -58,7 +57,6 @@ import org.jclouds.openstack.nova.v2_0.compute.loaders.CreateUniqueKeyPair;
 import org.jclouds.openstack.nova.v2_0.compute.loaders.FindSecurityGroupOrCreate;
 import org.jclouds.openstack.nova.v2_0.compute.loaders.LoadFloatingIpsForInstance;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
-import org.jclouds.openstack.nova.v2_0.compute.predicates.GetImageWhenImageInZoneHasActiveStatusPredicateWithResult;
 import org.jclouds.openstack.nova.v2_0.compute.strategy.ApplyNovaTemplateOptionsCreateNodesWithGroupEncodedIntoNameThenAddToSet;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
@@ -71,8 +69,6 @@ import org.jclouds.openstack.nova.v2_0.domain.zonescoped.ZoneAndId;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.ZoneAndName;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.ZoneSecurityGroupNameAndPorts;
 import org.jclouds.openstack.nova.v2_0.predicates.FindSecurityGroupWithNameAndReturnTrue;
-import org.jclouds.predicates.PredicateWithResult;
-import org.jclouds.predicates.RetryablePredicate;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
@@ -146,9 +142,6 @@ public class NovaComputeServiceContextModule extends
       
       bind(new TypeLiteral<ImageExtension>() {
       }).to(NovaImageExtension.class);
-      
-      bind(new TypeLiteral<PredicateWithResult<ZoneAndId, Image>>() {
-      }).to(GetImageWhenImageInZoneHasActiveStatusPredicateWithResult.class);
    }
 
    @Override
@@ -187,7 +180,7 @@ public class NovaComputeServiceContextModule extends
    protected Predicate<AtomicReference<ZoneAndName>> securityGroupEventualConsistencyDelay(
             FindSecurityGroupWithNameAndReturnTrue in,
             @Named(TIMEOUT_SECURITYGROUP_PRESENT) long msDelay) {
-      return new RetryablePredicate<AtomicReference<ZoneAndName>>(in, msDelay, 100l, TimeUnit.MILLISECONDS);
+      return retry(in, msDelay, 100l, MILLISECONDS);
    }
 
    @Provides

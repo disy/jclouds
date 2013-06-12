@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.collect;
 
@@ -35,32 +33,26 @@ import com.google.common.collect.ImmutableSet;
  */
 @Beta
 public class PagedIterables {
-   
-   @SuppressWarnings("rawtypes")
-   public static final PagedIterable EMPTY = new PagedIterable() {
-
-      @Override
-      public Iterator<IterableWithMarker> iterator() {
-         return ImmutableSet.of(IterableWithMarkers.EMPTY).iterator();
-      }
-
-   };
-   
    /**
     * @param only
     *           the only page of data
     * 
     * @return iterable with only the one page
     */
-   public static <T> PagedIterable<T> of(final IterableWithMarker<T> only) {
+   public static <T> PagedIterable<T> onlyPage(final IterableWithMarker<T> only) {
       return new PagedIterable<T>() {
-
-         @Override
          public Iterator<IterableWithMarker<T>> iterator() {
             return ImmutableSet.of(only).iterator();
          }
-
       };
+   }
+
+   /**
+    * @see #onlyPage(IterableWithMarker)
+    */
+   @Deprecated
+   public static <T> PagedIterable<T> of(IterableWithMarker<T> only) {
+      return onlyPage(only);
    }
 
    /**
@@ -77,12 +69,9 @@ public class PagedIterables {
    public static <T> PagedIterable<T> advance(final IterableWithMarker<T> initial,
          final Function<Object, IterableWithMarker<T>> markerToNext) {
       return new PagedIterable<T>() {
-
-         @Override
          public Iterator<IterableWithMarker<T>> iterator() {
             return advancingIterator(initial, markerToNext);
          }
-
       };
    }
 
@@ -97,9 +86,6 @@ public class PagedIterables {
          this.markerToNext = checkNotNull(markerToNext, "marker to next iterable");
       }
 
-      /**
-       * {@inheritDoc}
-       */
       @Override
       protected IterableWithMarker<T> computeNext() {
          if (unread)
@@ -114,17 +100,11 @@ public class PagedIterables {
             return endOfData();
       }
 
-      /**
-       * {@inheritDoc}
-       */
       @Override
       public int hashCode() {
          return Objects.hashCode(current, unread);
       }
 
-      /**
-       * {@inheritDoc}
-       */
       @Override
       public boolean equals(Object obj) {
          if (this == obj)
@@ -135,9 +115,6 @@ public class PagedIterables {
          return Objects.equal(this.current, other.current) && Objects.equal(this.unread, other.unread);
       }
 
-      /**
-       * {@inheritDoc}
-       */
       @Override
       public String toString() {
          return Objects.toStringHelper("").add("current", current).add("unread", unread).toString();
@@ -154,12 +131,11 @@ public class PagedIterables {
     * @return iterable current data which continues if the user iterates beyond
     *         the first page
     */
-   public static <T> Iterator<IterableWithMarker<T>> advancingIterator(IterableWithMarker<T> initial,
+   private static <T> Iterator<IterableWithMarker<T>> advancingIterator(IterableWithMarker<T> initial,
          Function<Object, IterableWithMarker<T>> markerToNext) {
       if (!initial.nextMarker().isPresent()) {
          return ImmutableSet.of(initial).iterator();
       }
       return new AdvancingIterator<T>(initial, markerToNext);
    }
-
 }

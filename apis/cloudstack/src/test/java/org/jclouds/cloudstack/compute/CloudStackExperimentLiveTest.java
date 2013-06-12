@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.compute;
 
@@ -51,7 +49,7 @@ public class CloudStackExperimentLiveTest extends BaseCloudStackClientLiveTest {
    }
 
    protected void deleteNetworksInZoneWithVlanId(String zoneId, String vlanId) {
-      Set<Network> networks = domainAdminContext.getApi().getNetworkClient().listNetworks(
+      Set<Network> networks = domainAdminClient.getNetworkClient().listNetworks(
          ListNetworksOptions.Builder
             .isDefault(false)
             .isSystem(false)
@@ -63,7 +61,7 @@ public class CloudStackExperimentLiveTest extends BaseCloudStackClientLiveTest {
       URI broadcastUri = URI.create("vlan://" + vlanId);
       for (Network net : networks) {
          if (broadcastUri.equals(net.getBroadcastURI())) {
-            String jobId = domainAdminContext.getApi().getNetworkClient().deleteNetwork(net.getId());
+            String jobId = domainAdminClient.getNetworkClient().deleteNetwork(net.getId());
             adminJobComplete.apply(jobId);
          }
       }
@@ -96,7 +94,7 @@ public class CloudStackExperimentLiveTest extends BaseCloudStackClientLiveTest {
             cloudStackContext.getApi().getOfferingClient().listNetworkOfferings(specifyVLAN(true).zoneId(zoneId)), 0).getId();
 
          // create an arbitrary network
-         network = domainAdminContext.getApi()
+         network = domainAdminClient
             .getNetworkClient()
                // startIP/endIP/netmask/gateway must be specified together
             .createNetworkInZone(zoneId, offeringId, group, group,
@@ -117,7 +115,7 @@ public class CloudStackExperimentLiveTest extends BaseCloudStackClientLiveTest {
          if (nodes != null)
             view.getComputeService().destroyNodesMatching(NodePredicates.inGroup(group));
          if (network != null)
-            domainAdminContext.getApi().getNetworkClient().deleteNetwork(network.getId());
+            domainAdminClient.getNetworkClient().deleteNetwork(network.getId());
       }
    }
 

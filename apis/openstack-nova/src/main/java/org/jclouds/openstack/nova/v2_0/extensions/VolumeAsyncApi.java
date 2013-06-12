@@ -1,23 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -65,6 +64,7 @@ public interface VolumeAsyncApi {
     *
     * @return the list of volumes
     */
+   @Named("volume:list")
    @GET
    @Path("/os-volumes")
    @SelectJson("volumes")
@@ -77,6 +77,7 @@ public interface VolumeAsyncApi {
     *
     * @return the list of volumes.
     */
+   @Named("volume:list")
    @GET
    @Path("/os-volumes/detail")
    @SelectJson("volumes")
@@ -89,6 +90,7 @@ public interface VolumeAsyncApi {
     *
     * @return details of a specific volume.
     */
+   @Named("volume:get")
    @GET
    @Path("/os-volumes/{id}")
    @SelectJson("volume")
@@ -101,6 +103,7 @@ public interface VolumeAsyncApi {
     *
     * @return the new Snapshot
     */
+   @Named("volume:create")
    @POST
    @Path("/os-volumes")
    @SelectJson("volume")
@@ -114,6 +117,7 @@ public interface VolumeAsyncApi {
     *
     * @return true if successful
     */
+   @Named("volume:delete")
    @DELETE
    @Path("/os-volumes/{id}")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -127,6 +131,7 @@ public interface VolumeAsyncApi {
     * @deprecated To be removed in jclouds 1.7
     * @see VolumeAttachmentApi#listAttachmentsOnServer(String)
     */
+   @Named("volume:listattachments")
    @GET
    @Path("/servers/{server_id}/os-volume_attachments")
    @SelectJson("volumeAttachments")
@@ -141,6 +146,7 @@ public interface VolumeAsyncApi {
     * @deprecated To be removed in jclouds 1.7
     * @see VolumeAttachmentApi#getAttachmentForVolumeOnServer(String, String)
     */
+   @Named("volume:getattachments")
    @GET
    @Path("/servers/{server_id}/os-volume_attachments/{id}")
    @SelectJson("volumeAttachment")
@@ -156,6 +162,7 @@ public interface VolumeAsyncApi {
     * @deprecated To be removed in jclouds 1.7
     * @see VolumeAttachmentApi#attachVolumeToServerAsDevice(String, String, String)
     */
+   @Named("volume:attach")
    @POST
    @Path("/servers/{server_id}/os-volume_attachments")
    @SelectJson("volumeAttachment")
@@ -172,6 +179,7 @@ public interface VolumeAsyncApi {
     * @deprecated To be removed in jclouds 1.7
     * @see VolumeAttachmentApi#detachVolumeFromServer(String, String)
     */
+   @Named("volume:detach")
    @DELETE
    @Path("/servers/{server_id}/os-volume_attachments/{id}")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -183,6 +191,7 @@ public interface VolumeAsyncApi {
     *
     * @return the list of snapshots
     */
+   @Named("volume:listsnapshots")
    @GET
    @Path("/os-snapshots")
    @SelectJson("snapshots")
@@ -195,6 +204,7 @@ public interface VolumeAsyncApi {
     *
     * @return the list of snapshots
     */
+   @Named("volume:listsnapshot")
    @GET
    @Path("/os-snapshots/detail")
    @SelectJson("snapshots")
@@ -207,6 +217,7 @@ public interface VolumeAsyncApi {
     *
     * @return details of a specific snapshot.
     */
+   @Named("volume:getsnapshot")
    @GET
    @Path("/os-snapshots/{id}")
    @SelectJson("snapshot")
@@ -219,6 +230,7 @@ public interface VolumeAsyncApi {
     *
     * @return the new Snapshot
     */
+   @Named("volume:createsnapshot")
    @POST
    @Path("/os-snapshots")
    @SelectJson("snapshot")
@@ -232,6 +244,7 @@ public interface VolumeAsyncApi {
     *
     * @return true if successful
     */
+   @Named("volume:deletesnapshot")
    @DELETE
    @Path("/os-snapshots/{id}")
    @Consumes(MediaType.APPLICATION_JSON)

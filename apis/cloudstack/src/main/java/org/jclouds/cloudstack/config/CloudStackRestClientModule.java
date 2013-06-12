@@ -1,28 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.config;
 
-import static com.google.common.base.Throwables.propagate;
-import static org.jclouds.rest.config.BinderUtils.bindClientAndAsyncClient;
+import static org.jclouds.rest.config.BinderUtils.bindSyncToAsyncHttpApi;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.jclouds.Constants;
@@ -209,9 +205,9 @@ public class CloudStackRestClientModule extends RestClientModule<CloudStackClien
       });
       bind(CredentialType.class).toProvider(CredentialTypeFromPropertyOrDefault.class);
       // session client is used directly for filters and retry handlers, so let's bind it explicitly
-      bindClientAndAsyncClient(binder(), SessionClient.class, SessionAsyncClient.class);
-      bindClientAndAsyncClient(binder(), CloudStackDomainClient.class, CloudStackDomainAsyncClient.class);
-      bindClientAndAsyncClient(binder(), CloudStackGlobalClient.class, CloudStackGlobalAsyncClient.class);
+      bindSyncToAsyncHttpApi(binder(), SessionClient.class, SessionAsyncClient.class);
+      bindSyncToAsyncHttpApi(binder(), CloudStackDomainClient.class, CloudStackDomainAsyncClient.class);
+      bindSyncToAsyncHttpApi(binder(), CloudStackGlobalClient.class, CloudStackGlobalAsyncClient.class);
       bind(HttpRetryHandler.class).annotatedWith(ClientError.class).to(InvalidateSessionAndRetryOn401AndLogoutOnClose.class);
       
       super.configure();
@@ -280,15 +276,11 @@ public class CloudStackRestClientModule extends RestClientModule<CloudStackClien
    @Provides
    @Singleton
    protected Supplier<LoginResponse> provideLoginResponseSupplier(final LoadingCache<Credentials, LoginResponse> cache,
-            @Provider final Credentials creds) {
+         @Provider final Supplier<Credentials> creds) {
       return new Supplier<LoginResponse>() {
          @Override
          public LoginResponse get() {
-            try {
-               return cache.get(creds);
-            } catch (ExecutionException e) {
-               throw propagate(e.getCause());
-            }
+            return cache.getUnchecked(creds.get());
          }
       };
    }

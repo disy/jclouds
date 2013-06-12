@@ -1,27 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.ec2.options.RunInstancesOptions.Builder.asType;
+import static org.jclouds.util.Predicates2.retry;
 import static org.jclouds.scriptbuilder.domain.Statements.exec;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.fail;
@@ -31,7 +30,6 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.jclouds.aws.AWSResponseException;
@@ -51,7 +49,6 @@ import org.jclouds.ec2.domain.Volume.InstanceInitiatedShutdownBehavior;
 import org.jclouds.ec2.predicates.InstanceHasIpAddress;
 import org.jclouds.ec2.predicates.InstanceStateRunning;
 import org.jclouds.http.HttpResponseException;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.predicates.SocketOpen;
 import org.jclouds.scriptbuilder.ScriptBuilder;
 import org.jclouds.scriptbuilder.domain.OsFamily;
@@ -61,6 +58,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -90,9 +88,9 @@ public class CloudApplicationArchitecturesEC2ClientLiveTest extends BaseComputeS
    private String instanceId;
    private String address;
 
-   private RetryablePredicate<HostAndPort> socketTester;
-   private RetryablePredicate<RunningInstance> hasIpTester;
-   private RetryablePredicate<RunningInstance> runningTester;
+   private Predicate<HostAndPort> socketTester;
+   private Predicate<RunningInstance> hasIpTester;
+   private Predicate<RunningInstance> runningTester;
 
    @BeforeClass(groups = { "integration", "live" })
    public void setupContext() {
@@ -100,11 +98,10 @@ public class CloudApplicationArchitecturesEC2ClientLiveTest extends BaseComputeS
       Injector injector = view.utils().injector();
       client = injector.getInstance(EC2Client.class);
       sshFactory = injector.getInstance(SshClient.Factory.class);
-      runningTester = new RetryablePredicate<RunningInstance>(new InstanceStateRunning(client), 180, 5,
-            TimeUnit.SECONDS);
-      hasIpTester = new RetryablePredicate<RunningInstance>(new InstanceHasIpAddress(client), 180, 5, TimeUnit.SECONDS);
+      runningTester = retry(new InstanceStateRunning(client), 180, 5,SECONDS);
+      hasIpTester = retry(new InstanceHasIpAddress(client), 180, 5, SECONDS);
       SocketOpen socketOpen = injector.getInstance(SocketOpen.class);
-      socketTester = new RetryablePredicate<HostAndPort>(socketOpen, 180, 1, TimeUnit.SECONDS);
+      socketTester = retry(socketOpen, 180, 1, SECONDS);
    }
 
    @Test(enabled = false)

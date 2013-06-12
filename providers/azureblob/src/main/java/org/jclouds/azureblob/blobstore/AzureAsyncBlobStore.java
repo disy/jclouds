@@ -1,28 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.azureblob.blobstore;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Futures.transform;
 import static org.jclouds.azure.storage.options.ListOptions.Builder.includeMetadata;
 
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,7 +54,6 @@ import org.jclouds.blobstore.options.ListContainerOptions;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.blobstore.util.BlobUtils;
 import org.jclouds.collect.Memoized;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.domain.Location;
 import org.jclouds.http.options.GetOptions;
 
@@ -64,10 +61,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * @author Adrian Cole
+ * @deprecated will be removed in jclouds 1.7, as async interfaces are no longer
+ *             supported. Please use {@link AzureBlobStore}
  */
+@Deprecated
 @Singleton
 public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
    private final AzureBlobAsyncClient async;
@@ -81,14 +82,14 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
 
    @Inject
    AzureAsyncBlobStore(BlobStoreContext context, BlobUtils blobUtils,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService service, Supplier<Location> defaultLocation,
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor, Supplier<Location> defaultLocation,
             @Memoized Supplier<Set<? extends Location>> locations, AzureBlobAsyncClient async,
             ContainerToResourceMetadata container2ResourceMd,
             ListOptionsToListBlobsOptions blobStore2AzureContainerListOptions,
             ListBlobsResponseToResourceList azure2BlobStoreResourceList, AzureBlobToBlob azureBlob2Blob,
             BlobToAzureBlob blob2AzureBlob, BlobPropertiesToBlobMetadata blob2BlobMd,
             BlobToHttpGetOptions blob2ObjectGetOptions) {
-      super(context, blobUtils, service, defaultLocation, locations);
+      super(context, blobUtils, userExecutor, defaultLocation, locations);
       this.async = checkNotNull(async, "async");
       this.container2ResourceMd = checkNotNull(container2ResourceMd, "container2ResourceMd");
       this.blobStore2AzureContainerListOptions = checkNotNull(blobStore2AzureContainerListOptions,
@@ -106,8 +107,7 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
     */
    @Override
    public ListenableFuture<org.jclouds.blobstore.domain.PageSet<? extends StorageMetadata>> list() {
-      return Futures
-               .compose(
+      return transform(
                         async.listContainers(includeMetadata()),
                         new Function<BoundedSet<ContainerProperties>, org.jclouds.blobstore.domain.PageSet<? extends StorageMetadata>>() {
                            public org.jclouds.blobstore.domain.PageSet<? extends StorageMetadata> apply(
@@ -115,7 +115,7 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
                               return new PageSetImpl<StorageMetadata>(Iterables.transform(from, container2ResourceMd),
                                        from.getNextMarker());
                            }
-                        }, service);
+                        }, userExecutor);
    }
 
    /**
@@ -152,7 +152,7 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
    public ListenableFuture<PageSet<? extends StorageMetadata>> list(String container, ListContainerOptions options) {
       ListBlobsOptions azureOptions = blobStore2AzureContainerListOptions.apply(options);
       ListenableFuture<ListBlobsResponse> returnVal = async.listBlobs(container, azureOptions.includeMetadata());
-      return Futures.compose(returnVal, azure2BlobStoreResourceList, service);
+      return transform(returnVal, azure2BlobStoreResourceList, userExecutor);
    }
 
    /**
@@ -178,7 +178,7 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
    public ListenableFuture<Blob> getBlob(String container, String key, org.jclouds.blobstore.options.GetOptions options) {
       GetOptions azureOptions = blob2ObjectGetOptions.apply(options);
       ListenableFuture<AzureBlob> returnVal = async.getBlob(container, key, azureOptions);
-      return Futures.compose(returnVal, azureBlob2Blob, service);
+      return transform(returnVal, azureBlob2Blob, userExecutor);
    }
 
    /**
@@ -230,14 +230,11 @@ public class AzureAsyncBlobStore extends BaseAsyncBlobStore {
     */
    @Override
    public ListenableFuture<BlobMetadata> blobMetadata(String container, String key) {
-      return Futures.compose(async.getBlobProperties(container, key), new Function<BlobProperties, BlobMetadata>() {
-
-         @Override
+      return transform(async.getBlobProperties(container, key), new Function<BlobProperties, BlobMetadata>() {
          public BlobMetadata apply(BlobProperties from) {
             return blob2BlobMd.apply(from);
          }
-
-      }, service);
+      }, userExecutor);
    }
 
    @Override

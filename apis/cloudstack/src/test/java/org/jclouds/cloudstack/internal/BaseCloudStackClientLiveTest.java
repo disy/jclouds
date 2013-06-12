@@ -1,44 +1,45 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.internal;
 
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.get;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.cloudstack.domain.Account.Type.ADMIN;
+import static org.jclouds.cloudstack.domain.Account.Type.DOMAIN_ADMIN;
+import static org.jclouds.cloudstack.domain.Account.Type.USER;
+import static org.jclouds.reflect.Reflection2.typeToken;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.jclouds.cloudstack.CloudStackAsyncClient;
 import org.jclouds.cloudstack.CloudStackClient;
 import org.jclouds.cloudstack.CloudStackContext;
-import org.jclouds.cloudstack.CloudStackDomainAsyncClient;
 import org.jclouds.cloudstack.CloudStackDomainClient;
-import org.jclouds.cloudstack.CloudStackGlobalAsyncClient;
 import org.jclouds.cloudstack.CloudStackGlobalClient;
 import org.jclouds.cloudstack.domain.Account;
 import org.jclouds.cloudstack.domain.Template;
 import org.jclouds.cloudstack.domain.User;
 import org.jclouds.cloudstack.domain.VirtualMachine;
+import org.jclouds.cloudstack.features.AccountClient;
 import org.jclouds.cloudstack.functions.ReuseOrAssociateNewPublicIPAddress;
 import org.jclouds.cloudstack.options.ListTemplatesOptions;
 import org.jclouds.cloudstack.predicates.CorrectHypervisorForZone;
@@ -52,9 +53,7 @@ import org.jclouds.cloudstack.strategy.BlockUntilJobCompletesAndReturnResult;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.internal.BaseGenericComputeServiceContextLiveTest;
-import org.jclouds.predicates.InetSocketAddressConnect;
-import org.jclouds.predicates.RetryablePredicate;
-import org.jclouds.rest.RestContext;
+import org.jclouds.predicates.SocketOpen;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.SkipException;
@@ -85,7 +84,7 @@ public class BaseCloudStackClientLiveTest extends BaseGenericComputeServiceConte
    
    @Override
    protected TypeToken<CloudStackContext> viewType() {
-      return TypeToken.of(CloudStackContext.class);
+      return typeToken(CloudStackContext.class);
    }
    
    @Override
@@ -150,18 +149,18 @@ public class BaseCloudStackClientLiveTest extends BaseGenericComputeServiceConte
    protected String prefix = System.getProperty("user.name");
 
    protected ComputeService computeClient;
-   protected RestContext<CloudStackClient, CloudStackAsyncClient> cloudStackContext;
+   protected CloudStackContext cloudStackContext;
    protected CloudStackClient client;
    protected CloudStackClient adminClient;
    protected User user;
 
    protected Predicate<HostAndPort> socketTester;
-   protected RetryablePredicate<String> jobComplete;
-   protected RetryablePredicate<String> adminJobComplete;
-   protected RetryablePredicate<VirtualMachine> virtualMachineRunning;
-   protected RetryablePredicate<VirtualMachine> adminVirtualMachineRunning;
-   protected RetryablePredicate<VirtualMachine> virtualMachineDestroyed;
-   protected RetryablePredicate<VirtualMachine> adminVirtualMachineDestroyed;
+   protected Predicate<String> jobComplete;
+   protected Predicate<String> adminJobComplete;
+   protected Predicate<VirtualMachine> virtualMachineRunning;
+   protected Predicate<VirtualMachine> adminVirtualMachineRunning;
+   protected Predicate<VirtualMachine> virtualMachineDestroyed;
+   protected Predicate<VirtualMachine> adminVirtualMachineDestroyed;
    protected SshClient.Factory sshFactory;
 
    protected Injector injector;
@@ -170,13 +169,11 @@ public class BaseCloudStackClientLiveTest extends BaseGenericComputeServiceConte
 
    protected boolean domainAdminEnabled;
    protected CloudStackContext domainAdminComputeContext;
-   protected RestContext<CloudStackDomainClient, CloudStackDomainAsyncClient> domainAdminContext;
    protected CloudStackDomainClient domainAdminClient;
    protected User domainAdminUser;
 
    protected boolean globalAdminEnabled;
    protected CloudStackContext globalAdminComputeContext;
-   protected RestContext<CloudStackGlobalClient, CloudStackGlobalAsyncClient> globalAdminContext;
    protected CloudStackGlobalClient globalAdminClient;
    protected User globalAdminUser;
    
@@ -199,47 +196,44 @@ public class BaseCloudStackClientLiveTest extends BaseGenericComputeServiceConte
    public void setupContext() {
       super.setupContext();
       computeClient = view.getComputeService();
-      cloudStackContext = view.unwrap();
+      cloudStackContext = CloudStackContext.class.cast(view);
       client = cloudStackContext.getApi();
-      user = verifyCurrentUserIsOfType(cloudStackContext, Account.Type.USER);
+      user = verifyCurrentUserIsOfType(identity, client.getAccountClient(), USER);
 
       domainAdminEnabled = setupDomainAdminProperties() != null;
       if (domainAdminEnabled) {
          domainAdminComputeContext = createView(setupDomainAdminProperties(), setupModules());
-         domainAdminContext = domainAdminComputeContext.getDomainContext();
-         domainAdminClient = domainAdminContext.getApi();
-         domainAdminUser = verifyCurrentUserIsOfType(domainAdminContext, Account.Type.DOMAIN_ADMIN);
-         adminClient = domainAdminContext.getApi();
+         domainAdminClient = domainAdminComputeContext.getDomainApi();
+         domainAdminUser = verifyCurrentUserIsOfType(domainAdminIdentity, domainAdminClient.getAccountClient(),
+               DOMAIN_ADMIN);
+         adminClient = domainAdminClient;
       }
 
       globalAdminEnabled = setupGlobalAdminProperties() != null;
       if (globalAdminEnabled) {
          globalAdminComputeContext = createView(setupGlobalAdminProperties(), setupModules());
-         globalAdminContext = globalAdminComputeContext.getGlobalContext();
-         globalAdminClient = globalAdminContext.getApi();
-         globalAdminUser = verifyCurrentUserIsOfType(globalAdminContext, Account.Type.ADMIN);
-         adminClient = globalAdminContext.getApi();
+         globalAdminClient = globalAdminComputeContext.getGlobalApi();
+         globalAdminUser = verifyCurrentUserIsOfType(globalAdminIdentity, globalAdminClient.getAccountClient(), ADMIN);
+         adminClient = globalAdminClient;
       }
 
       injector = cloudStackContext.utils().injector();
       sshFactory = injector.getInstance(SshClient.Factory.class);
-      socketTester = new RetryablePredicate<HostAndPort>(new InetSocketAddressConnect(), 180, 1, 1, TimeUnit.SECONDS);
+      SocketOpen socketOpen = context.utils().injector().getInstance(SocketOpen.class);
+      socketTester = retry(socketOpen, 180, 1, 1, SECONDS);
       injector.injectMembers(socketTester);
-      jobComplete = new RetryablePredicate<String>(new JobComplete(client), 1200, 1, 5, TimeUnit.SECONDS);
+
+      jobComplete = retry(new JobComplete(client), 1200, 1, 5, SECONDS);
       injector.injectMembers(jobComplete);
-      adminJobComplete = new RetryablePredicate<String>(new JobComplete(adminClient), 1200, 1, 5, TimeUnit.SECONDS);
+      adminJobComplete = retry(new JobComplete(adminClient), 1200, 1, 5, SECONDS);
       injector.injectMembers(adminJobComplete);
-      virtualMachineRunning = new RetryablePredicate<VirtualMachine>(new VirtualMachineRunning(client), 600, 5, 5,
-            TimeUnit.SECONDS);
+      virtualMachineRunning = retry(new VirtualMachineRunning(client), 600, 5, 5, SECONDS);
       injector.injectMembers(virtualMachineRunning);
-      adminVirtualMachineRunning = new RetryablePredicate<VirtualMachine>(new VirtualMachineRunning(adminClient), 600,
-            5, 5, TimeUnit.SECONDS);
+      adminVirtualMachineRunning = retry(new VirtualMachineRunning(adminClient), 600, 5, 5, SECONDS);
       injector.injectMembers(adminVirtualMachineRunning);
-      virtualMachineDestroyed = new RetryablePredicate<VirtualMachine>(new VirtualMachineDestroyed(client), 600, 5, 5,
-            TimeUnit.SECONDS);
+      virtualMachineDestroyed = retry(new VirtualMachineDestroyed(client), 600, 5, 5, SECONDS);
       injector.injectMembers(virtualMachineDestroyed);
-      adminVirtualMachineDestroyed = new RetryablePredicate<VirtualMachine>(new VirtualMachineDestroyed(adminClient),
-            600, 5, 5, TimeUnit.SECONDS);
+      adminVirtualMachineDestroyed = retry(new VirtualMachineDestroyed(adminClient), 600, 5, 5, SECONDS);
       injector.injectMembers(adminVirtualMachineDestroyed);
       reuseOrAssociate = new ReuseOrAssociateNewPublicIPAddress(client, new BlockUntilJobCompletesAndReturnResult(
             client, jobComplete));
@@ -251,10 +245,9 @@ public class BaseCloudStackClientLiveTest extends BaseGenericComputeServiceConte
       return new SshjSshClientModule();
    }
    
-   protected static User verifyCurrentUserIsOfType(
-         RestContext<? extends CloudStackClient, ? extends CloudStackAsyncClient> context, Account.Type type) {
-      Iterable<User> users = Iterables.concat(context.getApi().getAccountClient().listAccounts());
-      Predicate<User> apiKeyMatches = UserPredicates.apiKeyEquals(context.getIdentity());
+   private static User verifyCurrentUserIsOfType(String identity, AccountClient accountClient, Account.Type type) {
+      Iterable<User> users = Iterables.concat(accountClient.listAccounts());
+      Predicate<User> apiKeyMatches = UserPredicates.apiKeyEquals(identity);
       User currentUser;
       try {
          currentUser = Iterables.find(users, apiKeyMatches);

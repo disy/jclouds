@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.json.config;
 
@@ -40,15 +38,19 @@ import org.jclouds.json.Json;
 import org.jclouds.json.internal.DeserializationConstructorAndReflectiveTypeAdapterFactory;
 import org.jclouds.json.internal.EnumTypeAdapterThatReturnsFromValue;
 import org.jclouds.json.internal.GsonWrapper;
-import org.jclouds.json.internal.IgnoreNullFluentIterableTypeAdapterFactory;
-import org.jclouds.json.internal.IgnoreNullIterableTypeAdapterFactory;
-import org.jclouds.json.internal.IgnoreNullMapTypeAdapterFactory;
-import org.jclouds.json.internal.IgnoreNullMultimapTypeAdapterFactory;
-import org.jclouds.json.internal.IgnoreNullSetTypeAdapterFactory;
 import org.jclouds.json.internal.NamingStrategies.AnnotationConstructorNamingStrategy;
 import org.jclouds.json.internal.NamingStrategies.AnnotationOrNameFieldNamingStrategy;
 import org.jclouds.json.internal.NamingStrategies.ExtractNamed;
 import org.jclouds.json.internal.NamingStrategies.ExtractSerializedName;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.CollectionTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.FluentIterableTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.ImmutableListTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.ImmutableSetTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.IterableTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.ListTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.MapTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.MultimapTypeAdapterFactory;
+import org.jclouds.json.internal.NullFilteringTypeAdapterFactories.SetTypeAdapterFactory;
 import org.jclouds.json.internal.NullHackJsonLiteralAdapter;
 import org.jclouds.json.internal.OptionalTypeAdapterFactory;
 
@@ -58,6 +60,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Bytes;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -84,38 +88,42 @@ public class GsonModule extends AbstractModule {
    @Provides
    @Singleton
    Gson provideGson(TypeAdapter<JsonBall> jsonAdapter, DateAdapter adapter, ByteListAdapter byteListAdapter,
-            ByteArrayAdapter byteArrayAdapter, PropertiesAdapter propertiesAdapter, JsonAdapterBindings bindings,
-            OptionalTypeAdapterFactory optional, IgnoreNullSetTypeAdapterFactory set,
-            IgnoreNullMapTypeAdapterFactory map, IgnoreNullMultimapTypeAdapterFactory multimap,
-            IgnoreNullIterableTypeAdapterFactory iterable, IgnoreNullFluentIterableTypeAdapterFactory fluentIterable)
-            throws Exception {
+         ByteArrayAdapter byteArrayAdapter, PropertiesAdapter propertiesAdapter, JsonAdapterBindings bindings,
+         OptionalTypeAdapterFactory optional, SetTypeAdapterFactory set, ImmutableSetTypeAdapterFactory immutableSet,
+         MapTypeAdapterFactory map, MultimapTypeAdapterFactory multimap, IterableTypeAdapterFactory iterable,
+         CollectionTypeAdapterFactory collection, ListTypeAdapterFactory list,
+         ImmutableListTypeAdapterFactory immutableList, FluentIterableTypeAdapterFactory fluentIterable,
+         DefaultExclusionStrategy exclusionStrategy) {
 
-      FieldNamingStrategy serializationPolicy = new AnnotationOrNameFieldNamingStrategy(new ExtractSerializedName(),
-            new ExtractNamed());
+      FieldNamingStrategy serializationPolicy = new AnnotationOrNameFieldNamingStrategy(ImmutableSet.of(
+            new ExtractSerializedName(), new ExtractNamed()));
 
-      GsonBuilder builder = new GsonBuilder().setFieldNamingStrategy(serializationPolicy);
+      GsonBuilder builder = new GsonBuilder().setFieldNamingStrategy(serializationPolicy)
+                                             .setExclusionStrategies(exclusionStrategy);
 
       // simple (type adapters)
       builder.registerTypeAdapter(Properties.class, propertiesAdapter.nullSafe());
       builder.registerTypeAdapter(Date.class, adapter.nullSafe());
-      builder.registerTypeAdapter(new TypeToken<List<Byte>>() {
-      }.getType(), byteListAdapter.nullSafe());
       builder.registerTypeAdapter(byte[].class, byteArrayAdapter.nullSafe());
       builder.registerTypeAdapter(JsonBall.class, jsonAdapter.nullSafe());
       builder.registerTypeAdapterFactory(optional);
       builder.registerTypeAdapterFactory(iterable);
+      builder.registerTypeAdapterFactory(collection);
+      builder.registerTypeAdapterFactory(list);
+      builder.registerTypeAdapter(new TypeToken<List<Byte>>() {
+      }.getType(), byteListAdapter.nullSafe());
+      builder.registerTypeAdapterFactory(immutableList);
       builder.registerTypeAdapterFactory(set);
+      builder.registerTypeAdapterFactory(immutableSet);
       builder.registerTypeAdapterFactory(map);
       builder.registerTypeAdapterFactory(multimap);
       builder.registerTypeAdapterFactory(fluentIterable);
 
-      AnnotationConstructorNamingStrategy deserializationPolicy =
-            new AnnotationConstructorNamingStrategy(
-                  ImmutableSet.of(ConstructorProperties.class, Inject.class), ImmutableSet.of(new ExtractNamed()));
+      AnnotationConstructorNamingStrategy deserializationPolicy = new AnnotationConstructorNamingStrategy(
+            ImmutableSet.of(ConstructorProperties.class, Inject.class), ImmutableSet.of(new ExtractNamed()));
 
-      builder.registerTypeAdapterFactory(
-            new DeserializationConstructorAndReflectiveTypeAdapterFactory(new ConstructorConstructor(),
-            serializationPolicy, Excluder.DEFAULT, deserializationPolicy));
+      builder.registerTypeAdapterFactory(new DeserializationConstructorAndReflectiveTypeAdapterFactory(
+            new ConstructorConstructor(), serializationPolicy, Excluder.DEFAULT, deserializationPolicy));
 
       // complicated (serializers/deserializers as they need context to operate)
       builder.registerTypeHierarchyAdapter(Enum.class, new EnumTypeAdapterThatReturnsFromValue());
@@ -131,6 +139,20 @@ public class GsonModule extends AbstractModule {
       return builder.create();
    }
 
+   @ImplementedBy(NoExclusions.class)
+   public static interface DefaultExclusionStrategy extends ExclusionStrategy {
+   }
+
+   public static class NoExclusions implements DefaultExclusionStrategy {
+      public boolean shouldSkipField(FieldAttributes f) {
+         return false;
+      }
+
+      public boolean shouldSkipClass(Class<?> clazz) {
+         return false;
+      }
+   }
+   
    @ImplementedBy(CDateAdapter.class)
    public abstract static class DateAdapter extends TypeAdapter<Date> {
 

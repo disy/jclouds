@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore;
 
@@ -36,13 +34,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jclouds.Constants;
+import org.jclouds.blobstore.config.LocalBlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.Blob.Factory;
 import org.jclouds.blobstore.domain.BlobMetadata;
@@ -80,6 +78,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * Implementation of {@link BaseAsyncBlobStore} which uses a pluggable
@@ -89,7 +88,10 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @author Alfredo "Rainbowbreeze" Morresi
  * @author Andrew Gaul
  * @author James Murty
+ * @deprecated will be removed in jclouds 1.7, as async interfaces are no longer
+ *             supported. Please create and use {@link LocalBlobStore}
  */
+@Deprecated
 public class LocalAsyncBlobStore extends BaseAsyncBlobStore {
 
    @Resource
@@ -103,13 +105,13 @@ public class LocalAsyncBlobStore extends BaseAsyncBlobStore {
    @Inject
    protected LocalAsyncBlobStore(BlobStoreContext context,
          BlobUtils blobUtils,
-         @Named(Constants.PROPERTY_USER_THREADS) ExecutorService service,
+         @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor,
          Supplier<Location> defaultLocation,
          @Memoized Supplier<Set<? extends Location>> locations,
          ContentMetadataCodec contentMetadataCodec,
          IfDirectoryReturnNameStrategy ifDirectoryReturnName,
          Factory blobFactory, LocalStorageStrategy storageStrategy) {
-      super(context, blobUtils, service, defaultLocation, locations);
+      super(context, blobUtils, userExecutor, defaultLocation, locations);
       this.blobFactory = blobFactory;
       this.contentMetadataCodec = contentMetadataCodec;
       this.ifDirectoryReturnName = ifDirectoryReturnName;
@@ -191,15 +193,12 @@ public class LocalAsyncBlobStore extends BaseAsyncBlobStore {
 
             contents = newTreeSet(filter(contents, new DelimiterFilter(prefix, delimiter)));
 
-            Iterables.<StorageMetadata> addAll(contents, transform(commonPrefixes,
-                  new Function<String, StorageMetadata>() {
-                     public StorageMetadata apply(String o) {
-                        MutableStorageMetadata md = new MutableStorageMetadataImpl();
-                        md.setType(StorageType.RELATIVE_PATH);
-                        md.setName(o);
-                        return md;
-                     }
-                  }));
+            for (String o : commonPrefixes) {
+               MutableStorageMetadata md = new MutableStorageMetadataImpl();
+               md.setType(StorageType.RELATIVE_PATH);
+               md.setName(o);
+               contents.add(md);
+            }
          }
 
          // trim metadata, if the response isn't supposed to be detailed.

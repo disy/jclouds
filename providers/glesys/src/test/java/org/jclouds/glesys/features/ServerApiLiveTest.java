@@ -1,29 +1,28 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.glesys.features;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.glesys.domain.AllowedArgumentsForCreateServer;
 import org.jclouds.glesys.domain.Console;
@@ -31,6 +30,7 @@ import org.jclouds.glesys.domain.OSTemplate;
 import org.jclouds.glesys.domain.ResourceStatus;
 import org.jclouds.glesys.domain.ResourceUsage;
 import org.jclouds.glesys.domain.Server;
+import org.jclouds.glesys.domain.Server.State;
 import org.jclouds.glesys.domain.ServerDetails;
 import org.jclouds.glesys.domain.ServerLimit;
 import org.jclouds.glesys.domain.ServerStatus;
@@ -39,7 +39,6 @@ import org.jclouds.glesys.options.CloneServerOptions;
 import org.jclouds.glesys.options.DestroyServerOptions;
 import org.jclouds.glesys.options.ServerStatusOptions;
 import org.jclouds.glesys.options.UpdateServerOptions;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -60,22 +59,22 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    
    @BeforeClass(groups = { "integration", "live" })
    @Override
-   public void setupContext() {
+   public void setup() {
       hostName = hostName + "-server";
-      super.setupContext();
-      api = gleContext.getApi().getServerApi();
+      super.setup();
+      serverApi = api.getServerApi();
    }
 
    @AfterClass(groups = { "integration", "live" })
    @Override
-   public void tearDownContext() {
+   public void tearDown() {
       if (testServerId2 != null) {
-         api.destroy(testServerId2, DestroyServerOptions.Builder.discardIp());
+         serverApi.destroy(testServerId2, DestroyServerOptions.Builder.discardIp());
       }
-      super.tearDownContext();
+      super.tearDown();
    }
 
-   private ServerApi api;
+   private ServerApi serverApi;
    private String testServerId2;
 
    @BeforeMethod
@@ -85,7 +84,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    
    @Test
    public void testAllowedArguments() throws Exception {
-      Map<String,AllowedArgumentsForCreateServer> templates = api.getAllowedArgumentsForCreateByPlatform();
+      Map<String,AllowedArgumentsForCreateServer> templates = serverApi.getAllowedArgumentsForCreateByPlatform();
       
       assertTrue(templates.containsKey("OpenVZ"));
       assertTrue(templates.containsKey("Xen"));
@@ -107,7 +106,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    }
    
    public void testListTemplates() throws Exception {
-      FluentIterable<OSTemplate> oSTemplates = api.listTemplates();
+      FluentIterable<OSTemplate> oSTemplates = serverApi.listTemplates();
 
       for(OSTemplate oSTemplate : oSTemplates) {
          checkTemplate(oSTemplate);
@@ -125,12 +124,12 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
     }
    
    public void testListServers() throws Exception {
-      FluentIterable<Server> response = api.list();
+      FluentIterable<Server> response = serverApi.list();
       assertNotNull(response);
       assertTrue(response.size() > 0);
 
       for (Server server : response) {
-         ServerDetails newDetails = api.get(server.getId());
+         ServerDetails newDetails = serverApi.get(server.getId());
          assertEquals(newDetails.getId(), server.getId());
          assertEquals(newDetails.getHostname(), server.getHostname());
          assertEquals(newDetails.getPlatform(), server.getPlatform());
@@ -140,7 +139,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    }
 
    public void testServerDetails() throws Exception {
-      ServerDetails details = api.get(serverId);
+      ServerDetails details = serverApi.get(serverId);
       checkServer(details);
       assertEquals("Ubuntu 10.04 LTS 32-bit", details.getTemplateName());
       assertEquals("Falkenberg", details.getDatacenter());
@@ -152,22 +151,22 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    }
 
    public void testServerStatus() throws Exception {
-      ServerStatus newStatus = api.getStatus(serverId);
+      ServerStatus newStatus = serverApi.getStatus(serverId);
       checkStatus(newStatus);
    }
 
    public void testUpdateServer() throws Exception {
-      ServerDetails edited = api.update(serverId, UpdateServerOptions.Builder.description("this is a different description!"));
+      ServerDetails edited = serverApi.update(serverId, UpdateServerOptions.Builder.description("this is a different description!"));
       assertEquals(edited.getDescription(), "this is a different description!");
 
-      edited = api.update(serverId, UpdateServerOptions.Builder.description("another description!").hostname("host-name1"));
+      edited = serverApi.update(serverId, UpdateServerOptions.Builder.description("another description!").hostname("host-name1"));
       assertEquals(edited.getDescription(), "another description!");
       assertEquals(edited.getHostname(), "host-name1");
 
-      edited = api.resetPassword(serverId, "anotherpass");
+      edited = serverApi.resetPassword(serverId, "anotherpass");
       assertEquals(edited.getHostname(), "host-name1");
 
-      edited = api.update(serverId, UpdateServerOptions.Builder.hostname(hostName));
+      edited = serverApi.update(serverId, UpdateServerOptions.Builder.hostname(hostName));
       assertEquals(edited.getHostname(), hostName);
    }
 
@@ -175,7 +174,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    public void testRebootServer() throws Exception {
       assertTrue(serverStatusChecker.apply(Server.State.RUNNING));
 
-      api.reboot(serverId);
+      serverApi.reboot(serverId);
       
       assertTrue(serverStatusChecker.apply(Server.State.RUNNING));
    }
@@ -184,17 +183,17 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    public void testStopAndStartServer() throws Exception {
       assertTrue(serverStatusChecker.apply(Server.State.RUNNING));
 
-      api.stop(serverId);
+      serverApi.stop(serverId);
 
       assertTrue(serverStatusChecker.apply(Server.State.STOPPED));
 
-      api.start(serverId);
+      serverApi.start(serverId);
 
       assertTrue(serverStatusChecker.apply(Server.State.RUNNING));
    }
 
    public void testServerLimits() throws Exception {
-      Map<String, ServerLimit> limits = api.getLimits(serverId);
+      Map<String, ServerLimit> limits = serverApi.getLimits(serverId);
       assertNotNull(limits);
       for (Map.Entry<String, ServerLimit> entry : limits.entrySet()) {
          assertNotNull(entry.getKey());
@@ -210,16 +209,16 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
 
    public void testResourceUsage() throws Exception {
       // test server has only been in existence for less than a minute - check all servers
-      for (Server server : api.list()) {
+      for (Server server : serverApi.list()) {
          try {
-            ResourceUsage usage = api.getResourceUsage(server.getId(), "diskioread", "minute");
+            ResourceUsage usage = serverApi.getResourceUsage(server.getId(), "diskioread", "minute");
             assertEquals(usage.getInfo().getResource(), "diskioread");
             assertEquals(usage.getInfo().getResolution(), "minute");
          } catch (UnsupportedOperationException e) {
 
          }
          try {
-            ResourceUsage usage = api.getResourceUsage(server.getId(), "cpuusage", "minute");
+            ResourceUsage usage = serverApi.getResourceUsage(server.getId(), "cpuusage", "minute");
             assertEquals(usage.getInfo().getResource(), "cpuusage");
             assertEquals(usage.getInfo().getResolution(), "minute");
          } catch (UnsupportedOperationException e) {
@@ -229,7 +228,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    }
 
    public void testConsole() throws Exception {
-      Console console = api.getConsole(serverId);
+      Console console = serverApi.getConsole(serverId);
       assertNotNull(console);
       assertNotNull(console.getHost());
       assertTrue(console.getPort() > 0 && console.getPort() < 65537);
@@ -239,7 +238,7 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
    // takes a few minutes and requires an extra server (used 1 already)
    @Test(enabled=false)
    public void testCloneServer() throws Exception {
-      ServerDetails testServer2 = api.clone(serverId, testHostName2, CloneServerOptions.Builder.cpucores(1));
+      ServerDetails testServer2 = serverApi.clone(serverId, testHostName2, CloneServerOptions.Builder.cpucores(1));
 
       assertNotNull(testServer2.getId());
       assertEquals(testServer2.getHostname(), "jclouds-test2");
@@ -247,26 +246,22 @@ public class ServerApiLiveTest extends BaseGleSYSApiWithAServerLiveTest {
       
       testServerId2 = testServer2.getId();
 
-      RetryablePredicate<Server.State> cloneChecker = new ServerStatusChecker(api, testServerId2, 300, 10, TimeUnit.SECONDS);
+      Predicate<State> cloneChecker = statusChecker(serverApi, testServerId2); 
       assertTrue(cloneChecker.apply(Server.State.STOPPED));
 
-      api.start(testServer2.getId());
+      serverApi.start(testServer2.getId());
 
       // TODO ServerStatus==STOPPED suggests the previous call to start should have worked
-      cloneChecker = new RetryablePredicate<Server.State>(
-            new Predicate<Server.State>() {
-
-               public boolean apply(Server.State value) {
-                  ServerStatus status = api.getStatus(testServerId2, ServerStatusOptions.Builder.state());
-                  if (status.getState() == value) {
-                     return true;
-                  }
-
-                  api.start(testServerId2);
-                  return false;
-               }
-
-            }, 600, 30, TimeUnit.SECONDS);
+      cloneChecker = retry(new Predicate<Server.State>() {
+         public boolean apply(Server.State value) {
+            ServerStatus status = serverApi.getStatus(testServerId2, ServerStatusOptions.Builder.state());
+            if (status.getState() == value) {
+               return true;
+            }
+            serverApi.start(testServerId2);
+            return false;
+         }
+      }, 600, 30, SECONDS);
 
       assertTrue(cloneChecker.apply(Server.State.RUNNING));
    }

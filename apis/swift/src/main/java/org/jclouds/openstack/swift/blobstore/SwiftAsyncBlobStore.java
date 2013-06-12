@@ -1,28 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.swift.blobstore;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Futures.transform;
 import static org.jclouds.blobstore.util.BlobStoreUtils.createParentIfNeededAsync;
 
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,7 +42,6 @@ import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.blobstore.strategy.internal.FetchBlobMetadata;
 import org.jclouds.blobstore.util.BlobUtils;
 import org.jclouds.collect.Memoized;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.domain.Location;
 import org.jclouds.http.options.GetOptions;
 import org.jclouds.openstack.swift.CommonSwiftAsyncClient;
@@ -65,11 +62,15 @@ import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * 
  * @author Adrian Cole
+ * @deprecated will be removed in jclouds 1.7, as async interfaces are no longer
+ *             supported. Please use {@link SwiftBlobStore}
  */
+@Deprecated
 @Singleton
 public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
    private final CommonSwiftClient sync;
@@ -86,7 +87,7 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
 
    @Inject
    protected SwiftAsyncBlobStore(BlobStoreContext context, BlobUtils blobUtils,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService service, Supplier<Location> defaultLocation,
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor, Supplier<Location> defaultLocation,
             @Memoized Supplier<Set<? extends Location>> locations, CommonSwiftClient sync,
             CommonSwiftAsyncClient async, ContainerToResourceMetadata container2ResourceMd,
             BlobStoreListContainerOptionsToListContainerOptions container2ContainerListOptions,
@@ -94,7 +95,7 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
             ObjectToBlobMetadata object2BlobMd, BlobToHttpGetOptions blob2ObjectGetOptions,
             Provider<FetchBlobMetadata> fetchBlobMetadataProvider,
             Provider<AsyncMultipartUploadStrategy> multipartUploadStrategy) {
-      super(context, blobUtils, service, defaultLocation, locations);
+      super(context, blobUtils, userExecutor, defaultLocation, locations);
       this.sync = sync;
       this.async = async;
       this.container2ResourceMd = container2ResourceMd;
@@ -113,13 +114,13 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
     */
    @Override
    public ListenableFuture<PageSet<? extends StorageMetadata>> list() {
-      return Futures.compose(async.listContainers(),
+      return transform(async.listContainers(),
                new Function<Set<ContainerMetadata>, org.jclouds.blobstore.domain.PageSet<? extends StorageMetadata>>() {
                   public org.jclouds.blobstore.domain.PageSet<? extends StorageMetadata> apply(
                            Set<ContainerMetadata> from) {
                      return new PageSetImpl<StorageMetadata>(Iterables.transform(from, container2ResourceMd), null);
                   }
-               }, service);
+               }, userExecutor);
    }
 
    /**
@@ -152,10 +153,10 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
       org.jclouds.openstack.swift.options.ListContainerOptions httpOptions = container2ContainerListOptions
                .apply(options);
       ListenableFuture<PageSet<ObjectInfo>> returnVal = async.listObjects(container, httpOptions);
-      ListenableFuture<PageSet<? extends StorageMetadata>> list = Futures.compose(returnVal, container2ResourceList,
-               service);
-      return options.isDetailed() ? Futures.compose(list, fetchBlobMetadataProvider.get().setContainerName(container),
-               service) : list;
+      ListenableFuture<PageSet<? extends StorageMetadata>> list = transform(returnVal, container2ResourceList,
+               userExecutor);
+      return options.isDetailed() ? transform(list, fetchBlobMetadataProvider.get().setContainerName(container),
+               userExecutor) : list;
    }
 
    /**
@@ -181,7 +182,7 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
     */
    @Override
    public ListenableFuture<BlobMetadata> blobMetadata(String container, String key) {
-      return Futures.compose(async.getObjectInfo(container, key),
+      return transform(async.getObjectInfo(container, key),
                new Function<MutableObjectInfoWithMetadata, BlobMetadata>() {
 
                   @Override
@@ -189,7 +190,7 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
                      return object2BlobMd.apply(from);
                   }
 
-               }, service);
+               }, userExecutor);
    }
 
    /**
@@ -204,7 +205,7 @@ public class SwiftAsyncBlobStore extends BaseAsyncBlobStore {
    public ListenableFuture<Blob> getBlob(String container, String key, org.jclouds.blobstore.options.GetOptions options) {
       GetOptions httpOptions = blob2ObjectGetOptions.apply(options);
       ListenableFuture<SwiftObject> returnVal = async.getObject(container, key, httpOptions);
-      return Futures.compose(returnVal, object2Blob, service);
+      return transform(returnVal, object2Blob, userExecutor);
    }
 
    /**

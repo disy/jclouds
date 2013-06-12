@@ -1,24 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.domain;
 
-import org.jclouds.crypto.Pems;
+import static org.jclouds.crypto.Pems.PRIVATE_PKCS1_MARKER;
+import static org.jclouds.crypto.Pems.PRIVATE_PKCS8_MARKER;
+
 import org.jclouds.javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
@@ -28,9 +28,9 @@ import com.google.common.base.Optional;
  */
 public class LoginCredentials extends Credentials {
 
-   public static boolean isPrivateKeyCredential(String credential) {
+   private static boolean isPrivateKeyCredential(String credential) {
       return credential != null
-            && (credential.startsWith(Pems.PRIVATE_PKCS1_MARKER) || credential.startsWith(Pems.PRIVATE_PKCS8_MARKER));
+            && (credential.startsWith(PRIVATE_PKCS1_MARKER) || credential.startsWith(PRIVATE_PKCS8_MARKER));
    }
 
    public static LoginCredentials fromCredentials(Credentials creds) {
@@ -115,15 +115,7 @@ public class LoginCredentials extends Credentials {
    private final Optional<String> password;
    private final Optional<String> privateKey;
 
-   public LoginCredentials(String username, boolean authenticateSudo) {
-      this(username, Optional.<String>absent(), Optional.<String>absent(), authenticateSudo);
-   }
-
-   public LoginCredentials(String username, @Nullable String password, @Nullable String privateKey, boolean authenticateSudo) {
-      this(username, Optional.fromNullable(password), Optional.fromNullable(privateKey), authenticateSudo);
-   }
-
-   public LoginCredentials(String username, @Nullable Optional<String> password, @Nullable Optional<String> privateKey, boolean authenticateSudo) {
+   private LoginCredentials(String username, @Nullable Optional<String> password, @Nullable Optional<String> privateKey, boolean authenticateSudo) {
       super(username, privateKey != null && privateKey.isPresent() && isPrivateKeyCredential(privateKey.get())
                     ? privateKey.get()
                     : (password != null && password.isPresent() ? password.get() : null));
@@ -140,25 +132,11 @@ public class LoginCredentials extends Credentials {
    }
 
    /**
-    * @return true if a password is available
-    */
-   public boolean hasPassword() {
-      return password != null && password.isPresent();
-   }
-
-   /**
-    * @return true if a password was set
-    */
-   public boolean hasPasswordOption() {
-      return password != null;
-   }
-
-   /**
     * @return the password of the login user or null
     */
    @Nullable
    public String getPassword() {
-      return hasPassword() ? password.get() : null;
+      return (password != null) ? password.orNull() : null;
    }
 
    /**
@@ -170,25 +148,11 @@ public class LoginCredentials extends Credentials {
    }
 
    /**
-    * @return true if a private key is available
-    */
-   public boolean hasPrivateKey() {
-      return privateKey != null && privateKey.isPresent();
-   }
-
-   /**
-    * @return true if a password was set
-    */
-   public boolean hasPrivateKeyOption() {
-      return privateKey != null;
-   }
-
-   /**
     * @return the private ssh key of the user or null
     */
    @Nullable
    public String getPrivateKey() {
-      return  hasPrivateKey() ? privateKey.get() : null;
+      return (privateKey != null) ? privateKey.orNull() : null;
    }
 
    /**
@@ -233,7 +197,7 @@ public class LoginCredentials extends Credentials {
 
    @Override
    public String toString() {
-      return "[user=" + getUser() + ", passwordPresent=" + hasPassword() + ", privateKeyPresent="
-            + hasPrivateKey() + ", shouldAuthenticateSudo=" + authenticateSudo + "]";
+      return "[user=" + getUser() + ", passwordPresent=" + password.isPresent() + ", privateKeyPresent="
+            + privateKey.isPresent() + ", shouldAuthenticateSudo=" + authenticateSudo + "]";
    }
 }

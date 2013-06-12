@@ -1,26 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudservers;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.cloudservers.options.CreateServerOptions.Builder.withFile;
 import static org.jclouds.cloudservers.options.CreateSharedIpGroupOptions.Builder.withServer;
 import static org.jclouds.cloudservers.options.ListOptions.Builder.withDetails;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -30,7 +30,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.cloudservers.domain.BackupSchedule;
 import org.jclouds.cloudservers.domain.DailyBackup;
@@ -49,7 +48,6 @@ import org.jclouds.compute.internal.BaseComputeServiceContextLiveTest;
 import org.jclouds.domain.LoginCredentials;
 import org.jclouds.http.HttpResponseException;
 import org.jclouds.io.Payload;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.predicates.SocketOpen;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.ssh.SshException;
@@ -91,7 +89,7 @@ public class CloudServersClientLiveTest extends BaseComputeServiceContextLiveTes
       client = injector.getInstance(CloudServersClient.class);
       sshFactory = injector.getInstance(SshClient.Factory.class);
       SocketOpen socketOpen = injector.getInstance(SocketOpen.class);
-      socketTester = new RetryablePredicate<HostAndPort>(socketOpen, 120, 1, TimeUnit.SECONDS);
+      socketTester = retry(socketOpen, 120, 1, SECONDS);
       injector.injectMembers(socketOpen); // add logger
    }
 

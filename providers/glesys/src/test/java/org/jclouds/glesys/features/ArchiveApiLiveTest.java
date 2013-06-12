@@ -1,33 +1,30 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.glesys.features;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
-import java.util.concurrent.TimeUnit;
-
 import org.jclouds.glesys.domain.Archive;
 import org.jclouds.glesys.domain.ArchiveAllowedArguments;
 import org.jclouds.glesys.internal.BaseGleSYSApiLiveTest;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -43,35 +40,34 @@ import com.google.common.base.Predicate;
 public class ArchiveApiLiveTest extends BaseGleSYSApiLiveTest {
 
    @BeforeClass(groups = { "integration", "live" })
-   public void setupContext() {
-      super.setupContext();
+   public void setup() {
+      super.setup();
       
-      api = gleContext.getApi().getArchiveApi();
-      archiveUser = gleContext.getIdentity().toLowerCase() + "_test9";
-      archiveCounter = new RetryablePredicate<Integer>(
-            new Predicate<Integer>() {
-               public boolean apply(Integer value){
-                  return api.list().size() == value;
-               }
-            }, 30, 1, TimeUnit.SECONDS);
+      archiveApi = api.getArchiveApi();
+      archiveUser = identity.toLowerCase() + "_test9";
+      archiveCounter = retry(new Predicate<Integer>() {
+         public boolean apply(Integer value) {
+            return archiveApi.list().size() == value.intValue();
+         }
+      }, 30, 1, SECONDS);
    }
    
    @AfterClass(groups = { "integration", "live" })
-   protected void tearDownContext() {
-      int before = api.list().size();
-      api.delete(archiveUser);
+   protected void tearDown() {
+      int before = archiveApi.list().size();
+      archiveApi.delete(archiveUser);
       assertTrue(archiveCounter.apply(before - 1));
 
-      super.tearDownContext();
+      super.tearDown();
    }
 
-   private ArchiveApi api;
+   private ArchiveApi archiveApi;
    private String archiveUser;
-   private RetryablePredicate<Integer> archiveCounter;
+   private Predicate<Integer> archiveCounter;
 
    @Test
    public void testAllowedArguments() throws Exception {
-      ArchiveAllowedArguments args = api.getAllowedArguments();
+      ArchiveAllowedArguments args = archiveApi.getAllowedArguments();
       assertNotNull(args);
       assertNotNull(args.getSizes());
       assertTrue(args.getSizes().size() > 0);
@@ -84,39 +80,38 @@ public class ArchiveApiLiveTest extends BaseGleSYSApiLiveTest {
    @Test
    public void testCreateArchive() throws Exception {
       try {
-         api.delete(archiveUser);
+         archiveApi.delete(archiveUser);
       } catch(Exception ex) {
       }
       
-      int before = api.list().size();
+      int before = archiveApi.list().size();
       
-      api.createWithCredentialsAndSize(archiveUser, "password", 10);
+      archiveApi.createWithCredentialsAndSize(archiveUser, "password", 10);
 
       assertTrue(archiveCounter.apply(before + 1));
    }
 
    @Test(dependsOnMethods = "testCreateArchive")
    public void testArchiveDetails() throws Exception {
-      Archive details = api.get(archiveUser);
+      Archive details = archiveApi.get(archiveUser);
       assertEquals(details.getUsername(), archiveUser);
    }
 
    @Test(dependsOnMethods = "testCreateArchive")
    public void testChangePassword() throws Exception {
-      api.changePassword(archiveUser, "newpassword");      
+      archiveApi.changePassword(archiveUser, "newpassword");      
       // TODO assert something useful!
    }
 
    @Test(dependsOnMethods = "testCreateArchive")
    public void testResizeArchive() throws Exception {
-      api.resize(archiveUser, 20);
+      archiveApi.resize(archiveUser, 20);
 
-      assertTrue(new RetryablePredicate<String>(
-            new Predicate<String>() {
-               public boolean apply(String value){
-                  return api.get(archiveUser) != null && value.equals(api.get(archiveUser).getTotalSize());
-               }
-            }, 30, 1, TimeUnit.SECONDS).apply("20 GB"));
+      assertTrue(retry(new Predicate<String>() {
+         public boolean apply(String value) {
+            return archiveApi.get(archiveUser) != null && value.equals(archiveApi.get(archiveUser).getTotalSize());
+         }
+      }, 30, 1, SECONDS).apply("20 GB"));
    }
 
 }

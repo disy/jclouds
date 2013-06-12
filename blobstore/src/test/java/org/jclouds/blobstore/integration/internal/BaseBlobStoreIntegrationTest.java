@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore.integration.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagateIfPossible;
+import static org.jclouds.reflect.Reflection2.typeToken;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,6 +61,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.inject.Module;
 
 public class BaseBlobStoreIntegrationTest extends BaseViewLiveTest<BlobStoreContext> {
@@ -106,7 +106,7 @@ public class BaseBlobStoreIntegrationTest extends BaseViewLiveTest<BlobStoreCont
       return ImmutableSet.<Module> of(getLoggingModule(), createHttpModule());
    }
 
-   protected ExecutorService exec;
+   protected ListeningExecutorService exec;
 
    /**
     * we are doing this at a class level, as the context.getBlobStore() object is going to be shared
@@ -116,7 +116,7 @@ public class BaseBlobStoreIntegrationTest extends BaseViewLiveTest<BlobStoreCont
     */
    @BeforeClass(groups = { "integration", "live" }, dependsOnMethods = "setupContext")
    public void setUpResourcesOnThisThread(ITestContext testContext) throws Exception {
-      exec = Executors.newCachedThreadPool();
+      exec = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
    }
 
    
@@ -522,7 +522,7 @@ public class BaseBlobStoreIntegrationTest extends BaseViewLiveTest<BlobStoreCont
 
    @Override
    protected TypeToken<BlobStoreContext> viewType() {
-      return TypeToken.of(BlobStoreContext.class);
+      return typeToken(BlobStoreContext.class);
    }
 
 }

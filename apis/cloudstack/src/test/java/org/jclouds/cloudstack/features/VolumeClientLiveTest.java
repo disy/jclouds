@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
@@ -40,8 +38,6 @@ import org.jclouds.cloudstack.domain.Zone;
 import org.jclouds.cloudstack.internal.BaseCloudStackClientLiveTest;
 import org.jclouds.cloudstack.options.ListVolumesOptions;
 import org.jclouds.logging.Logger;
-import org.jclouds.predicates.PredicateCallable;
-import org.jclouds.predicates.Retryables;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -152,15 +148,11 @@ public class VolumeClientLiveTest extends BaseCloudStackClientLiveTest {
    }
 
    protected Volume createPreferredVolumeFromDisk() {
-      return Retryables.retryGettingResultOrFailing(new PredicateCallable<Volume>() {
-         public Volume call() {
-            AsyncCreateResponse job = client.getVolumeClient().createVolumeFromDiskOfferingInZone(
-                  prefix+"-jclouds-volume", getPreferredDiskOffering().getId(), zoneId);
-            assertTrue(jobComplete.apply(job.getJobId()));
-            logger.info("created volume "+job.getId());
-            return findVolumeWithId(job.getId());
-         }
-      }, null, 60*1000, "failed to create volume");
+      AsyncCreateResponse job = client.getVolumeClient().createVolumeFromDiskOfferingInZone(prefix + "-jclouds-volume",
+            getPreferredDiskOffering().getId(), zoneId);
+      assertTrue(jobComplete.apply(job.getJobId()));
+      logger.info("created volume " + job.getId());
+      return findVolumeWithId(job.getId());
    }
 
    public void testCreateVolumeFromDiskofferingInZoneAndDeleteVolume() {
@@ -168,6 +160,33 @@ public class VolumeClientLiveTest extends BaseCloudStackClientLiveTest {
       Volume volume = createPreferredVolumeFromDisk();
       checkVolume(volume);
       client.getVolumeClient().deleteVolume(volume.getId());
+   }
+
+   /** Test requires a custom disk offering to be available */
+   public void testCreateVolumeFromCustomDiskOffering() {
+      final int size = 1;
+      DiskOffering offering = null;
+      for (DiskOffering candidate : client.getOfferingClient().listDiskOfferings()) {
+         if (candidate.isCustomized()) {
+            offering = candidate;
+            break;
+         }
+      }
+      
+      assertNotNull("No custom disk offering found!", offering);
+      
+      AsyncCreateResponse job = client.getVolumeClient().createVolumeFromCustomDiskOfferingInZone(
+                prefix + "-jclouds-volume", offering.getId(), zoneId, size);
+      assertTrue(jobComplete.apply(job.getJobId()));
+      logger.info("created volume "+job.getId());
+      
+      Volume volume = findVolumeWithId(job.getId());
+      try {
+         checkVolume(volume);
+         assertEquals(volume.getSize(), size * 1024 * 1024 * 1024);
+      } finally {
+         client.getVolumeClient().deleteVolume(volume.getId());
+      }
    }
 
    /** test requires that a VM exist */
@@ -178,36 +197,22 @@ public class VolumeClientLiveTest extends BaseCloudStackClientLiveTest {
 
          checkVolume(volume);
 
-         final VirtualMachine virtualMachine = getPreferredVirtualMachine();
+         VirtualMachine virtualMachine = getPreferredVirtualMachine();
 
-         Volume attachedVolume = Retryables.retryGettingResultOrFailing(new PredicateCallable<Volume>() {
-            public Volume call() {
-               logger.info("attaching volume %s to vm %s", volume, virtualMachine);
-               AsyncCreateResponse job = client.getVolumeClient().attachVolume(volume.getId(), virtualMachine.getId());
-               assertTrue(jobComplete.apply(job.getJobId()));
-               return findVolumeWithId(volume.getId());
-            }
-            int failures=0;
-            protected void onFailure() {
-               logger.info("failed attaching volume (retrying): %s", getLastFailure());
-               if (failures++==0) logger.warn(getLastFailure(), "first failure attaching volume");
-            }
-         }, null, 60*1000, "failed to attach volume");
+         logger.info("attaching volume %s to vm %s", volume, virtualMachine);
+         AsyncCreateResponse job = client.getVolumeClient().attachVolume(volume.getId(), virtualMachine.getId());
+         assertTrue(jobComplete.apply(job.getJobId()));
+         Volume attachedVolume = findVolumeWithId(volume.getId());
+
          checkVolume(attachedVolume);
          assertEquals(virtualMachine.getId(), attachedVolume.getVirtualMachineId());
          assertNotNull(attachedVolume.getAttached());
 
-         Volume detachedVolume = Retryables.retryGettingResultOrFailing(new PredicateCallable<Volume>() {
-            public Volume call() {
-               logger.info("detaching volume %s from vm %s", volume, virtualMachine);
-               AsyncCreateResponse job = client.getVolumeClient().detachVolume(volume.getId());
-               assertTrue(jobComplete.apply(job.getJobId()));
-               return findVolumeWithId(volume.getId());
-            }
-            protected void onFailure() {
-               logger.debug("failed detaching volume (retrying): %s", getLastFailure());
-            }
-         }, null, 60*1000, "failed to detach volume");
+         logger.info("detaching volume %s from vm %s", volume, virtualMachine);
+         job = client.getVolumeClient().detachVolume(volume.getId());
+         assertTrue(jobComplete.apply(job.getJobId()));
+         Volume detachedVolume = findVolumeWithId(volume.getId());
+
          checkVolume(detachedVolume);
          assertNull(detachedVolume.getAttached());
 
@@ -219,17 +224,11 @@ public class VolumeClientLiveTest extends BaseCloudStackClientLiveTest {
    public void testCreateVolumeFromSnapshotInZoneAndDeleteVolume() {
       logger.info("testCreateVolumeFromSnapshotInZoneAndDeleteVolume (takes ~3m)");
       assertNotNull(getPreferredSnapshot());
-      Volume volume = Retryables.retryGettingResultOrFailing(new PredicateCallable<Volume>() {
-         public Volume call() {
-            AsyncCreateResponse job = client.getVolumeClient().createVolumeFromSnapshotInZone(
-                  prefix+"-jclouds-volume", getPreferredSnapshot().getId(), zoneId);
-            assertTrue(jobComplete.apply(job.getJobId()));
-            return findVolumeWithId(job.getId());
-         }
-         protected void onFailure() {
-            logger.debug("failed creating volume (retrying): %s", getLastFailure());
-         }
-      }, null, 60*1000, "failed to create volume");
+
+      AsyncCreateResponse job = client.getVolumeClient().createVolumeFromSnapshotInZone(prefix + "-jclouds-volume",
+            getPreferredSnapshot().getId(), zoneId);
+      assertTrue(jobComplete.apply(job.getJobId()));
+      Volume volume = findVolumeWithId(job.getId());
 
       checkVolume(volume);
       client.getVolumeClient().deleteVolume(volume.getId());

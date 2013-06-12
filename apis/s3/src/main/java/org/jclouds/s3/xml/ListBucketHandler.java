@@ -1,26 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3.xml;
 
 import static com.google.common.io.BaseEncoding.base16;
 import static org.jclouds.http.Uris.uriBuilder;
 import static org.jclouds.util.SaxUtils.currentOrNull;
+
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -31,7 +31,6 @@ import org.jclouds.s3.domain.ListBucketResponse;
 import org.jclouds.s3.domain.ObjectMetadata;
 import org.jclouds.s3.domain.ObjectMetadataBuilder;
 import org.jclouds.s3.domain.internal.ListBucketResponseImpl;
-import org.jclouds.util.Strings2;
 import org.xml.sax.Attributes;
 
 import com.google.common.collect.ImmutableSet;
@@ -63,6 +62,9 @@ public class ListBucketHandler extends ParseSax.HandlerWithResult<ListBucketResp
    private int maxResults;
    private String delimiter;
    private boolean isTruncated;
+
+   /** Some blobs have a non-hex suffix when created by multi-part uploads such Amazon S3. */
+   private static final Pattern MULTIPART_BLOB_ETAG = Pattern.compile("[0-9a-f]+-[0-9]+");
 
    @Inject
    public ListBucketHandler(DateService dateParser) {
@@ -99,7 +101,10 @@ public class ListBucketHandler extends ParseSax.HandlerWithResult<ListBucketResp
       } else if (qName.equals("ETag")) {
          String currentETag = currentOrNull(currentText);
          builder.eTag(currentETag);
-         builder.contentMD5(base16().lowerCase().decode(Strings2.replaceAll(currentETag, '"', "")));
+         currentETag = currentETag.replace("\"", "");
+         if (!MULTIPART_BLOB_ETAG.matcher(currentETag).matches()) {
+            builder.contentMD5(base16().lowerCase().decode(currentETag));
+         }
       } else if (qName.equals("Size")) {
          builder.contentLength(Long.valueOf(currentOrNull(currentText)));
       } else if (qName.equals("Owner")) {

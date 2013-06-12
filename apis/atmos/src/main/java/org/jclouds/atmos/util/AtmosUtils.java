@@ -1,22 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.atmos.util;
+import static com.google.common.base.Preconditions.checkState;
+import static org.jclouds.util.Predicates2.retry;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -31,6 +31,7 @@ import org.jclouds.atmos.domain.AtmosObject;
 import org.jclouds.atmos.filters.SignRequest;
 import org.jclouds.atmos.options.PutOptions;
 import org.jclouds.atmos.xml.ErrorHandler;
+import org.jclouds.blobstore.ContainerNotFoundException;
 import org.jclouds.blobstore.KeyAlreadyExistsException;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.crypto.Crypto;
@@ -38,9 +39,8 @@ import org.jclouds.http.HttpCommand;
 import org.jclouds.http.HttpException;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.http.functions.ParseSax;
-import org.jclouds.util.Assertions;
 
-import com.google.common.base.Supplier;
+import com.google.common.base.Predicate;
 
 /**
  * Encryption, Hashing, and IO Utilities needed to sign and verify Atmos Storage requests and
@@ -61,7 +61,7 @@ public class AtmosUtils {
 
    public AtmosError parseAtmosErrorFromContent(HttpCommand command, HttpResponse response, InputStream content)
             throws HttpException {
-      AtmosError error = (AtmosError) factory.create(errorHandlerProvider.get()).parse(content);
+      AtmosError error = factory.create(errorHandlerProvider.get()).parse(content);
       if (error.getCode() == 1032) {
          error.setStringSigned(signer.createStringToSign(command.getCurrentRequest()));
       }
@@ -78,25 +78,23 @@ public class AtmosUtils {
          sync.createFile(container, object, options);
          
       } catch(KeyAlreadyExistsException e) {
-         deleteAndEnsureGone(sync, path);
+         deletePathAndEnsureGone(sync, path);
          sync.createFile(container, object, options);
       }
       return path;
    }
-
-   public static void deleteAndEnsureGone(final AtmosClient sync, final String path) {
-      try {
-         if (!Assertions.eventuallyTrue(new Supplier<Boolean>() {
-            public Boolean get() {
-               sync.deletePath(path);
-               return !sync.pathExists(path);
+   
+   public static void deletePathAndEnsureGone(final AtmosClient sync, String path) {
+      checkState(retry(new Predicate<String>() {
+         public boolean apply(String in) {
+            try {
+               sync.deletePath(in);
+               return !sync.pathExists(in);
+            } catch (ContainerNotFoundException e) {
+               return true;
             }
-         }, 3000)) {
-            throw new IllegalStateException(path + " still exists after deleting!");
          }
-      } catch (InterruptedException e) {
-         throw new IllegalStateException(path + " interrupted during deletion!", e);
-      }
+      }, 3000).apply(path), "%s still exists after deleting!", path);
    }
 
    public AtmosError parseAtmosErrorFromContent(HttpCommand command, HttpResponse response, String content)

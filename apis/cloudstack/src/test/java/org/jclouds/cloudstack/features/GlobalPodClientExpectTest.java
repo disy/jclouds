@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
@@ -105,17 +103,23 @@ public class GlobalPodClientExpectTest extends BaseCloudStackExpectTest<GlobalPo
       assertEquals(client.listPods(), ImmutableSet.of());
    }
 
+   HttpRequest createPod = HttpRequest.builder().method("GET")
+                                      .endpoint("http://localhost:8080/client/api")
+                                      .addQueryParam("response", "json")
+                                      .addQueryParam("command", "createPod")
+                                      .addQueryParam("name", "richard-pod")
+                                      .addQueryParam("zoneid", "10")
+                                      .addQueryParam("startip", "172.20.0.1")
+                                      .addQueryParam("endip", "172.20.0.250")
+                                      .addQueryParam("gateway", "172.20.0.254")
+                                      .addQueryParam("netmask", "255.255.255.0")
+                                      .addQueryParam("allocationstate", "Enabled")
+                                      .addQueryParam("apiKey", "identity")
+                                      .addQueryParam("signature", "fwsoQ77BmNQWfuqv4nVlPcKvKbU=")
+                                      .addHeader("Accept", "application/json").build();
+
    public void testCreatePodWhenResponseIs2xx() {
-      GlobalPodClient client = requestSendsResponse(
-         HttpRequest.builder()
-            .method("GET")
-            .endpoint(
-               URI.create("http://localhost:8080/client/api?response=json&command=createPod&netmask=255.255.255.0&name=richard-pod&startip=172.20.0.1&zoneid=10&endip=172.20.0.250&gateway=172.20.0.254&allocationstate=Enabled&apiKey=identity&signature=fwsoQ77BmNQWfuqv4nVlPcKvKbU%3D"))
-            .headers(
-               ImmutableMultimap.<String, String>builder()
-                  .put("Accept", "application/json")
-                  .build())
-            .build(),
+      GlobalPodClient client = requestSendsResponse(createPod,
          HttpResponse.builder()
             .statusCode(200)
             .payload(payloadFromResource("/createpodresponse.json"))

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute.options;
 
@@ -22,6 +20,7 @@ import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.emptyToNull;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.jclouds.ec2.domain.BlockDeviceMapping.MapNewVolumeToDevice;
 import org.jclouds.ec2.domain.BlockDeviceMapping.UnmapDeviceNamed;
 import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.scriptbuilder.domain.Statement;
-import org.jclouds.util.Preconditions2;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
@@ -144,7 +142,7 @@ public class EC2TemplateOptions extends TemplateOptions implements Cloneable {
    public EC2TemplateOptions securityGroups(Iterable<String> groupNames) {
       checkArgument(Iterables.size(groupNames) > 0, "you must specify at least one security group");
       for (String groupId : groupNames)
-         Preconditions2.checkNotEmpty(groupId, "all security groups must be non-empty");
+         checkNotNull(emptyToNull(groupId), "all security groups must be non-empty");
       this.groupNames = ImmutableSet.copyOf(groupNames);
       return this;
    }
@@ -163,10 +161,8 @@ public class EC2TemplateOptions extends TemplateOptions implements Cloneable {
     * Specifies the keypair used to run instances with
     */
    public EC2TemplateOptions keyPair(String keyPair) {
-      checkNotNull(keyPair, "use noKeyPair option to request boot without a keypair");
       checkState(!noKeyPair, "you cannot specify both options keyPair and noKeyPair");
-      Preconditions2.checkNotEmpty(keyPair, "keypair must be non-empty");
-      this.keyPair = keyPair;
+      this.keyPair = checkNotNull(emptyToNull(keyPair), "use noKeyPair option to request boot without a keypair");
       return this;
    }
 

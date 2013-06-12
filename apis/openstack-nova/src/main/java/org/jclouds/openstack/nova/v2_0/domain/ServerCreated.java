@@ -1,24 +1,20 @@
 /*
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.domain;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.beans.ConstructorProperties;
 import java.util.Set;
@@ -29,6 +25,7 @@ import org.jclouds.openstack.v2_0.domain.Resource;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
+import com.google.common.base.Optional;
 
 /**
  * Server Resource with administrative password returned by ServerApi#CreateServer calls
@@ -40,21 +37,21 @@ import com.google.common.base.Objects.ToStringHelper;
 */
 public class ServerCreated extends Resource {
 
-   public static Builder<?> builder() { 
-      return new ConcreteBuilder();
+   public static Builder builder() { 
+      return new Builder();
    }
    
-   public Builder<?> toBuilder() { 
-      return new ConcreteBuilder().fromServerCreated(this);
+   public Builder toBuilder() { 
+      return builder().fromServerCreated(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>> extends Resource.Builder<T>  {
+   public static final class Builder extends Resource.Builder<Builder>  {
       protected String adminPass;
    
       /** 
        * @see ServerCreated#getAdminPass()
        */
-      public T adminPass(String adminPass) {
+      public Builder adminPass(String adminPass) {
          this.adminPass = adminPass;
          return self();
       }
@@ -63,33 +60,30 @@ public class ServerCreated extends Resource {
          return new ServerCreated(id, name, links, adminPass);
       }
       
-      public T fromServerCreated(ServerCreated in) {
-         return super.fromResource(in)
-                  .adminPass(in.getAdminPass());
+      public Builder fromServerCreated(ServerCreated in) {
+         return super.fromResource(in).adminPass(in.getAdminPass().orNull());
       }
-   }
 
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
       @Override
-      protected ConcreteBuilder self() {
+      protected Builder self() {
          return this;
       }
    }
 
-   private final String adminPass;
+   private final Optional<String> adminPass;
 
    @ConstructorProperties({
       "id", "name", "links", "adminPass"
    })
-   protected ServerCreated(String id, @Nullable String name, Set<Link> links, String adminPass) {
+   protected ServerCreated(String id, @Nullable String name, Set<Link> links, @Nullable String adminPass) {
       super(id, name, links);
-      this.adminPass = checkNotNull(adminPass, "adminPass");
+      this.adminPass = Optional.fromNullable(adminPass);
    }
 
    /**
-    * @return the administrative password for this server. Note: this is not available in Server responses.
+    * present unless the nova install was configured with the option {@code enable_instance_password=false}
     */
-   public String getAdminPass() {
+   public Optional<String> getAdminPass() {
       return this.adminPass;
    }
 
@@ -105,10 +99,9 @@ public class ServerCreated extends Resource {
       ServerCreated that = ServerCreated.class.cast(obj);
       return super.equals(that) && Objects.equal(this.adminPass, that.adminPass);
    }
-   
+
+   @Override
    protected ToStringHelper string() {
-      return super.string()
-            .add("adminPass", adminPass);
+      return super.string().add("adminPass", adminPass.orNull());
    }
-   
 }

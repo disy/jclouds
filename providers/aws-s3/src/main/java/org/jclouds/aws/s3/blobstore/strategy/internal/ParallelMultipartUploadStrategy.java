@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.s3.blobstore.strategy.internal;
 
@@ -31,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,7 +45,6 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.internal.BlobRuntimeException;
 import org.jclouds.blobstore.options.PutOptions;
 import org.jclouds.blobstore.reference.BlobStoreConstants;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.io.Payload;
 import org.jclouds.io.PayloadSlicer;
 import org.jclouds.logging.Logger;
@@ -58,6 +54,7 @@ import org.jclouds.util.Throwables2;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.inject.Inject;
 
 public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStrategy {
@@ -72,7 +69,7 @@ public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStra
    @VisibleForTesting
    static final int DEFAULT_MAX_PERCENT_RETRIES = 10;
    
-   private final ExecutorService ioWorkerExecutor;
+   private final ListeningExecutorService ioExecutor;
   
    @Inject(optional = true)
    @Named("jclouds.mpu.parallel.degree")
@@ -101,10 +98,10 @@ public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStra
 
    @Inject
    public ParallelMultipartUploadStrategy(AWSS3AsyncBlobStore ablobstore, PayloadSlicer slicer,
-         @Named(Constants.PROPERTY_IO_WORKER_THREADS) ExecutorService ioWorkerExecutor) {
+         @Named(Constants.PROPERTY_IO_WORKER_THREADS) ListeningExecutorService ioExecutor) {
       this.ablobstore = checkNotNull(ablobstore, "ablobstore");
       this.slicer = checkNotNull(slicer, "slicer");
-      this.ioWorkerExecutor = checkNotNull(ioWorkerExecutor, "ioWorkerExecutor");
+      this.ioExecutor = checkNotNull(ioExecutor, "ioExecutor");
    }
    
    protected void prepareUploadPart(final String container, final String key, 
@@ -149,14 +146,13 @@ public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStra
                latch.countDown();
             }
          }
-      }, ioWorkerExecutor);
+      }, ioExecutor);
       futureParts.put(part, futureETag);
    }   
    
    @Override
    public ListenableFuture<String> execute(final String container, final Blob blob, final PutOptions options) {
-      return Futures.makeListenable(
-            ioWorkerExecutor.submit(new Callable<String>() {
+      return ioExecutor.submit(new Callable<String>() {
                @Override
                public String call() throws Exception {
                   String key = blob.getMetadata().getName();
@@ -168,7 +164,7 @@ public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStra
                   long chunkSize = algorithm.getChunkSize();
                   long remaining = algorithm.getRemaining();
                   if (parts > 0) {
-                     AWSS3Client client = (AWSS3Client) ablobstore
+                     AWSS3Client client = ablobstore
                            .getContext().unwrap(AWSS3ApiMetadata.CONTEXT_TOKEN).getApi();
                      String uploadId = null;
                      final Map<Integer, ListenableFuture<String>> futureParts = 
@@ -250,10 +246,10 @@ public class ParallelMultipartUploadStrategy implements AsyncMultipartUploadStra
                            futureETag.get(maxTime,TimeUnit.SECONDS) : futureETag.get();
                   }
                }
-            }), ioWorkerExecutor);
+            });
    }
    
-   class Part {
+   static class Part {
       private int part;
       private long offset;
       private long size;

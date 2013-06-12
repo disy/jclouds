@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.filesystem.utils;
 
@@ -24,6 +22,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,6 +31,7 @@ import org.jclouds.filesystem.util.Utils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 /**
@@ -41,21 +41,19 @@ import com.google.common.io.Files;
  */
 public class TestUtils {
 
-    private static final String TARGET_RESOURCE_DIR = "." + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator;
+    private static final String TARGET_RESOURCE_DIR = "." + File.separator + "target" + File.separator + "resources" + File.separator;
 
     /** All the files available for the tests */
-    private static final Iterator<File> IMAGE_RESOURCES =
-            Iterators.cycle(ImmutableList.of(
+    private static final Iterable<File> IMAGE_RESOURCES = ImmutableList.of(
                     new File(TARGET_RESOURCE_DIR + "image1.jpg"),
                     new File(TARGET_RESOURCE_DIR + "image2.jpg"),
                     new File(TARGET_RESOURCE_DIR + "image3.jpg"),
-                    new File(TARGET_RESOURCE_DIR + "image4.jpg")));
+                    new File(TARGET_RESOURCE_DIR + "image4.jpg"));
 
     public static final String TARGET_BASE_DIR = "." + File.separator + "target" + File.separator + "basedir" + File.separator;
 
-    public static boolean isWindowsOs() {
-        return System.getProperty("os.name", "").toLowerCase().contains("windows");
-    }
+    private static final Iterator<File> IMAGE_RESOURCES_ITERATOR =
+            Iterators.cycle(IMAGE_RESOURCES);
 
     /**
      * Generate a random blob key simple name (with no path in the key)
@@ -201,6 +199,23 @@ public class TestUtils {
      * @return
      */
     public static File getImageForBlobPayload() {
-        return IMAGE_RESOURCES.next();
+        return IMAGE_RESOURCES_ITERATOR.next();
+    }
+
+    /** Create resources used by tests. */
+    public static void createResources() throws IOException {
+        File resourceDir = new File(TestUtils.TARGET_RESOURCE_DIR);
+        if (resourceDir.exists()) {
+            Utils.deleteRecursively(resourceDir);
+        }
+        if (!resourceDir.mkdir()) {
+            throw new IOException("Could not create: " + TARGET_RESOURCE_DIR);
+        }
+        Random random = new Random();
+        for (File file : IMAGE_RESOURCES) {
+            byte[] buffer = new byte[random.nextInt(2 * 1024 * 1024)];
+            random.nextBytes(buffer);
+            Files.copy(ByteStreams.newInputStreamSupplier(buffer), file);
+        }
     }
 }

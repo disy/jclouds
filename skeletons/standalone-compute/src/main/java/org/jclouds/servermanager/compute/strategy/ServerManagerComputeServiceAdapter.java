@@ -1,24 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.servermanager.compute.strategy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Iterables.contains;
+import static com.google.common.collect.Iterables.filter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,7 +32,9 @@ import org.jclouds.servermanager.Image;
 import org.jclouds.servermanager.Server;
 import org.jclouds.servermanager.ServerManager;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 /**
  * defines the connection between the {@link ServerManager} implementation and the jclouds
@@ -77,6 +79,17 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    @Override
    public Iterable<Server> listNodes() {
       return client.listServers();
+   }
+
+   @Override
+   public Iterable<Server> listNodesByIds(final Iterable<String> ids) {
+      return filter(listNodes(), new Predicate<Server>() {
+
+            @Override
+            public boolean apply(Server server) {
+               return contains(ids, Integer.toString(server.id));
+            }
+         });
    }
    
    @Override

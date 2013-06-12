@@ -78,107 +78,13 @@ END_OF_JCLOUDS_SCRIPT
 	export INSTANCE_HOME='$INSTANCE_HOME'
 	export LOG_DIR='$LOG_DIR'
 END_OF_JCLOUDS_SCRIPT
-   cat >> $INSTANCE_HOME/install_chef_gems.sh <<-'END_OF_JCLOUDS_SCRIPT'
-	function abort {
-   echo "aborting: $@" 1>&2
-   exit 1
-}
-alias apt-get-update="apt-get update -qq"
-alias apt-get-install="apt-get install -f -y -qq --force-yes"
-alias yum-install="yum --quiet --nogpgcheck -y install"
-
-function ensure_cmd_or_install_package_apt(){
-  local cmd=$1
-  shift
-  local pkg=$*
-  
-  hash $cmd 2>/dev/null || ( apt-get-update && apt-get-install $pkg )
-}
-
-function ensure_cmd_or_install_package_yum(){
-  local cmd=$1
-  shift
-  local pkg=$*
-  hash $cmd 2>/dev/null || yum-install $pkg
-}
-
-function ensure_netutils_apt() {
-  ensure_cmd_or_install_package_apt nslookup dnsutils
-  ensure_cmd_or_install_package_apt curl curl
-}
-
-function ensure_netutils_yum() {
-  ensure_cmd_or_install_package_yum nslookup bind-utils
-  ensure_cmd_or_install_package_yum curl curl
-}
-
-# most network services require that the hostname is in
-# the /etc/hosts file, or they won't operate
-function ensure_hostname_in_hosts() {
-  egrep -q `hostname` /etc/hosts || awk -v hostname=`hostname` 'END { print $1" "hostname }' /proc/net/arp >> /etc/hosts
-}
-
-# download locations for many services are at public dns
-function ensure_can_resolve_public_dns() {
-  nslookup yahoo.com | grep yahoo.com > /dev/null || echo nameserver 208.67.222.222 >> /etc/resolv.conf
-}
-
-function setupPublicCurl() {
-  ensure_hostname_in_hosts
-  if which dpkg &> /dev/null; then
-    ensure_netutils_apt
-  elif which rpm &> /dev/null; then
-    ensure_netutils_yum
-  else
-    abort "we only support apt-get and yum right now... please contribute!"
-    return 1
-  fi
-  ensure_can_resolve_public_dns
-  return 0  
-}
-function installRuby() {
-  if ! hash ruby 2>/dev/null; then
-    if which dpkg &> /dev/null; then
-      apt-get-update
-      apt-get install -y ruby ruby-dev build-essential
-    elif which rpm &> /dev/null; then
-      # Disable chef from the base repo (http://tickets.opscode.com/browse/CHEF-2906)
-      sed -i "s/\[base\]/\0\n\exclude=ruby*/g" /etc/yum.repos.d/CentOS-Base.repo
-      # Make sure to install an appropriate ruby version
-      yum erase -y ruby ruby-libs
-      rpm -Uvh http://rbel.co/rbel5
-      yum install -y ruby ruby-devel make gcc gcc-c++ automake autoconf
-    else
-      abort "we only support apt-get and yum right now... please contribute"
-    fi
-  fi
-}
-
-END_OF_JCLOUDS_SCRIPT
    
    # add desired commands from the user
    cat >> $INSTANCE_HOME/install_chef_gems.sh <<-'END_OF_JCLOUDS_SCRIPT'
 	cd $INSTANCE_HOME
 	rm -f $INSTANCE_HOME/rc
 	trap 'echo $?>$INSTANCE_HOME/rc' 0 1 2 3 15
-	setupPublicCurl || exit 1
-	installRuby || exit 1
-	if ! hash gem 2>/dev/null; then
-	(
-	mkdir /tmp/$$
-	curl -q -s -S -L --connect-timeout 10 --max-time 600 --retry 20 -X GET  http://production.cf.rubygems.org/rubygems/rubygems-1.8.10.tgz |(mkdir -p /tmp/$$ &&cd /tmp/$$ &&tar -xpzf -)
-	mkdir -p /tmp/rubygems
-	mv /tmp/$$/*/* /tmp/rubygems
-	rm -rf /tmp/$$
-	cd /tmp/rubygems
-	ruby setup.rb --no-format-executable
-	rm -fr /tmp/rubygems
-	)
-	fi
-	gem update --system
-	gem update --no-rdoc --no-ri
-	
-	gem install chef -v '>= 10.16.4' --no-rdoc --no-ri
+	gem install chef --no-rdoc --no-ri
 	
 END_OF_JCLOUDS_SCRIPT
    

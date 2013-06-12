@@ -1,28 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute;
-
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reportMatcher;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
@@ -32,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.easymock.IArgumentMatcher;
+import org.jclouds.compute.config.AdminAccessConfiguration;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.internal.BaseComputeServiceLiveTest;
@@ -39,11 +39,8 @@ import org.jclouds.compute.util.OpenSocketFinder;
 import org.jclouds.crypto.Pems;
 import org.jclouds.domain.LoginCredentials;
 import org.jclouds.io.Payload;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.predicates.SocketOpen;
 import org.jclouds.rest.AuthorizationException;
-import org.jclouds.scriptbuilder.statements.login.AdminAccess;
-import org.jclouds.scriptbuilder.statements.login.AdminAccess.Configuration;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.util.Strings2;
 import org.testng.annotations.Test;
@@ -84,7 +81,7 @@ public class StubComputeServiceIntegrationTest extends BaseComputeServiceLiveTes
 
       replay(socketOpen);
 
-      socketTester = new RetryablePredicate<HostAndPort>(socketOpen, 1, 1, TimeUnit.MILLISECONDS);
+      socketTester = retry(socketOpen, 1, 1, MILLISECONDS);
       
       openSocketFinder = new OpenSocketFinder(){
 
@@ -104,34 +101,26 @@ public class StubComputeServiceIntegrationTest extends BaseComputeServiceLiveTes
    @Override
    protected Module getSshModule() {
       return new AbstractModule() {
-
          @Override
          protected void configure() {
-            bind(AdminAccess.Configuration.class).toInstance(new Configuration() {
-
-               @Override
+            bind(AdminAccessConfiguration.class).toInstance(new AdminAccessConfiguration() {
                public Supplier<String> defaultAdminUsername() {
                   return Suppliers.ofInstance("defaultAdminUsername");
                }
 
-               @Override
                public Supplier<Map<String, String>> defaultAdminSshKeys() {
                   return Suppliers.<Map<String, String>> ofInstance(ImmutableMap.of("public", "publicKey", "private",
                         Pems.PRIVATE_PKCS1_MARKER));
                }
-
-               @Override
+               
                public Function<String, String> cryptFunction() {
                   return new Function<String, String>() {
-
-                     @Override
                      public String apply(String input) {
                         return String.format("crypt(%s)", input);
                      }
-
                   };
                }
-
+               
                public Supplier<String> passwordGenerator() {
                   return Suppliers.ofInstance("randompassword");
                }
@@ -535,7 +524,12 @@ public class StubComputeServiceIntegrationTest extends BaseComputeServiceLiveTes
       super.testListNodes();
    }
 
-   @Test(enabled = true, dependsOnMethods = { "testListNodes", "testGetNodesWithDetails" })
+   @Test(enabled = true, dependsOnMethods = "testSuspendResume")
+   public void testListNodesByIds() throws Exception {
+      super.testListNodesByIds();
+   }
+
+   @Test(enabled = true, dependsOnMethods = { "testListNodes", "testGetNodesWithDetails", "testListNodesByIds" })
    public void testDestroyNodes() {
       super.testDestroyNodes();
    }

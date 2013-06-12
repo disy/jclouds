@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.compute;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static org.jclouds.compute.util.ComputeServiceUtils.metadataAndTagsAsCommaDelimitedValue;
@@ -57,10 +56,12 @@ import org.jclouds.openstack.nova.v2_0.predicates.ImagePredicates;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Supplier;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterables;
 
 /**
  * The adapter used by the NovaComputeServiceContextModule to interface the nova-specific domain
@@ -130,8 +131,8 @@ public class NovaComputeServiceAdapter implements
       logger.trace("<< server(%s)", server.getId());
 
       ServerInZone serverInZone = new ServerInZone(server, zoneId);
-      if (!privateKey.isPresent())
-         credentialsBuilder.password(lightweightServer.getAdminPass());
+      if (!privateKey.isPresent() && lightweightServer.getAdminPass().isPresent())
+         credentialsBuilder.password(lightweightServer.getAdminPass().get());
       return new NodeAndInitialCredentials<ServerInZone>(serverInZone, serverInZone.slashEncode(), credentialsBuilder
                .build());
    }
@@ -205,6 +206,17 @@ public class NovaComputeServiceAdapter implements
                   }));
       }
       return builder.build();
+   }
+
+   @Override
+   public Iterable<ServerInZone> listNodesByIds(final Iterable<String> ids) {
+      return filter(listNodes(), new Predicate<ServerInZone>() {
+
+            @Override
+            public boolean apply(ServerInZone server) {
+               return contains(ids, server.slashEncode());
+            }
+         });
    }
 
    @Override

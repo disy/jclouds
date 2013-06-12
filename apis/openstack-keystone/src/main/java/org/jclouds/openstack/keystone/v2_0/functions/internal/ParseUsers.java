@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.keystone.v2_0.functions.internal;
 
@@ -48,11 +46,11 @@ import com.google.inject.TypeLiteral;
  */
 @Beta
 @Singleton
-public class ParseUsers extends ParseJson<Users<? extends User>> {
-   static class Users<T extends User> extends PaginatedCollection<T> {
+public class ParseUsers extends ParseJson<Users> {
+   static class Users extends PaginatedCollection<User> {
 
       @ConstructorProperties({ "users", "users_links" })
-      protected Users(Iterable<T> users, Iterable<Link> users_links) {
+      protected Users(Iterable<User> users, Iterable<Link> users_links) {
          super(users, users_links);
       }
 
@@ -60,8 +58,7 @@ public class ParseUsers extends ParseJson<Users<? extends User>> {
 
    @Inject
    public ParseUsers(Json json) {
-      super(json, new TypeLiteral<Users<? extends User>>() {
-      });
+      super(json, TypeLiteral.get(Users.class));
    }
 
    public static class ToPagedIterable extends CallerArg0ToPagedIterable<User, ToPagedIterable> {

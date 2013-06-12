@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.compute;
 
@@ -37,7 +35,6 @@ import org.jclouds.aws.ec2.domain.AWSRunningInstance;
 import org.jclouds.aws.ec2.domain.MonitoringState;
 import org.jclouds.aws.ec2.services.AWSSecurityGroupClient;
 import org.jclouds.cloudwatch.CloudWatchApi;
-import org.jclouds.cloudwatch.CloudWatchAsyncApi;
 import org.jclouds.cloudwatch.domain.Dimension;
 import org.jclouds.cloudwatch.domain.EC2Constants;
 import org.jclouds.cloudwatch.domain.GetMetricStatistics;
@@ -56,7 +53,6 @@ import org.jclouds.ec2.domain.KeyPair;
 import org.jclouds.ec2.domain.SecurityGroup;
 import org.jclouds.ec2.services.InstanceClient;
 import org.jclouds.ec2.services.KeyPairClient;
-import org.jclouds.rest.RestContext;
 import org.jclouds.scriptbuilder.domain.Statements;
 import org.testng.annotations.Test;
 
@@ -157,13 +153,13 @@ public class AWSEC2ComputeServiceLiveTest extends EC2ComputeServiceLiveTest {
          // stop the spinner
          future.cancel(true);
 
-         RestContext<CloudWatchApi, CloudWatchAsyncApi> monitoringContext = ContextBuilder
-               .newBuilder(new AWSCloudWatchProviderMetadata())
-               .credentials(identity, credential)
-               .modules(setupModules()).build();
+         CloudWatchApi monitoringApi = ContextBuilder.newBuilder(new AWSCloudWatchProviderMetadata())
+                                                     .credentials(identity, credential)
+                                                     .modules(setupModules())
+                                                     .buildApi(CloudWatchApi.class);
 
          try {
-            GetMetricStatisticsResponse datapoints = monitoringContext.getApi().getMetricApiForRegion(instance.getRegion())
+            GetMetricStatisticsResponse datapoints = monitoringApi.getMetricApiForRegion(instance.getRegion())
                      .getMetricStatistics(GetMetricStatistics.builder()
                                                              .dimension(new Dimension(EC2Constants.Dimension.INSTANCE_ID, instance.getId()))
                                                              .unit(Unit.PERCENT)
@@ -176,7 +172,7 @@ public class AWSEC2ComputeServiceLiveTest extends EC2ComputeServiceLiveTest {
                                                              .build());
             assert (datapoints.size() > 0) : instance;
          } finally {
-            monitoringContext.close();
+            monitoringApi.close();
          }
 
          // make sure we made our dummy group and also let in the user's group
@@ -186,7 +182,7 @@ public class AWSEC2ComputeServiceLiveTest extends EC2ComputeServiceLiveTest {
          SecurityGroup secgroup = getOnlyElement(securityGroupClient.describeSecurityGroupsInRegion(instance
                   .getRegion(), "jclouds#" + group));
 
-         assert secgroup.getIpPermissions().size() == 0 : secgroup;
+         assert secgroup.size() == 0 : secgroup;
 
          // try to run a script with the original keyPair
          runScriptWithCreds(group, first.getOperatingSystem(), LoginCredentials.builder().user(
@@ -201,7 +197,5 @@ public class AWSEC2ComputeServiceLiveTest extends EC2ComputeServiceLiveTest {
          }
          cleanupExtendedStuffInRegion(region, securityGroupClient, keyPairClient, group);
       }
-
    }
-
 }

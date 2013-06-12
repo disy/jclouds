@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute;
 
@@ -166,7 +164,7 @@ public class EC2TemplateBuilderTest {
       
       final Image image = new ImageBuilder().providerId("cc-image").name("image").id("us-east-1/cc-image").location(location)
                .operatingSystem(new OperatingSystem(OsFamily.UBUNTU, null, "1.0", "hvm", "ubuntu", true))
-               .description("description").version("1.0").defaultCredentials(new LoginCredentials("root", false))
+               .description("description").version("1.0").defaultCredentials(LoginCredentials.builder().user("root").build())
                .status(Image.Status.AVAILABLE)
                .build();
       Map<RegionAndName, Image> imageMap = ImmutableMap.of(
@@ -191,12 +189,12 @@ public class EC2TemplateBuilderTest {
       final Supplier<Set<? extends Image>> images = Suppliers.<Set<? extends Image>> ofInstance(ImmutableSet.<Image> of(
                new ImageBuilder().providerId("cc-image").name("image").id("us-east-1/cc-image").location(location)
                         .operatingSystem(new OperatingSystem(OsFamily.UBUNTU, null, "1.0", "hvm", "ubuntu", true))
-                        .description("description").version("1.0").defaultCredentials(new LoginCredentials("root", false))
+                        .description("description").version("1.0").defaultCredentials(LoginCredentials.builder().user("root").build())
                         .status(Image.Status.AVAILABLE)
                         .build(), 
                new ImageBuilder().providerId("normal-image").name("image").id("us-east-1/normal-image").location(location)
                         .operatingSystem(new OperatingSystem(OsFamily.UBUNTU, null, "1.0", "paravirtual", "ubuntu", true))
-                        .description("description").version("1.0").defaultCredentials(new LoginCredentials("root", false))
+                        .description("description").version("1.0").defaultCredentials(LoginCredentials.builder().user("root").build())
                         .status(Image.Status.AVAILABLE)
                         .build()));
       

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudservers;
 
@@ -27,10 +25,10 @@ import static org.jclouds.cloudservers.options.ListOptions.Builder.changesSince;
 import static org.jclouds.cloudservers.options.ListOptions.Builder.withDetails;
 import static org.jclouds.cloudservers.options.RebuildServerOptions.Builder.withImage;
 import static org.jclouds.location.reference.LocationConstants.PROPERTY_REGIONS;
+import static org.jclouds.reflect.Reflection2.method;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Properties;
@@ -65,12 +63,14 @@ import org.jclouds.openstack.keystone.v1_1.domain.Auth;
 import org.jclouds.openstack.keystone.v1_1.parse.ParseAuthTest;
 import org.jclouds.rest.ConfiguresRestClient;
 import org.jclouds.rest.internal.BaseAsyncClientTest;
+import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.Invokable;
 import com.google.inject.Module;
 import com.google.inject.Provides;
-
 /**
  * Tests behavior of {@code CloudServersAsyncClient}
  * 
@@ -80,14 +80,11 @@ import com.google.inject.Provides;
 // surefire
 @Test(groups = "unit", singleThreaded = true, testName = "CloudServersAsyncClientTest")
 public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServersAsyncClient> {
-   private static final Class<? extends ListOptions[]> listOptionsVarargsClass = new ListOptions[] {}.getClass();
-   private static final Class<? extends CreateServerOptions[]> createServerOptionsVarargsClass = new CreateServerOptions[] {}
-         .getClass();
 
    public void testCreateServer() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createServer", String.class, int.class, int.class,
-            createServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie", 2, 1);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createServer", String.class, int.class, int.class,
+            CreateServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", 2, 1));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -103,9 +100,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testCreateServerWithIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createServer", String.class, int.class, int.class,
-            createServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie", 2, 1, withSharedIpGroup(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createServer", String.class, int.class, int.class,
+            CreateServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", 2, 1, withSharedIpGroup(2)));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -121,10 +118,10 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testCreateServerWithFile() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createServer", String.class, int.class, int.class,
-            createServerOptionsVarargsClass);
-      HttpRequest request = processor
-            .createRequest(method, "ralphie", 2, 1, withFile("/etc/jclouds", "foo".getBytes()));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createServer", String.class, int.class, int.class,
+            CreateServerOptions[].class);
+      GeneratedHttpRequest request = processor
+            .createRequest(method, ImmutableList.<Object> of("ralphie", 2, 1, withFile("/etc/jclouds", "foo".getBytes())));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -142,10 +139,10 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testCreateServerWithMetadata() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createServer", String.class, int.class, int.class,
-            createServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie", 2, 1,
-            withMetadata(ImmutableMap.of("foo", "bar")));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createServer", String.class, int.class, int.class,
+            CreateServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", 2, 1,
+            withMetadata(ImmutableMap.of("foo", "bar"))));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -163,10 +160,10 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
 
    public void testCreateServerWithIpGroupAndSharedIp() throws IOException, SecurityException, NoSuchMethodException,
          UnknownHostException {
-      Method method = CloudServersAsyncClient.class.getMethod("createServer", String.class, int.class, int.class,
-            createServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie", 2, 1,
-            withSharedIpGroup(2).withSharedIp("127.0.0.1"));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createServer", String.class, int.class, int.class,
+            CreateServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", 2, 1,
+            withSharedIpGroup(2).withSharedIp("127.0.0.1")));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -183,8 +180,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testDeleteImage() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("deleteImage", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "deleteImage", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "DELETE https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images/2 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -198,8 +195,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testLimits() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getLimits");
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getLimits");
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/limits?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -213,8 +210,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListServers() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listServers", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listServers", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -230,8 +227,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    Date now = new Date(10000000l);
 
    public void testListServersOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listServers", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listServers", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -246,8 +243,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListServersDetail() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listServers", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails());
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listServers", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails()));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/detail?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -261,8 +258,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testGetServer() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getServer", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getServer", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -276,8 +273,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListFlavors() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listFlavors", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listFlavors", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/flavors?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -291,8 +288,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListFlavorsOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listFlavors", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listFlavors", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/flavors?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -307,8 +304,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListFlavorsDetail() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listFlavors", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails());
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listFlavors", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails()));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/flavors/detail?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -322,8 +319,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListFlavorsDetailOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listFlavors", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails().changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listFlavors", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails().changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/flavors/detail?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -338,8 +335,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testGetFlavor() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getFlavor", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getFlavor", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/flavors/2?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -353,8 +350,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListImages() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listImages", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listImages", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -368,8 +365,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListImagesDetail() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listImages", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails());
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listImages", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails()));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images/detail?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -383,8 +380,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListImagesOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listImages", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listImages", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -399,8 +396,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListImagesDetailOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listImages", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails().changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listImages", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails().changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images/detail?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -415,8 +412,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testGetImage() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getImage", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getImage", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images/2?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -430,8 +427,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testDeleteServer() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("deleteServer", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "deleteServer", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "DELETE https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -445,9 +442,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testShareIpNoConfig() throws IOException, SecurityException, NoSuchMethodException, UnknownHostException {
-      Method method = CloudServersAsyncClient.class.getMethod("shareIp", String.class, int.class, int.class,
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "shareIp", String.class, int.class, int.class,
             boolean.class);
-      HttpRequest request = processor.createRequest(method, "127.0.0.1", 2, 3, false);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("127.0.0.1", 2, 3, false));
 
       assertRequestLineEquals(request, "PUT https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips/public/127.0.0.1 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -463,9 +460,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testShareIpConfig() throws IOException, SecurityException, NoSuchMethodException, UnknownHostException {
-      Method method = CloudServersAsyncClient.class.getMethod("shareIp", String.class, int.class, int.class,
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "shareIp", String.class, int.class, int.class,
             boolean.class);
-      HttpRequest request = processor.createRequest(method, "127.0.0.1", 2, 3, true);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("127.0.0.1", 2, 3, true));
 
       assertRequestLineEquals(request, "PUT https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips/public/127.0.0.1 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -482,8 +479,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
 
    public void testUnshareIpNoConfig() throws IOException, SecurityException, NoSuchMethodException,
          UnknownHostException {
-      Method method = CloudServersAsyncClient.class.getMethod("unshareIp", String.class, int.class);
-      HttpRequest request = processor.createRequest(method, "127.0.0.1", 2, 3, false);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "unshareIp", String.class, int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("127.0.0.1", 2, 3, false));
 
       assertRequestLineEquals(request, "DELETE https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips/public/127.0.0.1 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -498,9 +495,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testReplaceBackupSchedule() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("replaceBackupSchedule", int.class, BackupSchedule.class);
-      HttpRequest request = processor.createRequest(method, 2, BackupSchedule.builder().weekly(WeeklyBackup.MONDAY)
-            .daily(DailyBackup.H_0800_1000).enabled(true).build());
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "replaceBackupSchedule", int.class, BackupSchedule.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2, BackupSchedule.builder().weekly(WeeklyBackup.MONDAY)
+            .daily(DailyBackup.H_0800_1000).enabled(true).build()));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/backup_schedule HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -517,8 +514,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testDeleteBackupSchedule() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("deleteBackupSchedule", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "deleteBackupSchedule", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "DELETE https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/backup_schedule HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -533,8 +530,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testChangeAdminPass() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("changeAdminPass", int.class, String.class);
-      HttpRequest request = processor.createRequest(method, 2, "foo");
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "changeAdminPass", int.class, String.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2, "foo"));
 
       assertRequestLineEquals(request, "PUT https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -549,8 +546,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testChangeServerName() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("renameServer", int.class, String.class);
-      HttpRequest request = processor.createRequest(method, 2, "foo");
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "renameServer", int.class, String.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2, "foo"));
 
       assertRequestLineEquals(request, "PUT https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -565,8 +562,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListSharedIpGroups() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listSharedIpGroups", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listSharedIpGroups", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -580,8 +577,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListSharedIpGroupsOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listSharedIpGroups", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listSharedIpGroups", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -596,8 +593,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListSharedIpGroupsDetail() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listSharedIpGroups", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails());
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listSharedIpGroups", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails()));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups/detail?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -611,8 +608,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListSharedIpGroupsDetailOptions() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listSharedIpGroups", listOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, withDetails().changesSince(now).maxResults(1).startAt(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listSharedIpGroups", ListOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(withDetails().changesSince(now).maxResults(1).startAt(2)));
 
       assertRequestLineEquals(request,
             "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups/detail?format=json&changes-since=10000&limit=1&offset=2 HTTP/1.1");
@@ -627,8 +624,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testGetSharedIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getSharedIpGroup", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getSharedIpGroup", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups/2?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -641,13 +638,10 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
       checkFilters(request);
    }
 
-   private static final Class<? extends CreateSharedIpGroupOptions[]> createSharedIpGroupOptionsVarargsClass = new CreateSharedIpGroupOptions[] {}
-         .getClass();
-
    public void testCreateSharedIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createSharedIpGroup", String.class,
-            createSharedIpGroupOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie");
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createSharedIpGroup", String.class,
+            CreateSharedIpGroupOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie"));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -662,9 +656,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testCreateSharedIpGroupWithIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createSharedIpGroup", String.class,
-            createSharedIpGroupOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, "ralphie", withServer(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createSharedIpGroup", String.class,
+            CreateSharedIpGroupOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", withServer(2)));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -679,8 +673,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testDeleteSharedIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("deleteSharedIpGroup", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "deleteSharedIpGroup", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "DELETE https://lon.servers.api.rackspacecloud.com/v1.0/10001786/shared_ip_groups/2 HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -694,8 +688,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListAddresses() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getAddresses", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getAddresses", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -709,8 +703,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListPublicAddresses() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listPublicAddresses", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listPublicAddresses", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips/public?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -724,8 +718,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListPrivateAddresses() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("listPrivateAddresses", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "listPrivateAddresses", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/ips/private?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -739,8 +733,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testListBackupSchedule() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("getBackupSchedule", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "getBackupSchedule", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "GET https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/backup_schedule?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -754,8 +748,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testCreateImageWithIpGroup() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("createImageFromServer", String.class, int.class);
-      HttpRequest request = processor.createRequest(method, "ralphie", 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "createImageFromServer", String.class, int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of("ralphie", 2));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/images?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "Accept: application/json\n");
@@ -770,13 +764,10 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
 
    }
 
-   private static final Class<? extends RebuildServerOptions[]> rebuildServerOptionsVarargsClass = new RebuildServerOptions[] {}
-         .getClass();
-
    public void testRebuildServer() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("rebuildServer", int.class,
-            rebuildServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, 3);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "rebuildServer", int.class,
+            RebuildServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(3));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/3/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -790,9 +781,9 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testRebuildServerWithImage() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("rebuildServer", int.class,
-            rebuildServerOptionsVarargsClass);
-      HttpRequest request = processor.createRequest(method, 3, withImage(2));
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "rebuildServer", int.class,
+            RebuildServerOptions[].class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(3, withImage(2)));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/3/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -806,8 +797,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testReboot() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("rebootServer", int.class, RebootType.class);
-      HttpRequest request = processor.createRequest(method, 2, RebootType.HARD);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "rebootServer", int.class, RebootType.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2, RebootType.HARD));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -821,8 +812,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testResize() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("resizeServer", int.class, int.class);
-      HttpRequest request = processor.createRequest(method, 2, 3);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "resizeServer", int.class, int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2, 3));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -837,8 +828,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testConfirmResize() throws IOException, IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("confirmResizeServer", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "confirmResizeServer", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");
@@ -852,8 +843,8 @@ public class CloudServersAsyncClientTest extends BaseAsyncClientTest<CloudServer
    }
 
    public void testRevertResize() throws IOException, SecurityException, NoSuchMethodException {
-      Method method = CloudServersAsyncClient.class.getMethod("revertResizeServer", int.class);
-      HttpRequest request = processor.createRequest(method, 2);
+      Invokable<?, ?> method = method(CloudServersAsyncClient.class, "revertResizeServer", int.class);
+      GeneratedHttpRequest request = processor.createRequest(method, ImmutableList.<Object> of(2));
 
       assertRequestLineEquals(request, "POST https://lon.servers.api.rackspacecloud.com/v1.0/10001786/servers/2/action?format=json HTTP/1.1");
       assertNonPayloadHeadersEqual(request, "");

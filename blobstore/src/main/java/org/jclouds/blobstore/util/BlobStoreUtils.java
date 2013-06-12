@@ -1,31 +1,29 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jclouds.blobstore.AsyncBlobStore;
-import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.MutableBlobMetadata;
 import org.jclouds.blobstore.domain.internal.MutableBlobMetadataImpl;
@@ -35,7 +33,6 @@ import org.jclouds.http.HttpRequestFilter;
 import org.jclouds.rest.internal.GeneratedHttpRequest;
 
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -60,12 +57,13 @@ public class BlobStoreUtils {
 
    public static String getNameFor(GeneratedHttpRequest request) {
       checkNotNull(request, "request");
+      List<Object> args = request.getInvocation().getArgs();
       // assume first params are container and key
-      if (request.getArgs().size() >= 2 && request.getArgs().get(0) instanceof String
-            && request.getArgs().get(1) instanceof String) {
-         return request.getArgs().get(1).toString();
-      } else if (request.getArgs().size() >= 1 && request.getArgs().get(0) instanceof String) {
-         Matcher matcher = keyFromContainer.matcher(request.getArgs().get(0).toString());
+      if (args.size() >= 2 && args.get(0) instanceof String
+            && args.get(1) instanceof String) {
+         return args.get(1).toString();
+      } else if (args.size() >= 1 && args.get(0) instanceof String) {
+         Matcher matcher = keyFromContainer.matcher(args.get(0).toString());
          if (matcher.find())
             return matcher.group(1);
       }
@@ -90,11 +88,6 @@ public class BlobStoreUtils {
       } else {
          return Futures.immediateFuture(null);
       }
-   }
-
-   @Deprecated
-   public static Iterable<String> getSupportedProviders() {
-      return org.jclouds.rest.Providers.getSupportedProvidersOfType(TypeToken.of(BlobStoreContext.class));
    }
    
    public static MutableBlobMetadata copy(MutableBlobMetadata in) {

@@ -1,30 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.http.apachehc;
-
 import static com.google.common.hash.Hashing.md5;
 import static com.google.common.io.BaseEncoding.base64;
+import static org.jclouds.http.HttpUtils.filterOutContentHeaders;
 import static org.jclouds.io.ByteSources.asByteSource;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Named;
 
@@ -45,10 +42,10 @@ import org.jclouds.http.internal.HttpWire;
 import org.jclouds.io.ContentMetadataCodec;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
-import org.jclouds.rest.internal.RestAnnotationProcessor;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.inject.Inject;
 
 /**
@@ -63,10 +60,10 @@ public class ApacheHCHttpCommandExecutorService extends BaseHttpCommandExecutorS
 
    @Inject
    ApacheHCHttpCommandExecutorService(HttpUtils utils, ContentMetadataCodec contentMetadataCodec,
-         @Named(Constants.PROPERTY_IO_WORKER_THREADS) ExecutorService ioWorkerExecutor,
+         @Named(Constants.PROPERTY_IO_WORKER_THREADS) ListeningExecutorService ioExecutor,
          DelegatingRetryHandler retryHandler, IOExceptionRetryHandler ioRetryHandler,
          DelegatingErrorHandler errorHandler, HttpWire wire, HttpClient client) {
-      super(utils, contentMetadataCodec, ioWorkerExecutor, retryHandler, ioRetryHandler, errorHandler, wire);
+      super(utils, contentMetadataCodec, ioExecutor, retryHandler, ioRetryHandler, errorHandler, wire);
       this.client = client;
       this.apacheHCUtils = new ApacheHCUtils(contentMetadataCodec);
    }
@@ -108,7 +105,7 @@ public class ApacheHCHttpCommandExecutorService extends BaseHttpCommandExecutorS
       return HttpResponse.builder().statusCode(apacheResponse.getStatusLine().getStatusCode())
                                    .message(apacheResponse.getStatusLine().getReasonPhrase())
                                    .payload(payload)
-                                   .headers(RestAnnotationProcessor.filterOutContentHeaders(headers)).build();
+                                   .headers(filterOutContentHeaders(headers)).build();
    }
 
    private org.apache.http.HttpResponse executeRequest(HttpUriRequest nativeRequest) throws IOException,

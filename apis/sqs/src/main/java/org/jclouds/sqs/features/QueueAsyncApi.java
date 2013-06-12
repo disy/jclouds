@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.sqs.features;
 
@@ -69,7 +67,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#list
     */
-   @Named("sqs:ListQueues")
+   @Named("ListQueues")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ListQueues")
@@ -79,7 +77,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#list(ListQueuesOptions)
     */
-   @Named("sqs:ListQueues")
+   @Named("ListQueues")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ListQueues")
@@ -89,7 +87,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#get(String)
     */
-   @Named("sqs:GetQueueUrl")
+   @Named("GetQueueUrl")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "GetQueueUrl")
@@ -100,7 +98,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#getInAccount
     */
-   @Named("sqs:GetQueueUrl")
+   @Named("GetQueueUrl")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "GetQueueUrl")
@@ -112,7 +110,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#create
     */
-   @Named("sqs:CreateQueue")
+   @Named("CreateQueue")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateQueue")
@@ -122,7 +120,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#create
     */
-   @Named("sqs:CreateQueue")
+   @Named("CreateQueue")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateQueue")
@@ -132,7 +130,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#delete
     */
-   @Named("sqs:DeleteQueue")
+   @Named("DeleteQueue")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteQueue")
@@ -142,7 +140,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#getAttributes(URI)
     */
-   @Named("sqs:GetQueueAttributes")
+   @Named("GetQueueAttributes")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "AttributeName.1" }, values = { "GetQueueAttributes", "All" })
@@ -154,7 +152,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#getAttributes(URI, Iterable)
     */
-   @Named("sqs:GetQueueAttributes")
+   @Named("GetQueueAttributes")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "GetQueueAttributes")
@@ -165,7 +163,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#getAttribute
     */
-   @Named("sqs:GetQueueAttributes")
+   @Named("GetQueueAttributes")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "GetQueueAttributes")
@@ -175,7 +173,7 @@ public interface QueueAsyncApi {
    /**
     * @see QueueApi#setAttribute
     */
-   @Named("sqs:SetQueueAttributes")
+   @Named("SetQueueAttributes")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "SetQueueAttributes")

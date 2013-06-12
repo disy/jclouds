@@ -1,37 +1,38 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3.fallbacks;
-
 import static com.google.common.util.concurrent.Futures.getUnchecked;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.jclouds.reflect.Reflection2.method;
 import static org.testng.Assert.assertFalse;
 
 import org.jclouds.aws.AWSResponseException;
 import org.jclouds.aws.domain.AWSError;
+import org.jclouds.reflect.Invocation;
 import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.jclouds.s3.S3Client;
 import org.jclouds.s3.options.PutBucketOptions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author Adrian Cole
@@ -43,14 +44,12 @@ public class FalseIfBucketAlreadyOwnedByYouOrOperationAbortedWhenBucketExistsTes
 
    @BeforeClass
    void setUp() throws SecurityException, NoSuchMethodException {
-      putBucket = GeneratedHttpRequest
-            .builder()
+      putBucket = GeneratedHttpRequest.builder()
             .method("PUT")
             .endpoint("https://adriancole-blobstore113.s3.amazonaws.com/")
-            .declaring(S3Client.class)
-            .javaMethod(
-                  S3Client.class.getMethod("putBucketInRegion", String.class, String.class, PutBucketOptions[].class))
-            .args(new Object[] { null, "bucket" }).build();
+            .invocation(
+                  Invocation.create(method(S3Client.class, "putBucketInRegion", String.class,
+                        String.class, PutBucketOptions[].class), Lists.<Object> newArrayList(null, "bucket"))).build();
    }
 
    @Test

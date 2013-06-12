@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore.integration.internal;
 
@@ -33,6 +31,7 @@ import static org.testng.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,9 +40,9 @@ import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
@@ -58,12 +57,10 @@ import org.jclouds.blobstore.domain.BlobMetadata;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.domain.StorageType;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.crypto.Crypto;
 import org.jclouds.encryption.internal.JCECrypto;
 import org.jclouds.http.BaseJettyTest;
 import org.jclouds.http.HttpResponseException;
-import org.jclouds.io.InputSuppliers;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.jclouds.io.WriteTo;
@@ -84,6 +81,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * @author Adrian Cole
@@ -128,9 +127,8 @@ public class BaseBlobIntegrationTest extends BaseBlobStoreIntegrationTest {
    public void testPutFileParallel() throws InterruptedException, IOException, TimeoutException {
 
       File payloadFile = File.createTempFile("testPutFileParallel", "png");
-      Files.copy(InputSuppliers.of(getClass().getResource("/testimg.png").openStream()), payloadFile);
+      Files.copy(createTestInput(), payloadFile);
       payloadFile.deleteOnExit();
-      
       
       final Payload testPayload = Payloads.newFilePayload(payloadFile);
       final byte[] md5 = md5Supplier(testPayload);
@@ -139,7 +137,7 @@ public class BaseBlobIntegrationTest extends BaseBlobStoreIntegrationTest {
       final AtomicInteger blobCount = new AtomicInteger();
       final String container = getContainerName();
       try {
-         Map<Integer, Future<?>> responses = Maps.newHashMap();
+         Map<Integer, ListenableFuture<?>> responses = Maps.newHashMap();
          for (int i = 0; i < 10; i++) {
 
             responses.put(i, this.exec.submit(new Callable<Void>() {
@@ -179,10 +177,10 @@ public class BaseBlobIntegrationTest extends BaseBlobStoreIntegrationTest {
          final String name = "constitution.txt";
 
          uploadConstitution(container, name, expectedContentDisposition);
-         Map<Integer, Future<?>> responses = Maps.newHashMap();
+         Map<Integer, ListenableFuture<?>> responses = Maps.newHashMap();
          for (int i = 0; i < 10; i++) {
 
-            responses.put(i, Futures.compose(view.getAsyncBlobStore().getBlob(container, name),
+            responses.put(i, Futures.transform(view.getAsyncBlobStore().getBlob(container, name),
                      new Function<Blob, Void>() {
 
                         @Override
@@ -606,4 +604,13 @@ public class BaseBlobIntegrationTest extends BaseBlobStoreIntegrationTest {
       assertEquals(metadata.getContentMetadata().getContentMD5(), md5().hashString(TEST_STRING, UTF_8).asBytes());
    }
 
+   private File createTestInput() throws IOException {
+      File file = File.createTempFile("testimg", "png");
+      file.deleteOnExit();
+      Random random = new Random();
+      byte[] buffer = new byte[random.nextInt(2 * 1024 * 1024)];
+      random.nextBytes(buffer);
+      Files.copy(ByteStreams.newInputStreamSupplier(buffer), file);
+      return file;
+   }
 }

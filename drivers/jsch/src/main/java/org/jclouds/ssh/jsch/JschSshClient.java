@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ssh.jsch;
 
@@ -28,8 +26,8 @@ import static com.google.common.base.Throwables.getCausalChain;
 import static com.google.common.collect.Iterables.any;
 import static com.google.common.hash.Hashing.md5;
 import static com.google.common.io.BaseEncoding.base16;
-import static org.jclouds.crypto.SshKeys.fingerprintPrivateKey;
-import static org.jclouds.crypto.SshKeys.sha1PrivateKey;
+import static org.jclouds.ssh.SshKeys.fingerprintPrivateKey;
+import static org.jclouds.ssh.SshKeys.sha1PrivateKey;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -50,6 +48,7 @@ import org.jclouds.http.handlers.BackoffLimitedRetryHandler;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.jclouds.logging.Logger;
+import org.jclouds.proxy.ProxyConfig;
 import org.jclouds.rest.AuthorizationException;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.ssh.SshException;
@@ -75,7 +74,7 @@ import com.jcraft.jsch.Session;
  */
 public class JschSshClient implements SshClient {
 
-   private final class CloseFtpChannelOnCloseInputStream extends FilterInputStream {
+   private static final class CloseFtpChannelOnCloseInputStream extends FilterInputStream {
 
       private final ChannelSftp sftp;
 
@@ -123,7 +122,8 @@ public class JschSshClient implements SshClient {
    final String user;
    final String host;
 
-   public JschSshClient(BackoffLimitedRetryHandler backoffLimitedRetryHandler, HostAndPort socket,
+
+   public JschSshClient(ProxyConfig proxyConfig, BackoffLimitedRetryHandler backoffLimitedRetryHandler, HostAndPort socket,
             LoginCredentials loginCredentials, int timeout) {
       this.user = checkNotNull(loginCredentials, "loginCredentials").getUser();
       this.host = checkNotNull(socket, "socket").getHostText();
@@ -142,7 +142,7 @@ public class JschSshClient implements SshClient {
                   fingerPrint, sha1, host, socket.getPort());
       }
       sessionConnection = SessionConnection.builder().hostAndPort(HostAndPort.fromParts(host, socket.getPort())).loginCredentials(
-               loginCredentials).connectTimeout(timeout).sessionTimeout(timeout).build();
+               loginCredentials).proxy(checkNotNull(proxyConfig, "proxyConfig")).connectTimeout(timeout).sessionTimeout(timeout).build();
    }
 
    @Override
@@ -467,8 +467,8 @@ public class JschSshClient implements SshClient {
 
       @Override
       public ExecChannel create() throws Exception {
-         this.sessionConnection = acquire(SessionConnection.builder().fromSessionConnection(
-                  JschSshClient.this.sessionConnection).sessionTimeout(0).build());
+         this.sessionConnection = acquire(SessionConnection.builder().from(JschSshClient.this.sessionConnection)
+               .sessionTimeout(0).build());
          String channel = "exec";
          executor = (ChannelExec) sessionConnection.openChannel(channel);
          executor.setCommand(command);

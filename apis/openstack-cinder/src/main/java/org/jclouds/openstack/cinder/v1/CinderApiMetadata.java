@@ -1,25 +1,21 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.cinder.v1;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.jclouds.Constants.PROPERTY_TIMEOUTS_PREFIX;
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.CREDENTIAL_TYPE;
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.SERVICE_TYPE;
 
@@ -27,17 +23,16 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.jclouds.apis.ApiMetadata;
+import org.jclouds.openstack.cinder.v1.config.CinderHttpApiModule;
 import org.jclouds.openstack.cinder.v1.config.CinderParserModule;
-import org.jclouds.openstack.cinder.v1.config.CinderRestClientModule;
+import org.jclouds.openstack.keystone.v2_0.config.AuthenticationApiModule;
 import org.jclouds.openstack.keystone.v2_0.config.CredentialTypes;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneAuthenticationModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneAuthenticationModule.ZoneModule;
 import org.jclouds.openstack.v2_0.ServiceType;
-import org.jclouds.rest.RestContext;
-import org.jclouds.rest.internal.BaseRestApiMetadata;
+import org.jclouds.rest.internal.BaseHttpApiMetadata;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Module;
 
 /**
@@ -45,12 +40,8 @@ import com.google.inject.Module;
  * 
  * @author Everett Toews
  */
-public class CinderApiMetadata extends BaseRestApiMetadata {
+public class CinderApiMetadata extends BaseHttpApiMetadata<CinderApi> {
    
-   public static final TypeToken<RestContext<CinderApi, CinderAsyncApi>> CONTEXT_TOKEN = new TypeToken<RestContext<CinderApi, CinderAsyncApi>>() {
-      private static final long serialVersionUID = 1L;
-   };
-
    @Override
    public Builder toBuilder() {
       return new Builder().fromApiMetadata(this);
@@ -65,17 +56,15 @@ public class CinderApiMetadata extends BaseRestApiMetadata {
    }
 
    public static Properties defaultProperties() {
-      Properties properties = BaseRestApiMetadata.defaultProperties();
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "default", MINUTES.toMillis(3) + "");
+      Properties properties = BaseHttpApiMetadata.defaultProperties();
       properties.setProperty(SERVICE_TYPE, ServiceType.BLOCK_STORAGE);
       properties.setProperty(CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
       return properties;
    }
 
-   public static class Builder extends BaseRestApiMetadata.Builder<Builder> {
+   public static class Builder extends BaseHttpApiMetadata.Builder<CinderApi, Builder> {
 
       protected Builder() {
-         super(CinderApi.class, CinderAsyncApi.class);
           id("openstack-cinder")
          .name("OpenStack Cinder Folsom API")
          .identityName("${tenantName}:${userName} or ${userName}, if your keystone supports a default tenant")
@@ -86,10 +75,11 @@ public class CinderApiMetadata extends BaseRestApiMetadata {
          .defaultEndpoint("http://localhost:5000/v2.0/")
          .defaultProperties(CinderApiMetadata.defaultProperties())
          .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
+                                     .add(AuthenticationApiModule.class)
                                      .add(KeystoneAuthenticationModule.class)
                                      .add(ZoneModule.class)
                                      .add(CinderParserModule.class)
-                                     .add(CinderRestClientModule.class)
+                                     .add(CinderHttpApiModule.class)
                                      .build());
       }
       

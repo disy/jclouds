@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.services;
 
@@ -58,7 +56,7 @@ public interface ElasticIPAddressAsyncClient {
    /**
     * @see BaseEC2Client#allocateAddressInRegion
     */
-   @Named("ec2:AllocateAddress")
+   @Named("AllocateAddress")
    @POST
    @Path("/")
    @XMLResponseParser(AllocateAddressResponseHandler.class)
@@ -69,7 +67,7 @@ public interface ElasticIPAddressAsyncClient {
    /**
     * @see BaseEC2Client#associateAddressInRegion
     */
-   @Named("ec2:AssociateAddress")
+   @Named("AssociateAddress")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "AssociateAddress")
@@ -80,7 +78,7 @@ public interface ElasticIPAddressAsyncClient {
    /**
     * @see BaseEC2Client#disassociateAddressInRegion
     */
-   @Named("ec2:DisassociateAddress")
+   @Named("DisassociateAddress")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DisassociateAddress")
@@ -91,7 +89,7 @@ public interface ElasticIPAddressAsyncClient {
    /**
     * @see BaseEC2Client#releaseAddressInRegion
     */
-   @Named("ec2:ReleaseAddress")
+   @Named("ReleaseAddress")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "ReleaseAddress")
@@ -102,7 +100,7 @@ public interface ElasticIPAddressAsyncClient {
    /**
     * @see BaseEC2Client#describeAddressesInRegion
     */
-   @Named("ec2:DescribeAddresses")
+   @Named("DescribeAddresses")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DescribeAddresses")

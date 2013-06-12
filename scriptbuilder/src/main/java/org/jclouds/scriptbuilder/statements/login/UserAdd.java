@@ -1,34 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.scriptbuilder.statements.login;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
-import org.jclouds.crypto.Sha512Crypt;
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
+
 import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.scriptbuilder.domain.OsFamily;
 import org.jclouds.scriptbuilder.domain.Statement;
@@ -37,11 +29,14 @@ import org.jclouds.scriptbuilder.domain.Statements;
 import org.jclouds.scriptbuilder.statements.ssh.AuthorizeRSAPublicKeys;
 import org.jclouds.scriptbuilder.statements.ssh.InstallRSAPrivateKey;
 
-import javax.inject.Named;
-import java.util.List;
-
-import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 /**
  * Creates a statement that will add a given user to a machine ("login"), with optional
@@ -60,6 +55,7 @@ public class UserAdd implements Statement {
    }
 
    public static class Builder {
+      private Function<String, String> cryptFunction;
       private String defaultHome = "/home/users";
       private String home;
       private String login;
@@ -70,6 +66,14 @@ public class UserAdd implements Statement {
       private String shell = "/bin/bash";
       private String fullName;
 
+      /**
+       * @see  org.jclouds.compute.functions.Sha512Crypt
+       */
+      public Builder cryptFunction(Function<String, String> cryptFunction) {
+         this.cryptFunction = cryptFunction;
+         return this;
+      }
+      
       /**
        * See --home in `man useradd`.
        */
@@ -132,20 +136,26 @@ public class UserAdd implements Statement {
          this.fullName = fullName;
          return this;
       }
+
       public UserAdd build() {
-         return new UserAdd(login, groups, password, RSAPrivateKey, authorizeRSAPublicKeys, home, defaultHome, shell, fullName);
+         return new UserAdd(cryptFunction, login, groups, password, RSAPrivateKey, authorizeRSAPublicKeys, home,
+               defaultHome, shell, fullName);
       }
    }
 
-   public UserAdd(String login, List<String> groups, @Nullable String password, @Nullable String installRSAPrivateKey,
-         List<String> authorizeRSAPublicKeys, String defaultHome, String shell) {
-      this(login, groups, password, installRSAPrivateKey, authorizeRSAPublicKeys, null, defaultHome, shell, login);
+   public UserAdd(Function<String, String> cryptFunction, String login, List<String> groups, @Nullable String password,
+         @Nullable String installRSAPrivateKey, List<String> authorizeRSAPublicKeys, String defaultHome, String shell) {
+      this(cryptFunction, login, groups, password, installRSAPrivateKey, authorizeRSAPublicKeys, null, defaultHome,
+            shell, login);
    }
 
-   public UserAdd(String login, List<String> groups, @Nullable String password, @Nullable String installRSAPrivateKey,
-         List<String> authorizeRSAPublicKeys, @Nullable String home, String defaultHome, String shell, String fullName) {
+   public UserAdd(Function<String, String> cryptFunction, String login, List<String> groups, @Nullable String password,
+         @Nullable String installRSAPrivateKey, List<String> authorizeRSAPublicKeys, @Nullable String home,
+         String defaultHome, String shell, String fullName) {
       this.login = checkNotNull(login, "login");
       this.password = password;
+      this.cryptFunction = password == null ? null : checkNotNull(cryptFunction,
+            "cryptFunction must be set! ex. org.jclouds.compute.functions.Sha512Crypt.INSTANCE");
       this.groups = ImmutableList.copyOf(checkNotNull(groups, "groups"));
       this.installRSAPrivateKey = installRSAPrivateKey;
       this.authorizeRSAPublicKeys = ImmutableList
@@ -155,7 +165,8 @@ public class UserAdd implements Statement {
       this.shell = checkNotNull(shell, "shell");
       this.fullName = fullName;
    }
-
+   
+   private final Function<String, String> cryptFunction;
    private final String home;
    private final String defaultHome;
    private final String login;
@@ -165,16 +176,6 @@ public class UserAdd implements Statement {
    private final List<String> authorizeRSAPublicKeys;
    private final String shell;
    private final String fullName;
-
-   private Function<String, String> cryptFunction = Sha512Crypt.function();
-
-   @Inject(optional = true)
-   @Named("CRYPT")
-   @VisibleForTesting
-   UserAdd cryptFunction(Function<String, String> cryptFunction) {
-      this.cryptFunction = cryptFunction;
-      return this;
-   }
 
    @Override
    public Iterable<String> functionDependencies(OsFamily family) {

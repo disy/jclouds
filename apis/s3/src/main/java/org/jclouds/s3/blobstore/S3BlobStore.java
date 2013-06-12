@@ -1,24 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3.blobstore;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static org.jclouds.util.Predicates2.retry;
 
 import java.util.Set;
 
@@ -57,9 +57,9 @@ import org.jclouds.s3.options.ListBucketOptions;
 import org.jclouds.s3.options.PutBucketOptions;
 import org.jclouds.s3.options.PutObjectOptions;
 import org.jclouds.s3.util.S3Utils;
-import org.jclouds.util.Assertions;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.base.Supplier;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -148,38 +148,20 @@ public class S3BlobStore extends BaseBlobStore {
    }
 
    /**
-    * This implementation invokes {@link #deleteAndEnsurePathGone}
-    * 
-    * @param container
-    *           bucket name
+    * This implementation invokes {@link #clearContainer} then {@link S3Client#deleteBucketIfEmpty} until it is true.
     */
    @Override
-   public void deleteContainer(String container) {
-      clearAndDeleteContainer(container);
-   }
-
-   /**
-    * This implementation invokes {@link #clearContainer} then {@link S3Client#deleteBucketIfEmpty}
-    * until it is true.
-    */
-   public void clearAndDeleteContainer(final String container) {
-      try {
-         //TODO: probably it is better to use a retryable predicate
-         if (!Assertions.eventuallyTrue(new Supplier<Boolean>() {
-            public Boolean get() {
-               try {
-                  clearContainer(container);
-                  return sync.deleteBucketIfEmpty(container);
-               } catch (ContainerNotFoundException e) {
-                  return true;
-               }
+   protected void deletePathAndEnsureGone(String path) {
+      checkState(retry(new Predicate<String>() {
+         public boolean apply(String in) {
+            try {
+               clearContainer(in);
+               return sync.deleteBucketIfEmpty(in);
+            } catch (ContainerNotFoundException e) {
+               return true;
             }
-         }, 30000)) {
-            throw new IllegalStateException(container + " still exists after deleting!");
          }
-      } catch (InterruptedException e) {
-         throw new IllegalStateException(container + " interrupted during deletion!", e);
-      }
+      }, 30000).apply(path), "%s still exists after deleting!", path);
    }
 
    /**

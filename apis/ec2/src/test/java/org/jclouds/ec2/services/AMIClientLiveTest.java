@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.services;
 
@@ -22,8 +20,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.ec2.options.DescribeImagesOptions.Builder.imageIds;
 import static org.jclouds.ec2.options.RegisterImageBackedByEbsOptions.Builder.addNewBlockDevice;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -31,7 +31,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.Template;
@@ -46,11 +45,11 @@ import org.jclouds.ec2.domain.RootDeviceType;
 import org.jclouds.ec2.domain.RunningInstance;
 import org.jclouds.ec2.domain.Snapshot;
 import org.jclouds.ec2.predicates.InstanceStateRunning;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -78,7 +77,7 @@ public class AMIClientLiveTest extends BaseComputeServiceContextLiveTest {
    protected EC2Client ec2Client;
    protected AMIClient client;
 
-   protected RetryablePredicate<RunningInstance> runningTester;
+   protected Predicate<RunningInstance> runningTester;
 
    protected Set<String> imagesToDeregister = newHashSet();
    protected Set<String> snapshotsToDelete = newHashSet();
@@ -92,8 +91,7 @@ public class AMIClientLiveTest extends BaseComputeServiceContextLiveTest {
    public void setupContext() {
       super.setupContext();
       ec2Client = view.unwrap(EC2ApiMetadata.CONTEXT_TOKEN).getApi();
-      runningTester = new RetryablePredicate<RunningInstance>(new InstanceStateRunning(ec2Client), 600, 5,
-            TimeUnit.SECONDS);
+      runningTester = retry(new InstanceStateRunning(ec2Client), 600, 5, SECONDS);
 
       client = ec2Client.getAMIServices();
       if (ebsTemplate != null) {

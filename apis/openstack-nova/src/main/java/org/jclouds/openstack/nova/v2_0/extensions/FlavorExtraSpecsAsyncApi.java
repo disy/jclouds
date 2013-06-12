@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
 import java.util.Map;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -65,6 +64,7 @@ public interface FlavorExtraSpecsAsyncApi {
    /**
     * @see FlavorExtraSpecsApi#getMetadata(String)
     */
+   @Named("flavor:getmetadata")
    @GET
    @SelectJson("extra_specs")
    @Path("/flavors/{flavor_id}/os-extra_specs")
@@ -74,6 +74,7 @@ public interface FlavorExtraSpecsAsyncApi {
    /**
     * @see FlavorExtraSpecsApi#updateMetadataEntry(String, String, String)
     */
+   @Named("flavor:updatemetadata")
    @POST
    @Path("/flavors/{flavor_id}/os-extra_specs")
    @Produces(MediaType.APPLICATION_JSON)
@@ -84,6 +85,7 @@ public interface FlavorExtraSpecsAsyncApi {
    /**
     * @see FlavorExtraSpecsApi#getMetadataKey(String, String)
     */
+   @Named("flavor:getmetadata")
    @GET
    @Path("/flavors/{flavor_id}/os-extra_specs/{key}")
    @Unwrap
@@ -93,6 +95,7 @@ public interface FlavorExtraSpecsAsyncApi {
    /**
     * @see FlavorExtraSpecsApi#updateMetadataEntry(String, String, String)
     */
+   @Named("flavor:updatemetadata")
    @PUT
    @Path("/flavors/{flavor_id}/os-extra_specs/{key}")
    @Produces(MediaType.APPLICATION_JSON)
@@ -105,6 +108,7 @@ public interface FlavorExtraSpecsAsyncApi {
    /**
     * @see FlavorExtraSpecsApi#deleteMetadataKey(String, String)
     */
+   @Named("flavor:deletemetadata")
    @DELETE
    @Path("/flavors/{flavor_id}/os-extra_specs/{key}")
    @Fallback(FalseOnNotFoundOr404.class)

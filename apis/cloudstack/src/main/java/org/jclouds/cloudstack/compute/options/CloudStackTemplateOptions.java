@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.compute.options;
 
@@ -60,7 +58,9 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
    protected boolean setupStaticNat = true;
    protected String account;
    protected String domainId;
-    
+   protected boolean generateKeyPair = false;
+   protected boolean generateSecurityGroup = false;
+   
    @Override
    public CloudStackTemplateOptions clone() {
       CloudStackTemplateOptions options = new CloudStackTemplateOptions();
@@ -78,6 +78,8 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
          eTo.ipsToNetworks(this.ipsToNetworks);
          eTo.ipOnDefaultNetwork(this.ipOnDefaultNetwork);
          eTo.keyPair(this.keyPair);
+         eTo.generateKeyPair(shouldGenerateKeyPair());
+         eTo.generateSecurityGroup(shouldGenerateSecurityGroup());
          eTo.account(this.account);
          eTo.domainId(this.domainId);
          eTo.setupStaticNat(setupStaticNat);
@@ -102,6 +104,21 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
 
    public Set<String> getSecurityGroupIds() {
       return securityGroupIds;
+   }
+
+   /**
+    * @see #shouldGenerateKeyPair()
+    */
+   public CloudStackTemplateOptions generateSecurityGroup(boolean enable) {
+      this.generateSecurityGroup = enable;
+      return this;
+   }
+
+   /**
+    * @return true if auto generation of keypairs is enabled
+    */
+   public boolean shouldGenerateSecurityGroup() {
+      return generateSecurityGroup;
    }
 
    /**
@@ -170,6 +187,21 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
    }
 
    /**
+    * @see #shouldGenerateKeyPair()
+    */
+   public CloudStackTemplateOptions generateKeyPair(boolean enable) {
+      this.generateKeyPair = enable;
+      return this;
+   }
+
+   /**
+    * @return true if auto generation of keypairs is enabled
+    */
+   public boolean shouldGenerateKeyPair() {
+      return generateKeyPair;
+   }
+
+   /**
     * @see DeployVirtualMachineOptions#accountInDomain(String,String)
     */
    public CloudStackTemplateOptions account(String account) {
@@ -212,6 +244,13 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
       public static CloudStackTemplateOptions securityGroupIds(Iterable<String> securityGroupIds) {
          CloudStackTemplateOptions options = new CloudStackTemplateOptions();
          return options.securityGroupIds(securityGroupIds);
+      }
+
+      /**
+       * @see CloudStackTemplateOptions#shouldGenerateSecurityGroup() 
+       */
+      public static CloudStackTemplateOptions generateSecurityGroup(boolean enable) {
+         return new CloudStackTemplateOptions().generateSecurityGroup(enable);
       }
 
       /**
@@ -260,6 +299,13 @@ public class CloudStackTemplateOptions extends TemplateOptions implements Clonea
       public static CloudStackTemplateOptions keyPair(String keyPair) {
          CloudStackTemplateOptions options = new CloudStackTemplateOptions();
          return options.keyPair(keyPair);
+      }
+
+      /**
+       * @see CloudStackTemplateOptions#shouldGenerateKeyPair() 
+       */
+      public static CloudStackTemplateOptions generateKeyPair(boolean enable) {
+         return new CloudStackTemplateOptions().generateKeyPair(enable);
       }
 
       /**

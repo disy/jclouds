@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute.stub.config;
 
@@ -29,13 +27,15 @@ import javax.inject.Singleton;
 
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.domain.NodeMetadata.Status;
 import org.jclouds.compute.domain.Processor;
 import org.jclouds.compute.domain.Volume;
-import org.jclouds.compute.domain.NodeMetadata.Status;
 import org.jclouds.compute.domain.internal.VolumeImpl;
+import org.jclouds.domain.Credentials;
+import org.jclouds.location.Provider;
 import org.jclouds.predicates.SocketOpen;
-import org.jclouds.rest.annotations.Identity;
 
+import com.google.common.base.Supplier;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -68,9 +68,9 @@ public class StubComputeServiceDependenciesModule extends AbstractModule {
 
    @Provides
    @Singleton
-   protected ConcurrentMap<String, NodeMetadata> provideNodesForIdentity(@Identity String identity)
+   protected ConcurrentMap<String, NodeMetadata> provideNodesForIdentity(@Provider Supplier<Credentials> creds)
             throws ExecutionException {
-      return backing.get(identity);
+      return backing.get(creds.get().identity);
    }
 
    protected static final LoadingCache<String, AtomicInteger> nodeIds = CacheBuilder.newBuilder().build(
@@ -85,8 +85,8 @@ public class StubComputeServiceDependenciesModule extends AbstractModule {
 
    @Provides
    @Named("NODE_ID")
-   protected Integer provideNodeIdForIdentity(@Identity String identity) throws ExecutionException {
-      return nodeIds.get(identity).incrementAndGet();
+   protected Integer provideNodeIdForIdentity(@Provider Supplier<Credentials> creds) throws ExecutionException {
+      return nodeIds.get(creds.get().identity).incrementAndGet();
    }
 
    @Singleton

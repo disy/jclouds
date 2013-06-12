@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.vcloud.features;
 
@@ -40,11 +38,11 @@ import org.jclouds.rest.annotations.PayloadParam;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.rest.annotations.XMLResponseParser;
 import org.jclouds.vcloud.binders.BindCatalogItemToXmlPayload;
+import org.jclouds.vcloud.binders.OrgNameAndCatalogNameToEndpoint;
+import org.jclouds.vcloud.binders.OrgNameCatalogNameItemNameToEndpoint;
 import org.jclouds.vcloud.domain.Catalog;
 import org.jclouds.vcloud.domain.CatalogItem;
 import org.jclouds.vcloud.filters.AddVCloudAuthorizationAndCookieToRequest;
-import org.jclouds.vcloud.functions.OrgNameAndCatalogNameToEndpoint;
-import org.jclouds.vcloud.functions.OrgNameCatalogNameItemNameToEndpoint;
 import org.jclouds.vcloud.options.CatalogItemOptions;
 import org.jclouds.vcloud.xml.CatalogHandler;
 import org.jclouds.vcloud.xml.CatalogItemHandler;
@@ -76,9 +74,9 @@ public interface CatalogAsyncClient {
    @XMLResponseParser(CatalogHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
    @Consumes(CATALOG_XML)
-   ListenableFuture<Catalog> findCatalogInOrgNamed(
-            @Nullable @EndpointParam(parser = OrgNameAndCatalogNameToEndpoint.class) String orgName,
-            @Nullable @EndpointParam(parser = OrgNameAndCatalogNameToEndpoint.class) String catalogName);
+   @MapBinder(OrgNameAndCatalogNameToEndpoint.class)
+   ListenableFuture<Catalog> findCatalogInOrgNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("catalogName") String catalogName);
 
    /**
     * @see CatalogClient#getCatalogItem
@@ -96,10 +94,9 @@ public interface CatalogAsyncClient {
    @Consumes(CATALOGITEM_XML)
    @XMLResponseParser(CatalogItemHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<CatalogItem> findCatalogItemInOrgCatalogNamed(
-            @Nullable @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String orgName,
-            @Nullable @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String catalogName,
-            @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String itemName);
+   @MapBinder(OrgNameCatalogNameItemNameToEndpoint.class)
+   ListenableFuture<CatalogItem> findCatalogItemInOrgCatalogNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("catalogName") String catalogName, @PayloadParam("itemName") String itemName);
 
    /**
     * @see CatalogClient#addVAppTemplateOrMediaImageToCatalog

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.handlers;
 
@@ -29,6 +27,7 @@ import org.jclouds.http.HttpResponse;
 import org.jclouds.http.HttpResponseException;
 import org.jclouds.logging.Logger;
 import org.jclouds.rest.AuthorizationException;
+import org.jclouds.rest.InsufficientResourcesException;
 import org.jclouds.rest.ResourceNotFoundException;
 import org.jclouds.util.Strings2;
 
@@ -75,6 +74,11 @@ public class CloudStackErrorHandler implements HttpErrorHandler {
                exception = new ResourceNotFoundException(message, exception);
             } else {
                exception = new IllegalStateException(message, exception);
+            }
+            break;
+         case 534:
+            if (message.contains("Maximum number of resources of type")) {
+               exception = new InsufficientResourcesException(message, exception);
             }
             break;
          case 537:

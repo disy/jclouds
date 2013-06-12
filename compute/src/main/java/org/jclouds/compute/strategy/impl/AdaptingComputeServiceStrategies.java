@@ -1,25 +1,28 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute.strategy.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.toArray;
+import static com.google.common.collect.Iterables.transform;
+import static org.jclouds.compute.predicates.NodePredicates.all;
+import static org.jclouds.compute.predicates.NodePredicates.withIds;
 import static org.jclouds.compute.util.ComputeServiceUtils.formatStatus;
 
 import java.util.Map;
@@ -55,6 +58,7 @@ import org.jclouds.logging.Logger;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 
 /**
@@ -111,8 +115,13 @@ public class AdaptingComputeServiceStrategies<N, H, I, L> implements CreateNodeW
    }
 
    @Override
+   public Iterable<? extends NodeMetadata> listNodesByIds(Iterable<String> ids) {
+      return FluentIterable.from(listDetailsOnNodesMatching(all())).filter(withIds(toArray(ids, String.class))).toSet();
+   }
+
+   @Override
    public Iterable<? extends NodeMetadata> listDetailsOnNodesMatching(Predicate<ComputeMetadata> filter) {
-      return Iterables.filter(Iterables.transform(client.listNodes(), nodeMetadataAdapter), filter);
+      return filter(transform(client.listNodes(), nodeMetadataAdapter), filter);
    }
    
    @Override

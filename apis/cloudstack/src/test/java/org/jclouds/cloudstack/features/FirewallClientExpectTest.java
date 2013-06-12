@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
@@ -24,6 +22,7 @@ import static org.testng.Assert.assertNull;
 import java.net.URI;
 import java.util.Set;
 
+import org.jclouds.cloudstack.CloudStackApiMetadata;
 import org.jclouds.cloudstack.CloudStackContext;
 import org.jclouds.cloudstack.domain.AsyncCreateResponse;
 import org.jclouds.cloudstack.domain.FirewallRule;
@@ -243,14 +242,19 @@ public class FirewallClientExpectTest extends BaseCloudStackExpectTest<FirewallC
 
    public void testCreatePortForwardingRuleForVirtualMachine() {
       FirewallClient client = requestSendsResponse(
-         HttpRequest.builder()
-            .method("GET")
-            .endpoint(
-               URI.create("http://localhost:8080/client/api?response=json&command=createPortForwardingRule&" +
-                  "ipaddressid=2&publicport=22&protocol=tcp&virtualmachineid=1234&privateport=22&" +
-                  "apiKey=identity&signature=84dtGzQp0G6k3z3Gkc3F/HBNS2Y%3D"))
-            .addHeader("Accept", "application/json")
-            .build(),
+         HttpRequest.builder().method("GET")
+                    .endpoint("http://localhost:8080/client/api")
+                    .addQueryParam("response", "json")
+                    .addQueryParam("command", "createPortForwardingRule")
+                    .addQueryParam("ipaddressid", "2")
+                    .addQueryParam("protocol", "tcp")
+                    .addQueryParam("publicport", "22")
+                    .addQueryParam("virtualmachineid", "1234")
+                    .addQueryParam("privateport", "22")
+                    .addQueryParam("apiKey", "identity")
+                    .addQueryParam("signature", "84dtGzQp0G6k3z3Gkc3F/HBNS2Y%3D")
+                    .addHeader("Accept", "application/json")
+                    .build(),
          HttpResponse.builder()
             .statusCode(200)
             .payload(payloadFromResource("/createportforwardingrulesresponse.json"))
@@ -280,6 +284,6 @@ public class FirewallClientExpectTest extends BaseCloudStackExpectTest<FirewallC
    
    @Override
    protected FirewallClient clientFrom(CloudStackContext context) {
-      return context.getProviderSpecificContext().getApi().getFirewallClient();
+      return context.unwrap(CloudStackApiMetadata.CONTEXT_TOKEN).getApi().getFirewallClient();
    }
 }

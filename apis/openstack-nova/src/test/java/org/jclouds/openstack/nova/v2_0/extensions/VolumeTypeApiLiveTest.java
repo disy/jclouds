@@ -1,23 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -27,7 +26,6 @@ import java.util.Set;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeType;
 import org.jclouds.openstack.nova.v2_0.internal.BaseNovaApiLiveTest;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeTypeOptions;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -53,37 +51,35 @@ public class VolumeTypeApiLiveTest extends BaseNovaApiLiveTest {
 
    @BeforeGroups(groups = {"integration", "live"})
    @Override
-   public void setupContext() {
-      super.setupContext();
-      zone = Iterables.getLast(novaContext.getApi().getConfiguredZones(), "nova");
-      volumeTypeOption = novaContext.getApi().getVolumeTypeExtensionForZone(zone);
+   public void setup() {
+      super.setup();
+      zone = Iterables.getLast(api.getConfiguredZones(), "nova");
+      volumeTypeOption = api.getVolumeTypeExtensionForZone(zone);
    }
 
 
    @AfterClass(groups = { "integration", "live" })
    @Override
-   protected void tearDownContext() {
+   protected void tearDown() {
       if (volumeTypeOption.isPresent()) {
          if (testVolumeType != null) {
             final String id = testVolumeType.getId();
             assertTrue(volumeTypeOption.get().delete(id));
-            assertTrue(new RetryablePredicate<VolumeTypeApi>(new Predicate<VolumeTypeApi>() {
-               @Override
+            assertTrue(retry(new Predicate<VolumeTypeApi>() {
                public boolean apply(VolumeTypeApi volumeApi) {
                   return volumeApi.get(id) == null;
                }
             }, 5 * 1000L).apply(volumeTypeOption.get()));
          }
       }
-      super.tearDownContext();
+      super.tearDown();
    }
 
    public void testCreateVolumeType() {
       if (volumeTypeOption.isPresent()) {
          testVolumeType = volumeTypeOption.get().create(
                "jclouds-test-1", CreateVolumeTypeOptions.Builder.specs(ImmutableMap.of("test", "value1")));
-         assertTrue(new RetryablePredicate<VolumeTypeApi>(new Predicate<VolumeTypeApi>() {
-            @Override
+         assertTrue(retry(new Predicate<VolumeTypeApi>() {
             public boolean apply(VolumeTypeApi volumeTypeApi) {
                return volumeTypeApi.get(testVolumeType.getId()) != null;
             }

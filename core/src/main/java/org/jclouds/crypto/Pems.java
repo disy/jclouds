@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.crypto;
 
@@ -53,14 +51,15 @@ import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 
-import org.jclouds.io.InputSuppliers;
 import org.jclouds.javax.annotation.Nullable;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteProcessor;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.InputSupplier;
 
 /**
@@ -76,15 +75,15 @@ public class Pems {
    public static final String PUBLIC_X509_MARKER = "-----BEGIN PUBLIC KEY-----";
    public static final String PUBLIC_PKCS1_MARKER = "-----BEGIN RSA PUBLIC KEY-----";
 
-   public static class PemProcessor<T> implements ByteProcessor<T> {
-      public interface ResultParser<T> {
+   private static class PemProcessor<T> implements ByteProcessor<T> {
+      private interface ResultParser<T> {
          T parseResult(byte[] bytes) throws IOException;
       }
 
       private final ByteArrayOutputStream out = new ByteArrayOutputStream();
       private final Map<String, ResultParser<T>> parsers;
 
-      public PemProcessor(Map<String, ResultParser<T>> parsers) {
+      private PemProcessor(Map<String, ResultParser<T>> parsers) {
          this.parsers = checkNotNull(parsers, "parsers");
       }
 
@@ -255,7 +254,8 @@ public class Pems {
     */
    public static KeySpec privateKeySpec(String pem) {
       try {
-         return privateKeySpec(InputSuppliers.of(pem));
+         return privateKeySpec(ByteStreams.newInputStreamSupplier(
+            pem.getBytes(Charsets.UTF_8)));
       } catch (IOException e) {
          throw propagate(e);
       }
@@ -314,7 +314,8 @@ public class Pems {
     * @see Pems#publicKeySpec(InputSupplier)
     */
    public static KeySpec publicKeySpec(String pem) throws IOException {
-      return publicKeySpec(InputSuppliers.of(pem));
+      return publicKeySpec(ByteStreams.newInputStreamSupplier(
+         pem.getBytes(Charsets.UTF_8)));
    }
 
    /**
@@ -364,7 +365,8 @@ public class Pems {
     * @see Pems#x509Certificate(InputSupplier, CertificateFactory)
     */
    public static X509Certificate x509Certificate(String pem) throws IOException, CertificateException {
-      return x509Certificate(InputSuppliers.of(pem), null);
+      return x509Certificate(ByteStreams.newInputStreamSupplier(
+         pem.getBytes(Charsets.UTF_8)), null);
    }
 
    /**
@@ -398,10 +400,11 @@ public class Pems {
    }
 
    private static String pem(byte[] encoded, String marker) {
+      String ls = System.getProperty("line.separator");
       StringBuilder builder = new StringBuilder();
-      builder.append(marker).append('\n');
-      builder.append(on('\n').join(fixedLength(64).split(base64().encode(encoded)))).append('\n');
-      builder.append(marker.replace("BEGIN", "END")).append('\n');
+      builder.append(marker).append(ls);
+      builder.append(on(ls).join(fixedLength(64).split(base64().encode(encoded)))).append(ls);
+      builder.append(marker.replace("BEGIN", "END")).append(ls);
       return builder.toString();
    }
 

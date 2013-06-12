@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute.util;
 
@@ -29,11 +27,10 @@ import static org.jclouds.scriptbuilder.domain.Statements.pipeHttpResponseToBash
 import java.net.URI;
 import java.util.Formatter;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
-import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.ComputeMetadataIncludingStatus;
 import org.jclouds.compute.domain.Hardware;
@@ -51,9 +48,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.Iterables;
 
 /**
  * 
@@ -128,8 +124,12 @@ public class ComputeServiceUtils {
 
    public static double getSpace(Hardware input) {
       double total = 0;
-      for (Volume volume : input.getVolumes())
-         total += volume.getSize() != null ? volume.getSize() : 0;
+      for (Volume volume : input.getVolumes()) {
+         Float size = volume.getSize();
+         if (size != null) {
+            total += size;
+         }
+      }
       return total;
    }
 
@@ -171,11 +171,6 @@ public class ComputeServiceUtils {
             return input.getName().equalsIgnoreCase(name);
          }
       });
-   }
-
-   @Deprecated
-   public static Iterable<String> getSupportedProviders() {
-      return org.jclouds.rest.Providers.getSupportedProvidersOfType(TypeToken.of(ComputeServiceContext.class));
    }
    
    /**

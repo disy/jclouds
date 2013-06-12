@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.trmk.vcloudexpress;
 
@@ -25,7 +23,6 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.jclouds.apis.ApiMetadata;
-import org.jclouds.rest.RestContext;
 import org.jclouds.trmk.vcloud_0_8.internal.TerremarkVCloudApiMetadata;
 import org.jclouds.trmk.vcloudexpress.compute.TerremarkVCloudExpressComputeServiceContextModule;
 import org.jclouds.trmk.vcloudexpress.config.TerremarkVCloudExpressRestClientModule;
@@ -41,7 +38,12 @@ import com.google.inject.Module;
  */
 public class TerremarkVCloudExpressApiMetadata extends TerremarkVCloudApiMetadata {
 
-   public static final TypeToken<RestContext<TerremarkVCloudExpressClient, TerremarkVCloudExpressAsyncClient>> CONTEXT_TOKEN = new TypeToken<RestContext<TerremarkVCloudExpressClient, TerremarkVCloudExpressAsyncClient>>() {
+   /**
+    * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(TerremarkVCloudExpressClient.class)} as
+    *             {@link TerremarkVCloudExpressAsyncClient} interface will be removed in jclouds 1.7.
+    */
+   @Deprecated
+   public static final TypeToken<org.jclouds.rest.RestContext<TerremarkVCloudExpressClient, TerremarkVCloudExpressAsyncClient>> CONTEXT_TOKEN = new TypeToken<org.jclouds.rest.RestContext<TerremarkVCloudExpressClient, TerremarkVCloudExpressAsyncClient>>() {
       private static final long serialVersionUID = 1L;
    };
    
@@ -67,6 +69,7 @@ public class TerremarkVCloudExpressApiMetadata extends TerremarkVCloudApiMetadat
 
    public static class Builder extends TerremarkVCloudApiMetadata.Builder<Builder> {
 
+      @SuppressWarnings("deprecation")
       protected Builder() {
          super(TerremarkVCloudExpressClient.class, TerremarkVCloudExpressAsyncClient.class);
          id("trmk-vcloudexpress")

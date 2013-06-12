@@ -1,23 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds;
 
+import static com.google.common.base.Suppliers.ofInstance;
 import static org.testng.Assert.assertEquals;
 
 import java.net.URI;
@@ -27,6 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.jclouds.concurrent.config.ExecutorServiceModule;
+import org.jclouds.domain.Credentials;
 import org.jclouds.events.config.EventBusModule;
 import org.jclouds.http.IntegrationTestAsyncClient;
 import org.jclouds.http.IntegrationTestClient;
@@ -40,7 +40,6 @@ import org.jclouds.providers.AnonymousProviderMetadata;
 import org.jclouds.providers.ProviderMetadata;
 import org.jclouds.rest.ConfiguresRestClient;
 import org.jclouds.rest.annotations.ApiVersion;
-import org.jclouds.rest.annotations.Identity;
 import org.jclouds.rest.config.CredentialStoreModule;
 import org.testng.annotations.Test;
 
@@ -63,10 +62,7 @@ public class ContextBuilderTest {
 
    @ConfiguresHttpCommandExecutorService
    static class HttpModule extends AbstractModule {
-
-      @Override
       protected void configure() {
-
       }
    }
 
@@ -115,8 +111,20 @@ public class ContextBuilderTest {
       overrides.setProperty(Constants.PROPERTY_IDENTITY, "foo");
       overrides.setProperty(Constants.PROPERTY_CREDENTIAL, "BAR");
       ContextBuilder withCredsInProps = testContextBuilder().overrides(overrides);
-      String identity = withCredsInProps.buildInjector().getInstance(Key.get(String.class, Identity.class));
-      assertEquals(identity, "foo");
+      Credentials creds = withCredsInProps.buildInjector()
+            .getInstance(Key.get(new TypeLiteral<Supplier<Credentials>>() {
+            }, Provider.class)).get();
+      assertEquals(creds, new Credentials("foo", "BAR"));
+   }
+
+   @Test
+   public void testProviderMetadataWithCredentialsSetSupplier() {
+      ContextBuilder withCredsSupplier = testContextBuilder().credentialsSupplier(
+            ofInstance(new Credentials("foo", "BAR")));
+      Credentials creds = withCredsSupplier.buildInjector()
+            .getInstance(Key.get(new TypeLiteral<Supplier<Credentials>>() {
+            }, Provider.class)).get();
+      assertEquals(creds, new Credentials("foo", "BAR"));
    }
    
    @Test
@@ -223,14 +231,10 @@ public class ContextBuilderTest {
    public void testBuilder() {
 
       Module module1 = new AbstractModule() {
-
-         @Override
          protected void configure() {
          }
       };
       Module module2 = new AbstractModule() {
-
-         @Override
          protected void configure() {
          }
       };

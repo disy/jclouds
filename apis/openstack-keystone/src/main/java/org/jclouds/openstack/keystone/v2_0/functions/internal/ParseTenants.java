@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.keystone.v2_0.functions.internal;
 
@@ -48,11 +46,11 @@ import com.google.inject.TypeLiteral;
  */
 @Beta
 @Singleton
-public class ParseTenants extends ParseJson<Tenants<? extends Tenant>> {
-   static class Tenants<T extends Tenant> extends PaginatedCollection<T> {
+public class ParseTenants extends ParseJson<Tenants> {
+   static class Tenants extends PaginatedCollection<Tenant> {
 
       @ConstructorProperties({ "tenants", "tenants_links" })
-      protected Tenants(Iterable<T> tenants, Iterable<Link> tenants_links) {
+      protected Tenants(Iterable<Tenant> tenants, Iterable<Link> tenants_links) {
          super(tenants, tenants_links);
       }
 
@@ -60,8 +58,7 @@ public class ParseTenants extends ParseJson<Tenants<? extends Tenant>> {
 
    @Inject
    public ParseTenants(Json json) {
-      super(json, new TypeLiteral<Tenants<? extends Tenant>>() {
-      });
+      super(json, TypeLiteral.get(Tenants.class));
    }
 
    public static class ToPagedIterable extends CallerArg0ToPagedIterable<Tenant, ToPagedIterable> {

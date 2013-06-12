@@ -1,30 +1,29 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudwatch.features;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.jclouds.util.Predicates2.retry;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.cloudwatch.domain.Datapoint;
 import org.jclouds.cloudwatch.domain.Dimension;
@@ -40,7 +39,6 @@ import org.jclouds.cloudwatch.domain.Unit;
 import org.jclouds.cloudwatch.internal.BaseCloudWatchApiLiveTest;
 import org.jclouds.cloudwatch.options.ListMetricsOptions;
 import org.jclouds.collect.IterableWithMarker;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -88,12 +86,11 @@ public class MetricApiLiveTest extends BaseCloudWatchApiLiveTest {
 
       ListMetricsOptions lmo = ListMetricsOptions.Builder.namespace(namespace)
                                                  .dimension(new Dimension("BaseMetricName", metricName));
-      boolean success = new RetryablePredicate<ListMetricsOptions>(new Predicate<ListMetricsOptions>() {
-         @Override
+      boolean success = retry(new Predicate<ListMetricsOptions>() {
          public boolean apply(ListMetricsOptions options) {
             return Iterables.size(api().list(options)) == 2;
          }
-      }, 20, 1, TimeUnit.MINUTES).apply(lmo);
+      }, 20, 1, MINUTES).apply(lmo);
 
       if (!success) {
          Assert.fail("Unable to gather the created CloudWatch data within the time (20m) allotted.");
@@ -270,13 +267,16 @@ public class MetricApiLiveTest extends BaseCloudWatchApiLiveTest {
 
          for (Metric metric : response) {
             Set<Dimension> dimensions = metric.getDimensions();
+            boolean dimensionFound = false;
 
-            checkArgument(dimensions.size() == 1, "There should only be one Dimension.");
+            for (Dimension dimension : dimensions) {
+               if (dimension.getName().equals(testDimensionName)) {
+                  dimensionFound = true;
+                  break;
+               }
+            }
 
-            Dimension dimension = dimensions.iterator().next();
-
-            checkArgument(dimension.equals(testDimension),
-                          "The retrieved Dimension and test Dimension should be equal.");
+            checkArgument(dimensionFound, "All metrics should have the " + testDimensionName + " Dimension.Name.");
          }
       }
    }
@@ -304,6 +304,6 @@ public class MetricApiLiveTest extends BaseCloudWatchApiLiveTest {
    }
 
    protected MetricApi api() {
-      return context.getApi().getMetricApiForRegion(null);
+      return api.getMetricApiForRegion(null);
    }
 }

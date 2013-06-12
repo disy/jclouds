@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute.util;
 
@@ -22,8 +20,6 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
@@ -37,6 +33,8 @@ import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.compute.strategy.CustomizeNodeAndAddToGoodMapOrPutExceptionIntoBadMap;
 
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * 
@@ -45,22 +43,22 @@ import com.google.common.collect.Multimap;
 @Singleton
 public class ComputeUtils {
    private final CustomizeNodeAndAddToGoodMapOrPutExceptionIntoBadMap.Factory customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory;
-   private final ExecutorService executor;
+   private final ListeningExecutorService userExecutor;
 
    @Inject
    public ComputeUtils(
             CustomizeNodeAndAddToGoodMapOrPutExceptionIntoBadMap.Factory customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService executor) {
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor) {
       this.customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory = customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory;
-      this.executor = executor;
+      this.userExecutor = userExecutor;
    }
 
-   public Map<?, Future<Void>> customizeNodesAndAddToGoodMapOrPutExceptionIntoBadMap(TemplateOptions options,
+   public Map<?, ListenableFuture<Void>> customizeNodesAndAddToGoodMapOrPutExceptionIntoBadMap(TemplateOptions options,
             Iterable<NodeMetadata> runningNodes, Set<NodeMetadata> goodNodes, Map<NodeMetadata, Exception> badNodes,
             Multimap<NodeMetadata, CustomizationResponse> customizationResponses) {
-      Map<NodeMetadata, Future<Void>> responses = newLinkedHashMap();
+      Map<NodeMetadata, ListenableFuture<Void>> responses = newLinkedHashMap();
       for (NodeMetadata node : runningNodes) {
-         responses.put(node, executor.submit(customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory.create(
+         responses.put(node, userExecutor.submit(customizeNodeAndAddToGoodMapOrPutExceptionIntoBadMapFactory.create(
                   options, new AtomicReference<NodeMetadata>(node), goodNodes, badNodes, customizationResponses)));
       }
       return responses;

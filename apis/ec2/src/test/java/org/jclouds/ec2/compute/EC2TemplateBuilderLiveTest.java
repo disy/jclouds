@@ -1,26 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute;
 
-import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getJavaArgsForRequestAtIndex;
-import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getJavaMethodForRequest;
-import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getJavaMethodForRequestAtIndex;
+import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getArgsForRequestAtIndex;
+import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getInvokerOfRequest;
+import static org.jclouds.http.internal.TrackingJavaUrlHttpCommandExecutorService.getInvokerOfRequestAtIndex;
 import static org.testng.Assert.assertEquals;
 
 import java.lang.reflect.Method;
@@ -73,14 +71,14 @@ public abstract class EC2TemplateBuilderLiveTest extends BaseTemplateBuilderLive
                      AvailabilityZoneAndRegionAsyncClient.class.getMethod("describeAvailabilityZonesInRegion", String.class, DescribeAvailabilityZonesOptions[].class));
             @Override
             public boolean apply(HttpCommand input) {
-               return !ignored.contains(getJavaMethodForRequest(input));
+               return !ignored.contains(getInvokerOfRequest(input));
             }
          });
          
          assert filteredCommandsInvoked.size() == 1 : commandsInvoked;
-         assertEquals(getJavaMethodForRequestAtIndex(filteredCommandsInvoked, 0), AMIAsyncClient.class
+         assertEquals(getInvokerOfRequestAtIndex(filteredCommandsInvoked, 0), AMIAsyncClient.class
                   .getMethod("describeImagesInRegion", String.class, DescribeImagesOptions[].class));
-         assertDescribeImagesOptionsEquals((DescribeImagesOptions[])getJavaArgsForRequestAtIndex(filteredCommandsInvoked, 0).get(1), 
+         assertDescribeImagesOptionsEquals((DescribeImagesOptions[])getArgsForRequestAtIndex(filteredCommandsInvoked, 0).get(1), 
                   defaultImageProviderId);
 
       } finally {

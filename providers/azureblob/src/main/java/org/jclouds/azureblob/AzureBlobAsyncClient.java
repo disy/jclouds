@@ -1,26 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.azureblob;
+
+import static com.google.common.net.HttpHeaders.EXPECT;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Named;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -81,7 +82,10 @@ import com.google.inject.Provides;
  * @see <a href="http://msdn.microsoft.com/en-us/library/dd135733.aspx" />
  * @see AzureBlobClient
  * @author Adrian Cole
+ * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(AzureBlobClient.class)} as
+ *             {@link AzureBlobAsyncClient} interface will be removed in jclouds 1.7.
  */
+@Deprecated
 @RequestFilters(SharedKeyLiteAuthentication.class)
 @Headers(keys = AzureStorageHeaders.VERSION, values = "2009-09-19")
 @SkipEncoding({ '/', '$' })
@@ -93,6 +97,7 @@ public interface AzureBlobAsyncClient {
    /**
     * @see AzureBlobClient#listContainers
     */
+   @Named("ListContainers")
    @GET
    @XMLResponseParser(AccountNameEnumerationResultsHandler.class)
    @QueryParams(keys = "comp", values = "list")
@@ -101,69 +106,76 @@ public interface AzureBlobAsyncClient {
    /**
     * @see AzureBlobClient#createContainer
     */
+   @Named("CreateContainer")
    @PUT
    @Path("{container}")
    @Fallback(FalseIfContainerAlreadyExists.class)
    @QueryParams(keys = "restype", values = "container")
    ListenableFuture<Boolean> createContainer(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             CreateContainerOptions... options);
 
    /**
     * @see AzureBlobClient#getPublicAccessForContainer
     */
+   @Named("GetContainerACL")
    @HEAD
    @Path("{container}")
    @QueryParams(keys = { "restype", "comp" }, values = { "container", "acl" })
    @ResponseParser(ParsePublicAccessHeader.class)
    @Fallback(NullOnContainerNotFound.class)
    ListenableFuture<PublicAccess> getPublicAccessForContainer(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container);
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container);
 
    /**
     * @see AzureBlobClient#getContainerProperties
     */
+   @Named("GetContainerProperties")
    @HEAD
    @Path("{container}")
    @QueryParams(keys = "restype", values = "container")
    @ResponseParser(ParseContainerPropertiesFromHeaders.class)
    @Fallback(NullOnContainerNotFound.class)
    ListenableFuture<ContainerProperties> getContainerProperties(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container);
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container);
 
    /**
     * @see AzureBlobClient#containerExists
     */
+   @Named("GetContainerProperties")
    @HEAD
    @Path("{container}")
    @QueryParams(keys = "restype", values = "container")
    @Fallback(FalseOnContainerNotFound.class)
    ListenableFuture<Boolean> containerExists(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container);
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container);
 
    /**
     * @see AzureBlobClient#setResourceMetadata
     */
+   @Named("SetContainerMetadata")
    @PUT
    @Path("{container}")
    @QueryParams(keys = { "restype", "comp" }, values = { "container", "metadata" })
    ListenableFuture<Void> setResourceMetadata(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @BinderParam(BindMapToHeadersWithPrefix.class) Map<String, String> metadata);
 
    /**
     * @see AzureBlobClient#deleteContainer
     */
+   @Named("DeleteContainer")
    @DELETE
    @Path("{container}")
    @Fallback(VoidOnNotFoundOr404.class)
    @QueryParams(keys = "restype", values = "container")
    ListenableFuture<Void> deleteContainer(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container);
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container);
 
    /**
     * @see AzureBlobClient#createRootContainer
     */
+   @Named("CreateContainer")
    @PUT
    @Path("$root")
    @Fallback(FalseIfContainerAlreadyExists.class)
@@ -173,6 +185,7 @@ public interface AzureBlobAsyncClient {
    /**
     * @see AzureBlobClient#deleteRootContainer
     */
+   @Named("DeleteContainer")
    @DELETE
    @Path("$root")
    @Fallback(TrueOnNotFoundOr404.class)
@@ -182,17 +195,19 @@ public interface AzureBlobAsyncClient {
    /**
     * @see AzureBlobClient#listBlobs(String, ListBlobsOptions[])
     */
+   @Named("ListBlobs")
    @GET
    @XMLResponseParser(ContainerNameEnumerationResultsHandler.class)
    @Path("{container}")
    @QueryParams(keys = { "restype", "comp" }, values = { "container", "list" })
    ListenableFuture<ListBlobsResponse> listBlobs(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             ListBlobsOptions... options);
 
    /**
     * @see AzureBlobClient#listBlobs(ListBlobsOptions[])
     */
+   @Named("ListBlobs")
    @GET
    @XMLResponseParser(ContainerNameEnumerationResultsHandler.class)
    @Path("$root")
@@ -202,63 +217,71 @@ public interface AzureBlobAsyncClient {
    /**
     * @see AzureBlobClient#putBlob
     */
+   @Named("PutBlob")
    @PUT
    @Path("{container}/{name}")
+   @Headers(keys = EXPECT, values = "100-continue")
    @ResponseParser(ParseETagHeader.class)
    ListenableFuture<String> putBlob(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") @ParamParser(BlobName.class) @BinderParam(BindAzureBlobMetadataToRequest.class) org.jclouds.azureblob.domain.AzureBlob object);
 
    /**
     * @see AzureBlobClient#getBlob
     */
+   @Named("GetBlob")
    @GET
    @ResponseParser(ParseBlobFromHeadersAndHttpContent.class)
    @Fallback(NullOnKeyNotFound.class)
    @Path("{container}/{name}")
    ListenableFuture<org.jclouds.azureblob.domain.AzureBlob> getBlob(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") String name, GetOptions... options);
 
    /**
     * @see AzureBlobClient#getBlobProperties
     */
+   @Named("GetBlobProperties")
    @HEAD
    @ResponseParser(ParseBlobPropertiesFromHeaders.class)
    @Fallback(NullOnKeyNotFound.class)
    @Path("{container}/{name}")
    ListenableFuture<BlobProperties> getBlobProperties(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") String name);
 
    /**
     * @see AzureBlobClient#blobExists
+    *
     */
+   @Named("GetBlobProperties")
    @HEAD
    @Fallback(FalseOnKeyNotFound.class)
    @Path("{container}/{name}")
    ListenableFuture<Boolean> blobExists(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") String name);
 
    /**
     * @see AzureBlobClient#setBlobMetadata
     */
+   @Named("SetBlobMetadata")
    @PUT
    @Path("{container}/{name}")
    @QueryParams(keys = { "comp" }, values = { "metadata" })
    ListenableFuture<Void> setBlobMetadata(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") String name, @BinderParam(BindMapToHeadersWithPrefix.class) Map<String, String> metadata);
 
    /**
     * @see AzureBlobClient#deleteBlob
     */
+   @Named("DeleteBlob")
    @DELETE
    @Fallback(VoidOnNotFoundOr404.class)
    @Path("{container}/{name}")
    ListenableFuture<Void> deleteBlob(
-            @PathParam("container") @ParamValidators( { ContainerNameValidator.class }) String container,
+            @PathParam("container") @ParamValidators(ContainerNameValidator.class) String container,
             @PathParam("name") String name);
 
 }

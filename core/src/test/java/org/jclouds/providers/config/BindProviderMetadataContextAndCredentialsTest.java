@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.providers.config;
 
@@ -41,11 +39,11 @@ import org.jclouds.providers.ProviderMetadata;
 import org.jclouds.rest.annotations.Api;
 import org.jclouds.rest.annotations.ApiVersion;
 import org.jclouds.rest.annotations.BuildVersion;
-import org.jclouds.rest.annotations.Credential;
-import org.jclouds.rest.annotations.Identity;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Predicates;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Guice;
 import com.google.inject.Key;
@@ -63,8 +61,6 @@ public class BindProviderMetadataContextAndCredentialsTest {
       private final javax.inject.Provider<Context> backend;
       private final ProviderMetadata providerMetadata;
       private final Credentials creds;
-      private final String identity;
-      private final String credential;
       private final String providerId;
       private final Set<String> iso3166Codes;
       private final String apiId;
@@ -73,10 +69,9 @@ public class BindProviderMetadataContextAndCredentialsTest {
 
       @Inject
       private ExpectedBindings(@Provider javax.inject.Provider<Context> backend, ProviderMetadata providerMetadata,
-               @Provider Credentials creds, @Identity String identity, @Nullable @Credential String credential,
-               @Provider String providerId, @Iso3166 Set<String> iso3166Codes, @Api String apiId,
-               @ApiVersion String apiVersion, @Nullable @BuildVersion String buildVersion,
-               @Provider TypeToken<? extends Context> backendToken, FilterStringsBoundToInjectorByName filter) {
+            @Provider Supplier<Credentials> creds, @Provider String providerId, @Iso3166 Set<String> iso3166Codes,
+            @Api String apiId, @ApiVersion String apiVersion, @Nullable @BuildVersion String buildVersion,
+            @Provider TypeToken<? extends Context> backendToken, FilterStringsBoundToInjectorByName filter) {
          this.backend = backend;
          assertEquals(backendToken, providerMetadata.getApiMetadata().getContext());
          this.providerMetadata = providerMetadata;
@@ -86,11 +81,7 @@ public class BindProviderMetadataContextAndCredentialsTest {
          expected.putAll(providerMetadata.getApiMetadata().getDefaultProperties());
          expected.putAll(providerMetadata.getDefaultProperties());
          assertEquals(props, expected);
-         this.creds = creds;
-         this.identity = identity;
-         assertEquals(identity, creds.identity);
-         this.credential = credential;
-         assertEquals(credential, creds.credential);
+         this.creds = creds.get();
          this.providerId = providerId;
          assertEquals(providerId, providerMetadata.getId());
          this.iso3166Codes = iso3166Codes;
@@ -110,12 +101,13 @@ public class BindProviderMetadataContextAndCredentialsTest {
 
       ProviderMetadata md = AnonymousProviderMetadata.forClientMappedToAsyncClientOnEndpoint(
                IntegrationTestClient.class, IntegrationTestAsyncClient.class, "http://localhost");
-      Credentials creds = LoginCredentials.builder().user("user").password("password").build();
+      Supplier<Credentials> creds = Suppliers.<Credentials> ofInstance(LoginCredentials.builder().user("user")
+            .password("password").build());
 
       ExpectedBindings bindings = Guice.createInjector(new BindProviderMetadataContextAndCredentials(md, creds))
                .getInstance(ExpectedBindings.class);
-      assertEquals(bindings.identity, "user");
-      assertEquals(bindings.credential, "password");
+      assertEquals(bindings.creds.identity, "user");
+      assertEquals(bindings.creds.credential, "password");
    }
 
    @Test
@@ -123,12 +115,12 @@ public class BindProviderMetadataContextAndCredentialsTest {
 
       ProviderMetadata md = AnonymousProviderMetadata.forClientMappedToAsyncClientOnEndpoint(
                IntegrationTestClient.class, IntegrationTestAsyncClient.class, "http://localhost");
-      Credentials creds = LoginCredentials.builder().user("user").build();
+      Supplier<Credentials> creds = Suppliers.<Credentials> ofInstance(LoginCredentials.builder().user("user").build());
 
       ExpectedBindings bindings = Guice.createInjector(new BindProviderMetadataContextAndCredentials(md, creds))
                .getInstance(ExpectedBindings.class);
-      assertEquals(bindings.identity, "user");
-      assertEquals(bindings.credential, null);
+      assertEquals(bindings.creds.identity, "user");
+      assertEquals(bindings.creds.credential, null);
    }
    
    @Test
@@ -138,7 +130,7 @@ public class BindProviderMetadataContextAndCredentialsTest {
                IntegrationTestClient.class, IntegrationTestAsyncClient.class, "http://localhost");
       ApiMetadata apiMd = md.getApiMetadata().toBuilder().buildVersion(null).build();
       md = md.toBuilder().apiMetadata(apiMd).build();
-      Credentials creds = LoginCredentials.builder().user("user").build();
+      Supplier<Credentials> creds = Suppliers.<Credentials> ofInstance(LoginCredentials.builder().user("user").build());
 
       ExpectedBindings bindings = Guice.createInjector(new BindProviderMetadataContextAndCredentials(md, creds))
                .getInstance(ExpectedBindings.class);
@@ -154,7 +146,7 @@ public class BindProviderMetadataContextAndCredentialsTest {
       defaultProps.setProperty(Constants.PROPERTY_SESSION_INTERVAL, Integer.MAX_VALUE + "");
       md = md.toBuilder().defaultProperties(defaultProps).build();
 
-      Credentials creds = LoginCredentials.builder().user("user").build();
+      Supplier<Credentials> creds = Suppliers.<Credentials> ofInstance(LoginCredentials.builder().user("user").build());
 
       int session = Guice.createInjector(new BindProviderMetadataContextAndCredentials(md, creds)).getInstance(
                Key.get(int.class, Names.named(Constants.PROPERTY_SESSION_INTERVAL)));

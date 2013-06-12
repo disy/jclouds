@@ -1,26 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
 import static com.google.common.collect.Iterables.find;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.cloudstack.predicates.NetworkPredicates.hasLoadBalancerService;
 import static org.jclouds.cloudstack.predicates.NetworkPredicates.isVirtualNetwork;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -28,7 +28,6 @@ import static org.testng.Assert.assertTrue;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.cloudstack.domain.AsyncJob;
 import org.jclouds.cloudstack.domain.JobResult;
@@ -40,7 +39,6 @@ import org.jclouds.cloudstack.domain.PublicIPAddress;
 import org.jclouds.cloudstack.domain.VirtualMachine;
 import org.jclouds.cloudstack.internal.BaseCloudStackClientLiveTest;
 import org.jclouds.cloudstack.predicates.LoadBalancerRuleActive;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.ssh.SshException;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
@@ -60,16 +58,14 @@ public class LoadBalancerClientLiveTest extends BaseCloudStackClientLiveTest {
    private PublicIPAddress ip = null;
    private VirtualMachine vm;
    private LoadBalancerRule rule;
-   private RetryablePredicate<LoadBalancerRule> loadBalancerRuleActive;
+   private Predicate<LoadBalancerRule> loadBalancerRuleActive;
    private Network network;
    private boolean networksDisabled;
 
    @BeforeGroups(groups = "live")
    public void setupContext() {
       super.setupContext();
-
-      loadBalancerRuleActive = new RetryablePredicate<LoadBalancerRule>(new LoadBalancerRuleActive(client), 60, 1, 1,
-            TimeUnit.SECONDS);
+      loadBalancerRuleActive = retry(new LoadBalancerRuleActive(client), 60, 1, 1, SECONDS);
       prefix += "rule";
       try {
          network = find(client.getNetworkClient().listNetworks(),
@@ -95,7 +91,7 @@ public class LoadBalancerClientLiveTest extends BaseCloudStackClientLiveTest {
       vm = VirtualMachineClientLiveTest.createVirtualMachineInNetwork(network,
             defaultTemplateOrPreferredInZone(defaultTemplate, client, network.getZoneId()),
             client, jobComplete, virtualMachineRunning);
-      if (vm.getPassword() != null && !loginCredentials.hasPasswordOption())
+      if (vm.getPassword() != null && loginCredentials.getOptionalPassword() == null)
          loginCredentials = loginCredentials.toBuilder().password(vm.getPassword()).build();
    }
 

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
@@ -52,7 +50,6 @@ import org.jclouds.cloudstack.options.ListNetworkOfferingsOptions;
 import org.jclouds.cloudstack.options.ListNetworksOptions;
 import org.jclouds.cloudstack.options.ListTemplatesOptions;
 import org.jclouds.cloudstack.options.ListVirtualMachinesOptions;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.util.InetAddresses2;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.Test;
@@ -87,7 +84,7 @@ public class VirtualMachineClientLiveTest extends BaseCloudStackClientLiveTest {
    };
 
    public static VirtualMachine createVirtualMachine(CloudStackClient client, String defaultTemplate,
-         RetryablePredicate<String> jobComplete, RetryablePredicate<VirtualMachine> virtualMachineRunning) {
+         Predicate<String> jobComplete, Predicate<VirtualMachine> virtualMachineRunning) {
       Set<Network> networks = client.getNetworkClient().listNetworks(isDefault(true));
       if (networks.size() > 0) {
          Network network = get(filter(networks, new Predicate<Network>() {
@@ -116,15 +113,15 @@ public class VirtualMachineClientLiveTest extends BaseCloudStackClientLiveTest {
    }
 
    public static VirtualMachine createVirtualMachineWithSecurityGroupInZone(String zoneId, String templateId, String groupId,
-         CloudStackClient client, RetryablePredicate<String> jobComplete,
-         RetryablePredicate<VirtualMachine> virtualMachineRunning) {
+         CloudStackClient client, Predicate<String> jobComplete,
+         Predicate<VirtualMachine> virtualMachineRunning) {
       return createVirtualMachineWithOptionsInZone(new DeployVirtualMachineOptions().securityGroupId(groupId), zoneId,
             templateId, client, jobComplete, virtualMachineRunning);
    }
 
    public static VirtualMachine createVirtualMachineInNetwork(Network network, String templateId,
-         CloudStackClient client, RetryablePredicate<String> jobComplete,
-         RetryablePredicate<VirtualMachine> virtualMachineRunning) {
+         CloudStackClient client, Predicate<String> jobComplete,
+         Predicate<VirtualMachine> virtualMachineRunning) {
       DeployVirtualMachineOptions options = new DeployVirtualMachineOptions();
       String zoneId = network.getZoneId();
       options.networkId(network.getId());
@@ -134,7 +131,7 @@ public class VirtualMachineClientLiveTest extends BaseCloudStackClientLiveTest {
 
    public static VirtualMachine createVirtualMachineInNetworkWithIp(
          CloudStackClient client, String templateId, Set<Network> networks, Map<String, String> ipToNetwork,
-         RetryablePredicate<String> jobComplete, RetryablePredicate<VirtualMachine> virtualMachineRunning) {
+         Predicate<String> jobComplete, Predicate<VirtualMachine> virtualMachineRunning) {
 
       DeployVirtualMachineOptions options = new DeployVirtualMachineOptions();
 
@@ -152,8 +149,8 @@ public class VirtualMachineClientLiveTest extends BaseCloudStackClientLiveTest {
    }
 
    public static VirtualMachine createVirtualMachineWithOptionsInZone(DeployVirtualMachineOptions options, String zoneId,
-         String templateId, CloudStackClient client, RetryablePredicate<String> jobComplete,
-         RetryablePredicate<VirtualMachine> virtualMachineRunning) {
+         String templateId, CloudStackClient client, Predicate<String> jobComplete,
+         Predicate<VirtualMachine> virtualMachineRunning) {
       String serviceOfferingId = DEFAULT_SIZE_ORDERING.min(client.getOfferingClient().listServiceOfferings()).getId();
 
       System.out.printf("serviceOfferingId %s, templateId %s, zoneId %s, options %s%n", serviceOfferingId, templateId,
@@ -284,7 +281,7 @@ public class VirtualMachineClientLiveTest extends BaseCloudStackClientLiveTest {
    }
 
    private void conditionallyCheckSSH() {
-      if (vm.getPassword() != null && !loginCredentials.hasPasswordOption())
+      if (vm.getPassword() != null && loginCredentials.getOptionalPassword() == null)
          loginCredentials = loginCredentials.toBuilder().password(vm.getPassword()).build();
       assert HostSpecifier.isValid(vm.getIPAddress());
       if (!InetAddresses2.isPrivateIPAddress(vm.getIPAddress())) {

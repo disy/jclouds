@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.parse;
 
@@ -101,8 +99,13 @@ public class ParseServerTest extends BaseItemParserTest<Server> {
                   .putAll("public", Address.createV4("67.23.10.132"), Address.createV6("::babe:67.23.10.132"),
                   Address.createV4("67.23.10.131"), Address.createV6("::babe:4317:0A83"))
                   .putAll("private", Address.createV4("10.176.42.16"), Address.createV6("::babe:10.176.42.16"))
-                  .build()).build();
-
+                  .build())
+            .links(Link.create(
+                        Relation.SELF, URI.create("http://servers.api.openstack.org/v1.1/1234/servers/52415800-8b69-11e0-9b19-734f6f006e54")),
+                   Link.create(
+                        Relation.BOOKMARK,
+                        URI.create("http://servers.api.openstack.org/1234/servers/52415800-8b69-11e0-9b19-734f6f006e54")))
+            .build();
    }
 
    protected Injector injector() {

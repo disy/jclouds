@@ -1,40 +1,39 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.rest.internal;
 import static com.google.common.base.Throwables.propagate;
 import static com.google.common.hash.Hashing.md5;
+import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
+import static com.google.inject.name.Names.named;
 import static org.easymock.EasyMock.createMock;
 import static org.eclipse.jetty.http.HttpHeaders.TRANSFER_ENCODING;
+import static org.jclouds.Constants.PROPERTY_IO_WORKER_THREADS;
+import static org.jclouds.Constants.PROPERTY_USER_THREADS;
 import static org.jclouds.io.ByteSources.asByteSource;
-import static org.jclouds.rest.internal.RestAnnotationProcessor.createResponseParser;
-import static org.jclouds.rest.internal.RestAnnotationProcessor.getSaxResponseParserClassOrNull;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
 
-import org.jclouds.Constants;
-import org.jclouds.concurrent.MoreExecutors;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.jclouds.concurrent.config.ConfiguresExecutorService;
 import org.jclouds.fallbacks.MapHttp4xxCodesToExceptions;
 import org.jclouds.http.HttpCommandExecutorService;
@@ -44,15 +43,20 @@ import org.jclouds.http.functions.ParseSax;
 import org.jclouds.io.MutableContentMetadata;
 import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.rest.annotations.Fallback;
+import org.jclouds.rest.annotations.XMLResponseParser;
 import org.jclouds.util.Strings2;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
+import com.google.common.reflect.Invokable;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.TimeLimiter;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.name.Names;
+import com.google.inject.Provides;
 
 /**
  * 
@@ -79,11 +83,15 @@ public abstract class BaseRestApiTest {
 
       @Override
       protected void configure() {
-         bind(ExecutorService.class).annotatedWith(Names.named(Constants.PROPERTY_USER_THREADS)).toInstance(
-               MoreExecutors.sameThreadExecutor());
-         bind(ExecutorService.class).annotatedWith(Names.named(Constants.PROPERTY_IO_WORKER_THREADS)).toInstance(
-               MoreExecutors.sameThreadExecutor());
+         bind(ListeningExecutorService.class).annotatedWith(named(PROPERTY_USER_THREADS)).toInstance(sameThreadExecutor());
+         bind(ListeningExecutorService.class).annotatedWith(named(PROPERTY_IO_WORKER_THREADS)).toInstance(sameThreadExecutor());
          bind(HttpCommandExecutorService.class).toInstance(mock);
+      }
+
+      @Provides
+      @Singleton
+      TimeLimiter timeLimiter(@Named(PROPERTY_USER_THREADS) ListeningExecutorService userExecutor){
+         return new SimpleTimeLimiter(userExecutor);
       }
    }
 
@@ -161,7 +169,7 @@ public abstract class BaseRestApiTest {
       assertEquals(request.getRequestLine(), toMatch);
    }
 
-   protected void assertFallbackClassEquals(Method method, @Nullable Class<?> expected) {
+   protected void assertFallbackClassEquals(Invokable<?, ?> method, @Nullable Class<?> expected) {
       Fallback fallbackAnnotation = method.getAnnotation(Fallback.class);
       Class<?> assigned = fallbackAnnotation != null ? fallbackAnnotation.value() : MapHttp4xxCodesToExceptions.class;
       if (expected == null)
@@ -170,16 +178,14 @@ public abstract class BaseRestApiTest {
          assertEquals(assigned, expected);
    }
 
-   protected void assertSaxResponseParserClassEquals(Method method, @Nullable Class<?> parserClass) {
-      assertEquals(getSaxResponseParserClassOrNull(method), parserClass);
+   protected void assertSaxResponseParserClassEquals(Invokable<?, ?> method, @Nullable Class<?> parserClass) {
+      XMLResponseParser annotation = method.getAnnotation(XMLResponseParser.class);
+      Class<?> expected =  (annotation != null) ? annotation.value() :null;
+      assertEquals(expected, parserClass);
    }
 
-   protected void assertResponseParserClassEquals(Method method, HttpRequest request, @Nullable Class<?> parserClass) {
-      assertEquals(createResponseParser(parserFactory, injector, method, request).getClass(), parserClass);
+   protected void assertResponseParserClassEquals(Invokable<?, ?> method, GeneratedHttpRequest request,
+         @Nullable Class<?> parserClass) {
+      assertEquals(injector.getInstance(TransformerForRequest.class).apply(request).getClass(), parserClass);
    }
-
-   protected RestAnnotationProcessor factory(Class<?> clazz) {
-      return injector.getInstance(RestAnnotationProcessor.Factory.class).declaring(clazz);
-   }
-
 }

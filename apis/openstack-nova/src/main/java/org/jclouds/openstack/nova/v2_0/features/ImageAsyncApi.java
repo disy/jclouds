@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.features;
 
 import java.util.Map;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -69,6 +68,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#list()
     */
+   @Named("image:list")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/images")
@@ -79,6 +79,7 @@ public interface ImageAsyncApi {
    ListenableFuture<? extends PagedIterable<? extends Resource>> list();
 
    /** @see ImageApi#list(PaginationOptions) */
+   @Named("image:list")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/images")
@@ -90,6 +91,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#listInDetail()
     */
+   @Named("image:list")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/images/detail")
@@ -100,6 +102,7 @@ public interface ImageAsyncApi {
    ListenableFuture<? extends PagedIterable<? extends Image>> listInDetail();
 
    /** @see ImageApi#listInDetail(PaginationOptions) */
+   @Named("image:list")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/images/detail")
@@ -111,6 +114,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#get
     */
+   @Named("image:get")
    @GET
    @SelectJson("image")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -121,6 +125,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#delete
     */
+   @Named("image:delete")
    @DELETE
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/images/{id}")
@@ -130,6 +135,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#getMetadata
     */
+   @Named("image:getmetadata")
    @GET
    @SelectJson("metadata")
    @Path("/images/{id}/metadata")
@@ -140,6 +146,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#setMetadata
     */
+   @Named("image:setmetadata")
    @PUT
    @SelectJson("metadata")
    @Path("/images/{id}/metadata")
@@ -152,6 +159,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#updateMetadata
     */
+   @Named("image:updatemetadata")
    @POST
    @SelectJson("metadata")
    @Path("/images/{id}/metadata")
@@ -164,6 +172,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#getMetadata
     */
+   @Named("image:getmetadata")
    @GET
    @Path("/images/{id}/metadata/{key}")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -174,6 +183,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#updateMetadata
     */
+   @Named("image:updatemetadata")
    @PUT
    @Path("/images/{id}/metadata/{key}")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -187,6 +197,7 @@ public interface ImageAsyncApi {
    /**
     * @see ImageApi#deleteMetadata
     */
+   @Named("image:deletemetadata")
    @DELETE
    @Consumes
    @Path("/images/{id}/metadata/{key}")

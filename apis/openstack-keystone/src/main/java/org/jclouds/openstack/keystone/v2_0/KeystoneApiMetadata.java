@@ -1,26 +1,21 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.keystone.v2_0;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.jclouds.Constants.PROPERTY_TIMEOUTS_PREFIX;
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.CREDENTIAL_TYPE;
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.SERVICE_TYPE;
 
@@ -32,8 +27,8 @@ import org.jclouds.openstack.keystone.v2_0.config.KeystoneAuthenticationModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneParserModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneRestClientModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneRestClientModule.KeystoneAdminURLModule;
+import org.jclouds.openstack.keystone.v2_0.config.MappedAuthenticationApiModule;
 import org.jclouds.openstack.v2_0.ServiceType;
-import org.jclouds.rest.RestContext;
 import org.jclouds.rest.internal.BaseRestApiMetadata;
 
 import com.google.common.collect.ImmutableSet;
@@ -47,7 +42,12 @@ import com.google.inject.Module;
  */
 public class KeystoneApiMetadata extends BaseRestApiMetadata {
    
-   public static final TypeToken<RestContext<? extends KeystoneApi,? extends  KeystoneAsyncApi>> CONTEXT_TOKEN = new TypeToken<RestContext<? extends KeystoneApi,? extends  KeystoneAsyncApi>>() {
+   /**
+    * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(KeystoneApi.class)} as
+    *             {@link KeystoneAsyncApi} interface will be removed in jclouds 1.7.
+    */
+   @Deprecated
+   public static final TypeToken<org.jclouds.rest.RestContext<KeystoneApi, KeystoneAsyncApi>> CONTEXT_TOKEN = new TypeToken<org.jclouds.rest.RestContext<KeystoneApi, KeystoneAsyncApi>>() {
       private static final long serialVersionUID = 1L;
    };
 
@@ -66,14 +66,13 @@ public class KeystoneApiMetadata extends BaseRestApiMetadata {
 
    public static Properties defaultProperties() {
       Properties properties = BaseRestApiMetadata.defaultProperties();
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "default", SECONDS.toMillis(30) + "");
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "ExtensionApi", MINUTES.toMillis(3) + "");
       properties.setProperty(CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
       properties.setProperty(SERVICE_TYPE, ServiceType.IDENTITY);
       return properties;
    }
 
-   public static abstract class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+   public abstract static class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+      @SuppressWarnings("deprecation")
       protected Builder() {
          this(KeystoneApi.class, KeystoneAsyncApi.class);
       }
@@ -90,6 +89,7 @@ public class KeystoneApiMetadata extends BaseRestApiMetadata {
          .defaultEndpoint("http://localhost:5000/v${jclouds.api-version}/")
          .defaultProperties(KeystoneApiMetadata.defaultProperties())
          .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
+                                     .add(MappedAuthenticationApiModule.class)
                                      .add(KeystoneAuthenticationModule.class)
                                      .add(KeystoneAdminURLModule.class)
                                      .add(KeystoneParserModule.class)

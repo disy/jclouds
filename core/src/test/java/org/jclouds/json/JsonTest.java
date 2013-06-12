@@ -1,34 +1,38 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.json;
 
+import static com.google.common.io.BaseEncoding.base16;
+import static com.google.common.primitives.Bytes.asList;
 import static org.testng.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.jclouds.json.config.GsonModule;
+import org.jclouds.json.config.GsonModule.DefaultExclusionStrategy;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.gson.FieldAttributes;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.TypeLiteral;
 
@@ -81,6 +85,26 @@ public class JsonTest {
       assertEquals(obj2, obj);
       assertEquals(json.toJson(obj2), json.toJson(obj));
    }
+   
+   static class ExcludeStringValue implements DefaultExclusionStrategy {
+      public boolean shouldSkipClass(Class<?> clazz) {
+        return false;
+      }
+
+      public boolean shouldSkipField(FieldAttributes f) {
+        return f.getName().equals("stringValue");
+      }
+   }
+
+   public void testExcluder() {
+      Json excluder = Guice.createInjector(new GsonModule(), new AbstractModule() {
+         protected void configure() {
+            bind(DefaultExclusionStrategy.class).to(ExcludeStringValue.class);
+         }
+      }).getInstance(Json.class);
+      ObjectNoDefaultConstructor obj = new ObjectNoDefaultConstructor("foo", 1);
+      assertEquals(excluder.toJson(obj), "{\"intValue\":1}");
+   }
 
    private static class EnumInside {
       private static enum Test {
@@ -88,6 +112,17 @@ public class JsonTest {
       }
 
       private Test enumValue;
+   }
+
+   private static class ByteList {
+      List<Byte> checksum;
+   }
+
+   public void testByteList() {
+      ByteList bl = new ByteList();
+      bl.checksum = asList(base16().lowerCase().decode("1dda05ed139664f1f89b9dec482b77c0"));
+      assertEquals(json.toJson(bl), "{\"checksum\":\"1dda05ed139664f1f89b9dec482b77c0\"}");
+      assertEquals(json.fromJson(json.toJson(bl), ByteList.class).checksum, bl.checksum);
    }
 
    public void testPropertiesSerializesDefaults() {

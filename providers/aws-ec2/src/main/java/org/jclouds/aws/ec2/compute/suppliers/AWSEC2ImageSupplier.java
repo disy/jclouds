@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.compute.suppliers;
 
@@ -26,8 +24,6 @@ import static org.jclouds.aws.ec2.reference.AWSEC2Constants.PROPERTY_EC2_CC_REGI
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -55,6 +51,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * 
@@ -71,7 +69,7 @@ public class AWSEC2ImageSupplier implements Supplier<Set<? extends Image>> {
    
    private final Set<String> clusterComputeIds;
    private final CallForImages.Factory factory;
-   private final ExecutorService executor;
+   private final ListeningExecutorService userExecutor;
 
    private final Supplier<Set<String>> regions;
    private final Map<String, String> queries;
@@ -83,14 +81,14 @@ public class AWSEC2ImageSupplier implements Supplier<Set<? extends Image>> {
             @ImageQuery Map<String, String> queries, @Named(PROPERTY_EC2_CC_REGIONS) String clusterRegions,
             Supplier<LoadingCache<RegionAndName, ? extends Image>> cache,
             CallForImages.Factory factory, @ClusterCompute Set<String> clusterComputeIds,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService executor) {
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor) {
       this.factory = factory;
       this.regions = regions;
       this.queries = queries;
       this.clusterRegions = Splitter.on(',').split(clusterRegions);
       this.cache = cache;
       this.clusterComputeIds = clusterComputeIds;
-      this.executor = executor;
+      this.userExecutor = userExecutor;
    }
    
    @SuppressWarnings("unchecked")
@@ -99,7 +97,7 @@ public class AWSEC2ImageSupplier implements Supplier<Set<? extends Image>> {
       String amiQuery = queries.get(PROPERTY_EC2_AMI_QUERY);
       String ccAmiQuery = queries.get(PROPERTY_EC2_CC_AMI_QUERY);
 
-      Future<Iterable<Image>> normalImages = images(regions.get(), amiQuery, PROPERTY_EC2_AMI_QUERY);
+      ListenableFuture<Iterable<Image>> normalImages = images(regions.get(), amiQuery, PROPERTY_EC2_AMI_QUERY);
       ImmutableSet<Image> clusterImages;
       try {
          clusterImages = ImmutableSet.copyOf(images(clusterRegions, ccAmiQuery, PROPERTY_EC2_CC_AMI_QUERY).get());
@@ -136,12 +134,12 @@ public class AWSEC2ImageSupplier implements Supplier<Set<? extends Image>> {
       };
    }
    
-   private Future<Iterable<Image>> images(Iterable<String> regions, String query, String tag) {
+   private ListenableFuture<Iterable<Image>> images(Iterable<String> regions, String query, String tag) {
       if (query == null) {
          logger.debug(">> no %s specified, skipping image parsing", tag);
          return Futures.<Iterable<Image>> immediateFuture(ImmutableSet.<Image> of());
       } else {
-         return executor.submit(factory.parseImagesFromRegionsUsingFilter(regions, QueryStringToMultimap.INSTANCE
+         return userExecutor.submit(factory.parseImagesFromRegionsUsingFilter(regions, QueryStringToMultimap.INSTANCE
                   .apply(query)));
       }
    }

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.http;
 
@@ -61,7 +59,6 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.jclouds.ContextBuilder;
 import org.jclouds.providers.AnonymousProviderMetadata;
-import org.jclouds.rest.RestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
@@ -87,7 +84,6 @@ public abstract class BaseJettyTest {
    protected Injector injector;
    private AtomicInteger cycle = new AtomicInteger(0);
    private Server server2;
-   protected RestContext<IntegrationTestClient, IntegrationTestAsyncClient> context;
    protected int testPort;
    protected String md5;
    static final Pattern actionPattern = Pattern.compile("/objects/(.*)/action/([a-z]*);?(.*)");
@@ -127,7 +123,7 @@ public abstract class BaseJettyTest {
                   response.setStatus(SC_OK);
                   response.getWriter().println(toStringAndClose(request.getInputStream()) + "PUT");
                } else {
-                  response.sendError(500, "no content");
+                  response.setStatus(SC_OK);
                }
             } else if (request.getMethod().equals("POST")) {
                // don't redirect large objects
@@ -170,8 +166,7 @@ public abstract class BaseJettyTest {
 
       Properties properties = new Properties();
       addConnectionProperties(properties);
-      context = newBuilder(testPort, properties, createConnectionModule()).build();
-      client = context.getApi();
+      client = newBuilder(testPort, properties, createConnectionModule()).buildApi(IntegrationTestClient.class);
       assert client != null;
 
       assert client.newStringBuilder() != null;
@@ -279,7 +274,7 @@ public abstract class BaseJettyTest {
 
    @AfterClass
    public void tearDownJetty() throws Exception {
-      closeQuietly(context);
+      closeQuietly(client);
       if (server2 != null)
          server2.stop();
       server.stop();

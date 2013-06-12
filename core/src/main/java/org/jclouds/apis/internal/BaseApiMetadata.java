@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.apis.internal;
 
@@ -32,6 +30,7 @@ import static org.jclouds.Constants.PROPERTY_SCHEDULER_THREADS;
 import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
 import static org.jclouds.Constants.PROPERTY_SO_TIMEOUT;
 import static org.jclouds.Constants.PROPERTY_USER_THREADS;
+import static org.jclouds.reflect.Reflection2.typeToken;
 
 import java.net.URI;
 import java.util.Properties;
@@ -76,25 +75,24 @@ public abstract class BaseApiMetadata implements ApiMetadata {
       return props;
    }
    
-   public static abstract class Builder<T extends Builder<T>> implements ApiMetadata.Builder<T> {
+   public abstract static class Builder<T extends Builder<T>> implements ApiMetadata.Builder<T> {
       protected abstract T self();
 
-      protected String id;
-      protected String name;
-      protected Set<TypeToken<? extends View>> views = ImmutableSet.of();
-      protected String endpointName = "https endpoint";
-      protected String identityName;
-      protected Optional<String> credentialName = Optional.absent();
-      protected String version = "";
-      protected Optional<String> buildVersion = Optional.of("");
-      protected Optional<String> defaultEndpoint = Optional.absent();
-      protected Optional<String> defaultIdentity = Optional.absent();
-      protected Optional<String> defaultCredential = Optional.absent();
-      protected Properties defaultProperties = BaseApiMetadata.defaultProperties();
-      protected URI documentation;
-      //
-      protected TypeToken<? extends Context> context = TypeToken.of(Context.class);
-      protected Set<Class<? extends Module>> defaultModules = ImmutableSet.of();
+      private String id;
+      private String name;
+      private Set<TypeToken<? extends View>> views = ImmutableSet.of();
+      private String endpointName = "https endpoint";
+      private String identityName;
+      private Optional<String> credentialName = Optional.absent();
+      private String version = "";
+      private Optional<String> buildVersion = Optional.of("");
+      private Optional<String> defaultEndpoint = Optional.absent();
+      private Optional<String> defaultIdentity = Optional.absent();
+      private Optional<String> defaultCredential = Optional.absent();
+      private Properties defaultProperties = BaseApiMetadata.defaultProperties();
+      private URI documentation;
+      private TypeToken<? extends Context> context = typeToken(Context.class);
+      private Set<Class<? extends Module>> defaultModules = ImmutableSet.of();
 
       /**
        * {@inheritDoc}
@@ -119,7 +117,7 @@ public abstract class BaseApiMetadata implements ApiMetadata {
        */
       @Override
       public T view(Class<? extends View> view) {
-         return view(TypeToken.of(checkNotNull(view, "view")));
+         return view(typeToken(checkNotNull(view, "view")));
       }
       
       /**
@@ -265,21 +263,21 @@ public abstract class BaseApiMetadata implements ApiMetadata {
       }
    }
 
-   protected final String id;
-   protected final String name;
-   protected final Set<TypeToken<? extends View>> views;
-   protected final String endpointName;
-   protected final String identityName;
-   protected final Optional<String> credentialName;
-   protected final String version;
-   protected final Optional<String> buildVersion;
-   protected final Optional<String> defaultEndpoint;
-   protected final Optional<String> defaultIdentity;
-   protected final Optional<String> defaultCredential;
-   protected final Properties defaultProperties;
-   protected final URI documentation;
-   protected final TypeToken<? extends Context> context;
-   protected final Set<Class<? extends Module>> defaultModules;
+   private final String id;
+   private final String name;
+   private final Set<TypeToken<? extends View>> views;
+   private final String endpointName;
+   private final String identityName;
+   private final Optional<String> credentialName;
+   private final String version;
+   private final Optional<String> buildVersion;
+   private final Optional<String> defaultEndpoint;
+   private final Optional<String> defaultIdentity;
+   private final Optional<String> defaultCredential;
+   private final Properties defaultProperties;
+   private final URI documentation;
+   private final TypeToken<? extends Context> context;
+   private final Set<Class<? extends Module>> defaultModules;
 
    protected BaseApiMetadata(Builder<?> builder) {
       this(builder.id, builder.name, builder.views, builder.endpointName, builder.identityName, builder.credentialName,
@@ -288,7 +286,7 @@ public abstract class BaseApiMetadata implements ApiMetadata {
                builder.defaultModules);
    }
 
-   public BaseApiMetadata(String id, String name, Set<TypeToken<? extends View>> views, String endpointName, String identityName,
+   protected BaseApiMetadata(String id, String name, Set<TypeToken<? extends View>> views, String endpointName, String identityName, // NO_UCD (use private)
             Optional<String> credentialName, String version, Optional<String> buildVersion,
             Optional<String> defaultEndpoint, Optional<String> defaultIdentity, Optional<String> defaultCredential,
             Properties defaultProperties, URI documentation, TypeToken<? extends Context> context,

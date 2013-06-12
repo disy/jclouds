@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.sqs.features;
 
@@ -63,14 +61,14 @@ public class BulkMessageApiLiveTest extends BaseSQSApiLiveTest {
 
    @BeforeClass(groups = { "integration", "live" })
    @Override
-   public void setupContext() {
-      super.setupContext();
+   public void setup() {
+      super.setup();
       recreateQueueInRegion(prefix, null);
    }
 
    public void testSendMessages() {
       for (URI queue : queues) {
-         BatchResult<? extends MessageIdAndMD5> acks = api().getMessageApiForQueue(queue).send(idPayload);
+         BatchResult<? extends MessageIdAndMD5> acks = api.getMessageApiForQueue(queue).send(idPayload);
 
          assertEquals(acks.size(), idPayload.size(), "error sending " + acks);
          assertEquals(acks.keySet(), idPayload.keySet());
@@ -87,9 +85,9 @@ public class BulkMessageApiLiveTest extends BaseSQSApiLiveTest {
    @Test(dependsOnMethods = "testSendMessages")
    public void testChangeMessageVisibility() {
       for (URI queue : queues) {
-         MessageApi api = api().getMessageApiForQueue(queue);
+         MessageApi messageApi = api.getMessageApiForQueue(queue);
          
-         Set<Message> messages = collectMessages(api);
+         Set<Message> messages = collectMessages(messageApi);
 
          receiptHandles = Iterables.transform(messages, new Function<Message, String>() {
             @Override
@@ -99,14 +97,14 @@ public class BulkMessageApiLiveTest extends BaseSQSApiLiveTest {
          });
 
          // hidden message, so we can't see it
-         assertNull(api.receive());
+         assertNull(messageApi.receive());
 
          // this should unhide it
-         BatchResult<String> acks = api.changeVisibility(receiptHandles, 0);
+         BatchResult<String> acks = messageApi.changeVisibility(receiptHandles, 0);
          assertEquals(acks.size(), messages.size(), "error changing visibility " + acks);
 
          // so we can see it again
-         assertEquals(collectMessages(api).size(), messages.size());
+         assertEquals(collectMessages(messageApi).size(), messages.size());
       }
    }
 
@@ -117,7 +115,7 @@ public class BulkMessageApiLiveTest extends BaseSQSApiLiveTest {
    @Test(dependsOnMethods = "testChangeMessageVisibility")
    public void testDeleteMessage() throws InterruptedException {
       for (URI queue : queues) {
-         BatchResult<String> acks = api().getMessageApiForQueue(queue).delete(receiptHandles);
+         BatchResult<String> acks = api.getMessageApiForQueue(queue).delete(receiptHandles);
          assertEquals(acks.size(), Iterables.size(receiptHandles), "error deleting messages " + acks);
          assertNoMessages(queue);
       }

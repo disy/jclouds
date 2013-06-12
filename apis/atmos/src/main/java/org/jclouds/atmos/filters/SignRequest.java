@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.atmos.filters;
 
@@ -26,7 +24,6 @@ import static org.jclouds.util.Patterns.NEWLINE_PATTERN;
 import static org.jclouds.util.Strings2.toInputStream;
 
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -38,18 +35,18 @@ import javax.ws.rs.core.HttpHeaders;
 import org.jclouds.atmos.reference.AtmosHeaders;
 import org.jclouds.crypto.Crypto;
 import org.jclouds.date.TimeStamp;
+import org.jclouds.domain.Credentials;
 import org.jclouds.http.HttpException;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpRequestFilter;
 import org.jclouds.http.HttpUtils;
 import org.jclouds.http.internal.SignatureWire;
 import org.jclouds.logging.Logger;
-import org.jclouds.rest.annotations.Credential;
-import org.jclouds.rest.annotations.Identity;
 import org.jclouds.util.Strings2;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Multimaps;
@@ -67,8 +64,7 @@ import com.google.common.io.ByteProcessor;
 public class SignRequest implements HttpRequestFilter {
 
    private final SignatureWire signatureWire;
-   private final String uid;
-   private final byte[] key;
+   private final Supplier<Credentials> creds;
    private final Provider<String> timeStampProvider;
    private final Crypto crypto;
    private final HttpUtils utils;
@@ -81,12 +77,10 @@ public class SignRequest implements HttpRequestFilter {
    Logger signatureLog = Logger.NULL;
 
    @Inject
-   public SignRequest(SignatureWire signatureWire, @Identity String uid,
-         @Credential String encodedKey, @TimeStamp Provider<String> timeStampProvider, Crypto crypto,
-         HttpUtils utils) {
+   public SignRequest(SignatureWire signatureWire, @org.jclouds.location.Provider Supplier<Credentials> creds,
+         @TimeStamp Provider<String> timeStampProvider, Crypto crypto, HttpUtils utils) {
       this.signatureWire = signatureWire;
-      this.uid = uid;
-      this.key = base64().decode(encodedKey);
+      this.creds = creds;
       this.timeStampProvider = timeStampProvider;
       this.crypto = crypto;
       this.utils = utils;
@@ -95,7 +89,7 @@ public class SignRequest implements HttpRequestFilter {
    @Override
    public HttpRequest filter(HttpRequest request) throws HttpException {
       Builder<String, String> builder = ImmutableMap.builder();
-      builder.put(AtmosHeaders.UID, uid);
+      builder.put(AtmosHeaders.UID, creds.get().identity);
       String date = timeStampProvider.get();
       builder.put(HttpHeaders.DATE, date);
       if (request.getHeaders().containsKey(AtmosHeaders.DATE))
@@ -130,7 +124,7 @@ public class SignRequest implements HttpRequestFilter {
 
    public String signString(String toSign) {
       try {
-         ByteProcessor<byte[]> hmacSHA1 = asByteProcessor(crypto.hmacSHA1(key));
+         ByteProcessor<byte[]> hmacSHA1 = asByteProcessor(crypto.hmacSHA1(base64().decode(creds.get().credential)));
          return base64().encode(readBytes(toInputStream(toSign), hmacSHA1));
       } catch (Exception e) {
          throw new HttpException("error signing request", e);
@@ -141,8 +135,6 @@ public class SignRequest implements HttpRequestFilter {
       toSign.append(request.getMethod()).append("\n");
    }
    
-   private static final Pattern TWO_SPACE_PATTERN = Pattern.compile("  ");
-
    private void appendCanonicalizedHeaders(HttpRequest request, StringBuilder toSign) {
       // TreeSet == Sort the headers alphabetically.
       Set<String> headers = Sets.newTreeSet(request.getHeaders().keySet());
@@ -154,8 +146,8 @@ public class SignRequest implements HttpRequestFilter {
             // replacing any
             // newline characters and extra embedded white spaces in the value.
             for (String value : request.getHeaders().get(header)) {
-               value = Strings2.replaceAll(value, TWO_SPACE_PATTERN, " ");
-               value = Strings2.replaceAll(value, NEWLINE_PATTERN, "");
+               value = value.replace("  ", " ");
+               value = NEWLINE_PATTERN.matcher(value).replaceAll("");
                toSign.append(value).append(' ');
             }
             toSign.deleteCharAt(toSign.lastIndexOf(" "));

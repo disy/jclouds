@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute.functions;
 
@@ -34,6 +32,7 @@ import org.jclouds.ec2.domain.RunningInstance;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -43,7 +42,7 @@ import com.google.common.cache.LoadingCache;
  * @author Adrian Cole
  */
 @Singleton
-public class CredentialsForInstance extends CacheLoader<RunningInstance, LoginCredentials> {
+public class CredentialsForInstance extends CacheLoader<RunningInstance, Optional<LoginCredentials>> {
 
    private final ConcurrentMap<RegionAndName, KeyPair> credentialsMap;
    private final Supplier<LoadingCache<RegionAndName, ? extends Image>> imageMap;
@@ -58,13 +57,13 @@ public class CredentialsForInstance extends CacheLoader<RunningInstance, LoginCr
    }
 
    @Override
-   public LoginCredentials load(final RunningInstance instance) throws ExecutionException {
+   public Optional<LoginCredentials> load(final RunningInstance instance) throws ExecutionException {
       if ("windows".equals(instance.getPlatform())) {
-         return passwordCredentialsFromWindowsInstance.apply(instance);
+         return Optional.of(passwordCredentialsFromWindowsInstance.apply(instance));
       } else  if (instance.getKeyName() != null) {
-         return LoginCredentials.builder().user(getLoginAccountFor(instance)).privateKey(getPrivateKeyOrNull(instance)).build();
+         return Optional.of(LoginCredentials.builder().user(getLoginAccountFor(instance)).privateKey(getPrivateKeyOrNull(instance)).build());
       }
-      return null;
+      return Optional.absent();
    }
 
    @VisibleForTesting

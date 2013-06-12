@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.hpcloud.objectstorage.blobstore;
 
+import static com.google.common.util.concurrent.Futures.transform;
+
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,10 +32,9 @@ import org.jclouds.blobstore.options.CreateContainerOptions;
 import org.jclouds.blobstore.strategy.internal.FetchBlobMetadata;
 import org.jclouds.blobstore.util.BlobUtils;
 import org.jclouds.collect.Memoized;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.domain.Location;
-import org.jclouds.hpcloud.objectstorage.HPCloudObjectStorageAsyncApi;
 import org.jclouds.hpcloud.objectstorage.HPCloudObjectStorageApi;
+import org.jclouds.hpcloud.objectstorage.HPCloudObjectStorageAsyncApi;
 import org.jclouds.hpcloud.objectstorage.blobstore.functions.EnableCDNAndCache;
 import org.jclouds.openstack.swift.blobstore.SwiftAsyncBlobStore;
 import org.jclouds.openstack.swift.blobstore.functions.BlobStoreListContainerOptionsToListContainerOptions;
@@ -50,18 +48,22 @@ import org.jclouds.openstack.swift.blobstore.strategy.internal.AsyncMultipartUpl
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * 
  * @author Adrian Cole
+ * @deprecated will be removed in jclouds 1.7, as async interfaces are no longer
+ *             supported. Please use {@link HPCloudObjectStorageBlobStore}
  */
+@Deprecated
 @Singleton
 public class HPCloudObjectStorageAsyncBlobStore extends SwiftAsyncBlobStore {
    private final EnableCDNAndCache enableAndCache;
 
    @Inject
    protected HPCloudObjectStorageAsyncBlobStore(BlobStoreContext context, BlobUtils blobUtils,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService service, Supplier<Location> defaultLocation,
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor, Supplier<Location> defaultLocation,
             @Memoized Supplier<Set<? extends Location>> locations, HPCloudObjectStorageApi sync, HPCloudObjectStorageAsyncApi async,
             ContainerToResourceMetadata container2ResourceMd,
             BlobStoreListContainerOptionsToListContainerOptions container2ContainerListOptions,
@@ -69,7 +71,7 @@ public class HPCloudObjectStorageAsyncBlobStore extends SwiftAsyncBlobStore {
             ObjectToBlobMetadata object2BlobMd, BlobToHttpGetOptions blob2ObjectGetOptions,
             Provider<FetchBlobMetadata> fetchBlobMetadataProvider, EnableCDNAndCache enableAndCache,
             Provider<AsyncMultipartUploadStrategy> multipartUploadStrategy) {
-      super(context, blobUtils, service, defaultLocation, locations, sync, async, container2ResourceMd,
+      super(context, blobUtils, userExecutor, defaultLocation, locations, sync, async, container2ResourceMd,
                container2ContainerListOptions, container2ResourceList, object2Blob, blob2Object, object2BlobMd,
                blob2ObjectGetOptions, fetchBlobMetadataProvider, multipartUploadStrategy);
       this.enableAndCache = enableAndCache;
@@ -81,7 +83,7 @@ public class HPCloudObjectStorageAsyncBlobStore extends SwiftAsyncBlobStore {
 
       ListenableFuture<Boolean> returnVal = createContainerInLocation(location, container);
       if (options.isPublicRead())
-         return Futures.compose(createContainerInLocation(location, container), new Function<Boolean, Boolean>() {
+         return transform(createContainerInLocation(location, container), new Function<Boolean, Boolean>() {
 
             @Override
             public Boolean apply(Boolean input) {
@@ -91,7 +93,7 @@ public class HPCloudObjectStorageAsyncBlobStore extends SwiftAsyncBlobStore {
                return false;
             }
 
-         }, service);
+         }, userExecutor);
       return returnVal;
    }
 }

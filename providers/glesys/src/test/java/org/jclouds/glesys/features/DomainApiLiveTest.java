@@ -1,36 +1,34 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.glesys.features;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.jclouds.glesys.domain.Domain;
 import org.jclouds.glesys.domain.DomainRecord;
 import org.jclouds.glesys.internal.BaseGleSYSApiLiveTest;
 import org.jclouds.glesys.options.DomainOptions;
 import org.jclouds.glesys.options.UpdateRecordOptions;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -47,25 +45,23 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
    public String testDomain;
 
    @BeforeClass(groups = { "integration", "live" })
-   public void setupContext() {
-      super.setupContext();
+   public void setup() {
+      super.setup();
       testDomain =  identity.toLowerCase() + "-domain.jclouds.org";
-      api = gleContext.getApi().getDomainApi();
-      domainCounter = new RetryablePredicate<Integer>(
-            new Predicate<Integer>() {
-               public boolean apply(Integer value) {
-                  return api.list().size() == value;
-               }
-            }, 30, 1, TimeUnit.SECONDS);
-      recordCounter = new RetryablePredicate<Integer>(
-            new Predicate<Integer>() {
-               public boolean apply(Integer value) {
-                  return api.listRecords(testDomain).size() == value;
-               }
-            }, 30, 1, TimeUnit.SECONDS);
+      domainApi = api.getDomainApi();
+      domainCounter = retry(new Predicate<Integer>() {
+         public boolean apply(Integer value) {
+            return domainApi.list().size() == value.intValue();
+         }
+      }, 30, 1, SECONDS);
+      recordCounter = retry(new Predicate<Integer>() {
+         public boolean apply(Integer value) {
+            return domainApi.listRecords(testDomain).size() == value.intValue();
+         }
+      }, 30, 1, SECONDS);
 
       try {
-         api.delete(testDomain);
+         domainApi.delete(testDomain);
       } catch (Exception ex) {
       }
       
@@ -73,21 +69,21 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
    }
 
    @AfterClass(groups = { "integration", "live" })
-   public void tearDownContext() {
-      int before = api.list().size();
-      api.delete(testDomain);
+   public void tearDown() {
+      int before = domainApi.list().size();
+      domainApi.delete(testDomain);
       assertTrue(domainCounter.apply(before - 1));
    
-      super.tearDownContext();
+      super.tearDown();
    }
 
-   private DomainApi api;
-   private RetryablePredicate<Integer> domainCounter;
-   private RetryablePredicate<Integer> recordCounter;
+   private DomainApi domainApi;
+   private Predicate<Integer> domainCounter;
+   private Predicate<Integer> recordCounter;
 
    @Test
    public void testGetDomain() throws Exception {
-      Domain domain = api.get(testDomain);
+      Domain domain = domainApi.get(testDomain);
       assertNotNull(domain);
       assertEquals(domain.getName(), testDomain);
       assertNotNull(domain.getCreateTime());
@@ -95,20 +91,20 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
    
    @Test
    public void testUpdateDomain() throws Exception {
-      api.update(testDomain, DomainOptions.Builder.responsiblePerson("another-tester.jclouds.org."));
-      Domain domain = api.get(testDomain);
+      domainApi.update(testDomain, DomainOptions.Builder.responsiblePerson("another-tester.jclouds.org."));
+      Domain domain = domainApi.get(testDomain);
       assertEquals(domain.getResponsiblePerson(), "another-tester.jclouds.org.");
    }
 
    @Test
    public void testCreateRecord() throws Exception {
-      int before = api.listRecords(testDomain).size();
+      int before = domainApi.listRecords(testDomain).size();
 
-      api.createRecord(testDomain, "test", "A", "127.0.0.1");
+      domainApi.createRecord(testDomain, "test", "A", "127.0.0.1");
 
       assertTrue(recordCounter.apply(before + 1));
 
-      for(DomainRecord record : api.listRecords(testDomain)) {
+      for(DomainRecord record : domainApi.listRecords(testDomain)) {
          if ("test".equals(record.getHost())) {
             assertEquals(record.getType(), "A");
             assertEquals(record.getData(), "127.0.0.1");
@@ -118,14 +114,14 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
 
    @Test
    public void testUpdateRecord() throws Exception {
-      int before = api.listRecords(testDomain).size();
+      int before = domainApi.listRecords(testDomain).size();
 
-      api.createRecord(testDomain, "testeditbefore", "A", "127.0.0.1");
+      domainApi.createRecord(testDomain, "testeditbefore", "A", "127.0.0.1");
 
       assertTrue(recordCounter.apply(before + 1));
 
       String recordId = null;
-      for(DomainRecord record : api.listRecords(testDomain)) {
+      for(DomainRecord record : domainApi.listRecords(testDomain)) {
          if ("testeditbefore".equals(record.getHost())) {
             assertEquals(record.getType(), "A");
             assertEquals(record.getData(), "127.0.0.1");
@@ -135,10 +131,10 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
 
       assertNotNull(recordId);
 
-      api.updateRecord(recordId, UpdateRecordOptions.Builder.host("testeditafter"));
+      domainApi.updateRecord(recordId, UpdateRecordOptions.Builder.host("testeditafter"));
 
       boolean found = false;
-      for(DomainRecord record : api.listRecords(testDomain)) {
+      for(DomainRecord record : domainApi.listRecords(testDomain)) {
          if (recordId.equals(record.getId())) {
             assertEquals(record.getHost(), "testeditafter");
             assertEquals(record.getType(), "A");
@@ -151,11 +147,11 @@ public class DomainApiLiveTest extends BaseGleSYSApiLiveTest {
 
    @Test
    public void testDeleteRecord() throws Exception {
-      Set<DomainRecord> domainRecords = api.listRecords(testDomain);
+      Set<DomainRecord> domainRecords = domainApi.listRecords(testDomain);
 
       int before = domainRecords.size();
       
-      api.deleteRecord(domainRecords.iterator().next().getId());
+      domainApi.deleteRecord(domainRecords.iterator().next().getId());
 
       assertTrue(recordCounter.apply(before - 1));
    }

@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.s3.blobstore.strategy.internal;
 
 import static org.testng.Assert.assertEquals;
 
+import org.jclouds.aws.s3.blobstore.strategy.MultipartUpload;
 import org.jclouds.aws.s3.blobstore.strategy.MultipartUploadStrategy;
 import org.testng.annotations.Test;
 
@@ -42,7 +41,7 @@ public class MpuPartitioningAlgorithmTest {
       MultipartUploadSlicingAlgorithm strategy = new MultipartUploadSlicingAlgorithm();
       
       // exactly the MIN_PART_SIZE
-      long length = MultipartUploadStrategy.MIN_PART_SIZE;
+      long length = MultipartUpload.MIN_PART_SIZE;
       long chunkSize = strategy.calculateChunkSize(length);
       assertEquals(chunkSize, MultipartUploadSlicingAlgorithm.DEFAULT_PART_SIZE);
       assertEquals(strategy.getParts(), 0);
@@ -100,17 +99,17 @@ public class MpuPartitioningAlgorithmTest {
    public void testWhenPartsHasToStartGrowingFromMagnitudeBase() {
       MultipartUploadSlicingAlgorithm strategy = new MultipartUploadSlicingAlgorithm();
       // upper limit while we still have exactly MAGNITUDE_BASE parts (together with the remaining)
-      long length = MultipartUploadStrategy.MAX_PART_SIZE * MultipartUploadSlicingAlgorithm.DEFAULT_MAGNITUDE_BASE;
+      long length = MultipartUpload.MAX_PART_SIZE * MultipartUploadSlicingAlgorithm.DEFAULT_MAGNITUDE_BASE;
       long chunkSize = strategy.calculateChunkSize(length);
-      assertEquals(chunkSize, MultipartUploadStrategy.MAX_PART_SIZE);
+      assertEquals(chunkSize, MultipartUpload.MAX_PART_SIZE);
       assertEquals(strategy.getParts(), MultipartUploadSlicingAlgorithm.DEFAULT_MAGNITUDE_BASE - 1);
-      assertEquals(strategy.getRemaining(), MultipartUploadStrategy.MAX_PART_SIZE);
+      assertEquals(strategy.getRemaining(), MultipartUpload.MAX_PART_SIZE);
       assertEquals(chunkSize * strategy.getParts() + strategy.getRemaining(), length);
 
       // then the number of parts is increasing
       length += 1;
       chunkSize = strategy.calculateChunkSize(length);
-      assertEquals(chunkSize, MultipartUploadStrategy.MAX_PART_SIZE);
+      assertEquals(chunkSize, MultipartUpload.MAX_PART_SIZE);
       assertEquals(strategy.getParts(), MultipartUploadSlicingAlgorithm.DEFAULT_MAGNITUDE_BASE);
       assertEquals(strategy.getRemaining(), 1);
       assertEquals(chunkSize * strategy.getParts() + strategy.getRemaining(), length);
@@ -125,18 +124,18 @@ public class MpuPartitioningAlgorithmTest {
    public void testWhenPartsExceedsMaxNumberOfParts() {
       MultipartUploadSlicingAlgorithm strategy = new MultipartUploadSlicingAlgorithm();
       // upper limit while we still have exactly MAX_NUMBER_OF_PARTS parts (together with the remaining)
-      long length = MultipartUploadStrategy.MAX_PART_SIZE * MultipartUploadStrategy.MAX_NUMBER_OF_PARTS;
+      long length = MultipartUpload.MAX_PART_SIZE * MultipartUpload.MAX_NUMBER_OF_PARTS;
       long chunkSize = strategy.calculateChunkSize(length);
-      assertEquals(chunkSize, MultipartUploadStrategy.MAX_PART_SIZE);
-      assertEquals(strategy.getParts(), MultipartUploadStrategy.MAX_NUMBER_OF_PARTS - 1);
-      assertEquals(strategy.getRemaining(), MultipartUploadStrategy.MAX_PART_SIZE);
+      assertEquals(chunkSize, MultipartUpload.MAX_PART_SIZE);
+      assertEquals(strategy.getParts(), MultipartUpload.MAX_NUMBER_OF_PARTS - 1);
+      assertEquals(strategy.getRemaining(), MultipartUpload.MAX_PART_SIZE);
       assertEquals(chunkSize * strategy.getParts() + strategy.getRemaining(), length);
 
       // then the number of parts is increasing
       length += 1;
       chunkSize = strategy.calculateChunkSize(length);
-      assertEquals(chunkSize, MultipartUploadStrategy.MAX_PART_SIZE);
-      assertEquals(strategy.getParts(), MultipartUploadStrategy.MAX_NUMBER_OF_PARTS);
+      assertEquals(chunkSize, MultipartUpload.MAX_PART_SIZE);
+      assertEquals(strategy.getParts(), MultipartUpload.MAX_NUMBER_OF_PARTS);
       assertEquals(strategy.getRemaining(), 1);
       assertEquals(chunkSize * strategy.getParts() + strategy.getRemaining(), length);
    } 

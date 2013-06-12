@@ -1,25 +1,21 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.jclouds.Constants.PROPERTY_TIMEOUTS_PREFIX;
 import static org.jclouds.aws.reference.AWSConstants.PROPERTY_AUTH_TAG;
 import static org.jclouds.aws.reference.AWSConstants.PROPERTY_HEADER_TAG;
 import static org.jclouds.compute.config.ComputeServiceProperties.RESOURCENAME_DELIMITER;
@@ -36,7 +32,6 @@ import org.jclouds.ec2.compute.EC2ComputeServiceContext;
 import org.jclouds.ec2.compute.config.EC2ComputeServiceContextModule;
 import org.jclouds.ec2.compute.config.EC2ResolveImagesModule;
 import org.jclouds.ec2.config.EC2RestClientModule;
-import org.jclouds.rest.RestContext;
 import org.jclouds.rest.internal.BaseRestApiMetadata;
 
 import com.google.common.collect.ImmutableSet;
@@ -61,8 +56,13 @@ import com.google.inject.Module;
  * @author Adrian Cole
  */
 public class EC2ApiMetadata extends BaseRestApiMetadata {
-   
-   public static final TypeToken<RestContext<? extends EC2Client, ? extends EC2AsyncClient>> CONTEXT_TOKEN = new TypeToken<RestContext<? extends EC2Client, ? extends EC2AsyncClient>>() {
+
+   /**
+    * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(EC2Client.class)} as
+    *             {@link EC2AsyncClient} interface will be removed in jclouds 1.7.
+    */
+   @Deprecated
+   public static final TypeToken<org.jclouds.rest.RestContext<? extends EC2Client, ? extends EC2AsyncClient>> CONTEXT_TOKEN = new TypeToken<org.jclouds.rest.RestContext<? extends EC2Client, ? extends EC2AsyncClient>>() {
       private static final long serialVersionUID = 1L;
    };
 
@@ -81,8 +81,6 @@ public class EC2ApiMetadata extends BaseRestApiMetadata {
 
    public static Properties defaultProperties() {
       Properties properties = BaseRestApiMetadata.defaultProperties();
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "default", MINUTES.toMillis(3) + "");
-      properties.setProperty(PROPERTY_TIMEOUTS_PREFIX + "AMIClient.describeImagesInRegion", MINUTES.toMillis(5) + "");
       properties.setProperty(PROPERTY_AUTH_TAG, "AWS");
       properties.setProperty(PROPERTY_HEADER_TAG, "amz");
       properties.setProperty(PROPERTY_EC2_AMI_OWNERS, "*");
@@ -93,7 +91,8 @@ public class EC2ApiMetadata extends BaseRestApiMetadata {
       return properties;
    }
 
-   public static abstract class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+   public abstract static class Builder<T extends Builder<T>> extends BaseRestApiMetadata.Builder<T> {
+      @SuppressWarnings("deprecation")
       protected Builder() {
          this(EC2Client.class, EC2AsyncClient.class);
       }
@@ -106,7 +105,7 @@ public class EC2ApiMetadata extends BaseRestApiMetadata {
          .credentialName("Secret Access Key")
          .defaultEndpoint("https://ec2.us-east-1.amazonaws.com")
          .documentation(URI.create("http://docs.amazonwebservices.com/AWSEC2/latest/APIReference"))
-         .version(EC2AsyncClient.VERSION)
+         .version("2010-06-15")
          .defaultProperties(EC2ApiMetadata.defaultProperties())
          .context(CONTEXT_TOKEN)
          .view(EC2ComputeServiceContext.class)

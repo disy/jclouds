@@ -115,7 +115,13 @@ function ensure_netutils_yum() {
 # most network services require that the hostname is in
 # the /etc/hosts file, or they won't operate
 function ensure_hostname_in_hosts() {
-  egrep -q `hostname` /etc/hosts || awk -v hostname=`hostname` 'END { print $1" "hostname }' /proc/net/arp >> /etc/hosts
+  [ -n "$SSH_CONNECTION" ] && {
+    local ipaddr=`echo $SSH_CONNECTION | awk '{print $3}'`
+  } || {
+    local ipaddr=`hostname -i`
+  }
+  # NOTE: we blindly trust existing hostname settings in /etc/hosts
+  egrep -q `hostname` /etc/hosts || echo "$ipaddr `hostname`" >> /etc/hosts
 }
 
 # download locations for many services are at public dns
@@ -164,21 +170,6 @@ END_OF_JCLOUDS_SCRIPT
 	setupPublicCurl || exit 1
 	
 	installRuby || exit 1
-	
-	if ! hash gem 2>/dev/null; then
-	(
-	mkdir /tmp/$$
-	curl -q -s -S -L --connect-timeout 10 --max-time 600 --retry 20 -X GET  http://production.cf.rubygems.org/rubygems/rubygems-1.8.10.tgz |(mkdir -p /tmp/$$ &&cd /tmp/$$ &&tar -xpzf -)
-	mkdir -p /tmp/rubygems
-	mv /tmp/$$/*/* /tmp/rubygems
-	rm -rf /tmp/$$
-	cd /tmp/rubygems
-	ruby setup.rb --no-format-executable
-	rm -fr /tmp/rubygems
-	)
-	fi
-	gem update --system
-	gem update --no-rdoc --no-ri
 	
 END_OF_JCLOUDS_SCRIPT
    

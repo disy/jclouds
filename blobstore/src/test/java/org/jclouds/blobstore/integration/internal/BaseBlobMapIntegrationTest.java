@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore.integration.internal;
 
@@ -23,6 +21,7 @@ import static org.jclouds.blobstore.options.ListContainerOptions.Builder.inDirec
 import static org.jclouds.blobstore.options.ListContainerOptions.Builder.maxResults;
 import static org.testng.Assert.assertEquals;
 
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -63,7 +62,7 @@ public abstract class BaseBlobMapIntegrationTest extends BaseMapIntegrationTest<
 
       @Override
       public Blob apply(String arg0) {
-         return map.blobBuilder().payload(arg0).build();
+         return map.blobBuilder().name(arg0).payload(arg0).build();
       }
    }
 
@@ -204,10 +203,11 @@ public abstract class BaseBlobMapIntegrationTest extends BaseMapIntegrationTest<
       try {
          Map<String, Blob> map = createMap(view, bucketName);
          ImmutableMap.Builder<String, Blob> newMap = ImmutableMap.builder();
-         for (String key : fiveInputs.keySet()) {
+         for (Map.Entry<String, InputStream> entry : fiveInputs.entrySet()) {
+            String key = entry.getKey();
             newMap.put(
                   key,
-                  view.getBlobStore().blobBuilder(key).payload(fiveInputs.get(key))
+                  view.getBlobStore().blobBuilder(key).payload(entry.getValue())
                         .contentLength((long) fiveBytes.get(key).length).build());
          }
          map.putAll(newMap.build());
@@ -233,7 +233,7 @@ public abstract class BaseBlobMapIntegrationTest extends BaseMapIntegrationTest<
 
          Map<String, Blob> newMap = Maps.newLinkedHashMap();
          for (String key : keySet.build()) {
-            newMap.put(key, map.blobBuilder().payload(key).build());
+            newMap.put(key, map.blobBuilder().name(key).payload(key).build());
          }
          map.putAll(newMap);
          newMap.clear();
@@ -278,7 +278,7 @@ public abstract class BaseBlobMapIntegrationTest extends BaseMapIntegrationTest<
    protected void addTenObjectsUnderPrefix(String containerName, String prefix) throws InterruptedException {
       BlobMap blobMap = createMap(view, containerName, inDirectory(prefix));
       for (int i = 0; i < 10; i++) {
-         blobMap.put(i + "", blobMap.blobBuilder().payload(i + "content").build());
+         blobMap.put(i + "", blobMap.blobBuilder().name(i + "").payload(i + "content").build());
       }
    }
 
@@ -286,7 +286,7 @@ public abstract class BaseBlobMapIntegrationTest extends BaseMapIntegrationTest<
    protected void addTenObjectsUnderRoot(String containerName) throws InterruptedException {
       BlobMap blobMap = createMap(view, containerName, ListContainerOptions.NONE);
       for (int i = 0; i < 10; i++) {
-         blobMap.put(i + "", blobMap.blobBuilder().payload(i + "content").build());
+         blobMap.put(i + "", blobMap.blobBuilder().name(i + "").payload(i + "content").build());
       }
    }
 }

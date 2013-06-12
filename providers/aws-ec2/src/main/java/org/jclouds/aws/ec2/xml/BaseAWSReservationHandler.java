@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.xml;
 
@@ -94,9 +92,8 @@ public abstract class BaseAWSReservationHandler<T> extends HandlerForGeneratedRe
 
    private Set<RunningInstance> instances = Sets.newLinkedHashSet();
 
-   protected int depth = 0;
-
    private boolean inPlacement;
+   private boolean inIamInstanceProfile;
 
    @Override
    public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
@@ -106,6 +103,8 @@ public abstract class BaseAWSReservationHandler<T> extends HandlerForGeneratedRe
          inInstancesSet = true;
       } else if (equalsOrSuffix(qName, "placement")) {
          inPlacement = true;
+      } else if (equalsOrSuffix(qName, "iamInstanceProfile")) {
+         inIamInstanceProfile = true;
       }
    }
 
@@ -119,6 +118,10 @@ public abstract class BaseAWSReservationHandler<T> extends HandlerForGeneratedRe
          groupId = currentOrNull(currentText);
       } else if (equalsOrSuffix(qName, "groupName") && inPlacement) {
          builder.placementGroup(currentOrNull(currentText));
+      } else if (equalsOrSuffix(qName, "arn") && inIamInstanceProfile) {
+         builder.iamInstanceProfileArn(currentOrNull(currentText));
+      } else if (equalsOrSuffix(qName, "id") && inIamInstanceProfile) {
+         builder.iamInstanceProfileId(currentOrNull(currentText));
       } else if (equalsOrSuffix(qName, "groupName")) {
          switch (itemDepth) {
          case 2:
@@ -143,6 +146,8 @@ public abstract class BaseAWSReservationHandler<T> extends HandlerForGeneratedRe
          inInstancesSet = false;
       } else if (equalsOrSuffix(qName, "placement")) {
          inPlacement = false;
+      } else if (equalsOrSuffix(qName, "iamInstanceProfile")) {
+         inIamInstanceProfile = false;
       } else if (equalsOrSuffix(qName, "ownerId")) {
          ownerId = currentOrNull(currentText);
       } else if (equalsOrSuffix(qName, "requesterId")) {

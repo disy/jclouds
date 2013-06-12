@@ -1,23 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -30,7 +29,6 @@ import org.jclouds.openstack.nova.v2_0.domain.VolumeSnapshot;
 import org.jclouds.openstack.nova.v2_0.internal.BaseNovaApiLiveTest;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeSnapshotOptions;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -56,21 +54,20 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
 
    @BeforeClass(groups = {"integration", "live"})
    @Override
-   public void setupContext() {
-      super.setupContext();
-      zone = Iterables.getLast(novaContext.getApi().getConfiguredZones(), "nova");
-      volumeOption = novaContext.getApi().getVolumeExtensionForZone(zone);
+   public void setup() {
+      super.setup();
+      zone = Iterables.getLast(api.getConfiguredZones(), "nova");
+      volumeOption = api.getVolumeExtensionForZone(zone);
    }
 
    @AfterClass(groups = { "integration", "live" })
    @Override
-   protected void tearDownContext() {
+   protected void tearDown() {
       if (volumeOption.isPresent()) {
          if (testSnapshot != null) {
             final String snapshotId = testSnapshot.getId();
             assertTrue(volumeOption.get().deleteSnapshot(snapshotId));
-            assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-               @Override
+            assertTrue(retry(new Predicate<VolumeApi>() {
                public boolean apply(VolumeApi volumeApi) {
                   return volumeOption.get().getSnapshot(snapshotId) == null;
                }
@@ -79,25 +76,23 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
          if (testVolume != null) {
             final String volumeId = testVolume.getId();
             assertTrue(volumeOption.get().delete(volumeId));
-            assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-               @Override
+            assertTrue(retry(new Predicate<VolumeApi>() {
                public boolean apply(VolumeApi volumeApi) {
                   return volumeOption.get().get(volumeId) == null;
                }
             }, 180 * 1000L).apply(volumeOption.get()));
          }
       }
-      super.tearDownContext();
+      super.tearDown();
    }
 
    public void testCreateVolume() {
       if (volumeOption.isPresent()) {
          testVolume = volumeOption.get().create(
-                  1,
-                  CreateVolumeOptions.Builder.name("jclouds-test-volume").description("description of test volume")
-                           .availabilityZone(zone));
-         assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-            @Override
+               1,
+               CreateVolumeOptions.Builder.name("jclouds-test-volume").description("description of test volume")
+                     .availabilityZone(zone));
+         assertTrue(retry(new Predicate<VolumeApi>() {
             public boolean apply(VolumeApi volumeApi) {
                return volumeOption.get().get(testVolume.getId()).getStatus() == Volume.Status.AVAILABLE;
             }
@@ -162,8 +157,7 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
          assertTrue(testSnapshot.getSize() > -1);
          assertNotNull(testSnapshot.getCreated());
 
-         assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-            @Override
+         assertTrue(retry(new Predicate<VolumeApi>() {
             public boolean apply(VolumeApi volumeApi) {
                return volumeOption.get().getSnapshot(snapshotId).getStatus() == Volume.Status.AVAILABLE;
             }
@@ -234,8 +228,7 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
             assertNotNull(testAttachment.getId());
             assertEquals(testAttachment.getVolumeId(), testVolume.getId());
 
-            assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-               @Override
+            assertTrue(retry(new Predicate<VolumeApi>() {
                public boolean apply(VolumeApi volumeApi) {
                   return volumeOption.get().listAttachmentsOnServer(serverId).size() > before;
                }
@@ -265,8 +258,7 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
             assertTrue(foundIt, "Failed to find the attachment we created in listAttachments() response");
 
             volumeOption.get().detachVolumeFromServer(testVolume.getId(), serverId);
-            assertTrue(new RetryablePredicate<VolumeApi>(new Predicate<VolumeApi>() {
-               @Override
+            assertTrue(retry(new Predicate<VolumeApi>() {
                public boolean apply(VolumeApi volumeApi) {
                   return volumeOption.get().listAttachmentsOnServer(serverId).size() == before;
                }
@@ -274,7 +266,7 @@ public class VolumeApiLiveTest extends BaseNovaApiLiveTest {
 
          } finally {
             if (server_id != null)
-               novaContext.getApi().getServerApiForZone(zone).delete(server_id);
+               api.getServerApiForZone(zone).delete(server_id);
          }
 
       }

@@ -1,24 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.byon.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Predicates.in;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Maps.filterKeys;
 
 import java.util.Set;
 
@@ -44,6 +47,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 /**
  * 
@@ -80,14 +84,19 @@ public class BYONComputeServiceAdapter implements JCloudsNativeComputeServiceAda
 
    @Override
    public Iterable<NodeMetadata> listNodes() {
-      return Iterables.transform(nodes.get().asMap().values(), converter);
+      return transform(nodes.get().asMap().values(), converter);
+   }
+
+   @Override
+   public Iterable<NodeMetadata> listNodesByIds(Iterable<String> ids) {
+      return transform(filterKeys(nodes.get().asMap(), in(ImmutableSet.copyOf(ids))).values(), converter);
    }
 
    @Override
    public Iterable<Location> listLocations() {
       Builder<Location> locations = ImmutableSet.builder();
-      Location provider = Iterables.getOnlyElement(locationSupplier.get());
-      Set<String> zones = ImmutableSet.copyOf(Iterables.filter(Iterables.transform(nodes.get().asMap().values(),
+      Location provider = getOnlyElement(locationSupplier.get());
+      Set<String> zones = ImmutableSet.copyOf(filter(transform(nodes.get().asMap().values(),
                new Function<Node, String>() {
 
                   @Override

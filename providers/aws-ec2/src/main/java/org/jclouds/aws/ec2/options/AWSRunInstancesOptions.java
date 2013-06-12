@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.options;
 
@@ -24,7 +22,9 @@ import java.util.Set;
 
 import org.jclouds.aws.ec2.domain.LaunchSpecification;
 import org.jclouds.ec2.domain.BlockDeviceMapping;
+import org.jclouds.ec2.domain.InstanceType;
 import org.jclouds.ec2.options.RunInstancesOptions;
+import org.jclouds.rest.annotations.SinceApiVersion;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -93,7 +93,29 @@ public class AWSRunInstancesOptions extends RunInstancesOptions {
    public AWSRunInstancesOptions withSecurityGroupIds(String... securityGroupIds) {
       return withSecurityGroupIds(ImmutableSet.copyOf(securityGroupIds));
    }
-   
+
+   /**
+    * Amazon resource name (ARN) of the IAM Instance Profile (IIP) to associate with the instances.
+    * 
+    * @see org.jclouds.aws.ec2.domain.AWSRunningInstance#getIAMInstanceProfile()
+    */
+   @SinceApiVersion("2012-06-01")
+   public AWSRunInstancesOptions withIAMInstanceProfileArn(String arn) {
+      formParameters.put("IamInstanceProfile.Arn", checkNotNull(arn, "arn"));
+      return this;
+   }
+
+   /**
+    * The name of the IAM Instance Profile (IIP) to associate with the instances.
+    * 
+    * @see org.jclouds.aws.ec2.domain.AWSRunningInstance#getIAMInstanceProfile()
+    */
+   @SinceApiVersion("2012-06-01")
+   public AWSRunInstancesOptions withIAMInstanceProfileName(String name) {
+      formParameters.put("IamInstanceProfile.Name", checkNotNull(name, "name"));
+      return this;
+   }
+
    public static class Builder extends RunInstancesOptions.Builder {
 
       /**
@@ -126,6 +148,22 @@ public class AWSRunInstancesOptions extends RunInstancesOptions {
       public static AWSRunInstancesOptions withSubnetId(String subnetId) {
          AWSRunInstancesOptions options = new AWSRunInstancesOptions();
          return options.withSubnetId(subnetId);
+      }
+
+      /**
+       * @see AWSRunInstancesOptions#withIAMInstanceProfileArn(String)
+       */
+      public static AWSRunInstancesOptions withIAMInstanceProfileArn(String arn) {
+         AWSRunInstancesOptions options = new AWSRunInstancesOptions();
+         return options.withIAMInstanceProfileArn(arn);
+      }
+
+      /**
+       * @see AWSRunInstancesOptions#withIAMInstanceProfileName(String)
+       */
+      public static AWSRunInstancesOptions withIAMInstanceProfileName(String id) {
+         AWSRunInstancesOptions options = new AWSRunInstancesOptions();
+         return options.withIAMInstanceProfileName(id);
       }
 
       /**

@@ -1,25 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.atmos;
 
+import static com.google.common.net.HttpHeaders.EXPECT;
+
+import java.io.Closeable;
 import java.net.URI;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -55,6 +57,7 @@ import org.jclouds.blobstore.BlobStoreFallbacks.ThrowKeyNotFoundOn404;
 import org.jclouds.http.options.GetOptions;
 import org.jclouds.rest.annotations.BinderParam;
 import org.jclouds.rest.annotations.Fallback;
+import org.jclouds.rest.annotations.Headers;
 import org.jclouds.rest.annotations.ParamParser;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
@@ -70,10 +73,14 @@ import com.google.inject.Provides;
  * @see AtmosClient
  * @see <a href="https://community.emc.com/community/labs/atmos_online" />
  * @author Adrian Cole
+ * 
+ * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(AtmosClient.class)} as
+ *             {@link AtmosAsyncClient} interface will be removed in jclouds 1.7.
  */
+@Deprecated
 @RequestFilters(SignRequest.class)
 @Path("/rest/namespace")
-public interface AtmosAsyncClient {
+public interface AtmosAsyncClient extends Closeable {
    /**
     * Creates a default implementation of AtmosObject
     */
@@ -83,6 +90,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#listDirectories
     */
+   @Named("ListDirectory")
    @GET
    @ResponseParser(ParseDirectoryListFromContentAndHeaders.class)
    @Consumes(MediaType.TEXT_XML)
@@ -91,6 +99,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#listDirectory
     */
+   @Named("ListDirectory")
    @GET
    @Path("/{directoryName}/")
    @ResponseParser(ParseDirectoryListFromContentAndHeaders.class)
@@ -102,6 +111,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#createDirectory
     */
+   @Named("CreateDirectory")
    @POST
    @Path("/{directoryName}/")
    @Fallback(EndpointIfAlreadyExists.class)
@@ -112,8 +122,10 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#createFile
     */
+   @Named("CreateObject")
    @POST
    @Path("/{parent}/{name}")
+   @Headers(keys = EXPECT, values = "100-continue")
    @Consumes(MediaType.WILDCARD)
    ListenableFuture<URI> createFile(
             @PathParam("parent") String parent,
@@ -123,8 +135,10 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#updateFile
     */
+   @Named("UpdateObject")
    @PUT
    @Path("/{parent}/{name}")
+   @Headers(keys = EXPECT, values = "100-continue")
    @Fallback(ThrowKeyNotFoundOn404.class)
    @Consumes(MediaType.WILDCARD)
    ListenableFuture<Void> updateFile(
@@ -135,6 +149,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#readFile
     */
+   @Named("ReadObject")
    @GET
    @ResponseParser(ParseObjectFromHeadersAndHttpContent.class)
    @Fallback(NullOnNotFoundOr404.class)
@@ -145,6 +160,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#headFile
     */
+   @Named("GetObjectMetadata")
    @HEAD
    @ResponseParser(ParseObjectFromHeadersAndHttpContent.class)
    @Fallback(NullOnNotFoundOr404.class)
@@ -155,6 +171,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#getSystemMetadata
     */
+   @Named("GetSystemMetadata")
    @HEAD
    @ResponseParser(ParseSystemMetadataFromHeaders.class)
    @Fallback(NullOnNotFoundOr404.class)
@@ -166,6 +183,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#getUserMetadata
     */
+   @Named("GetUserMetadata")
    @HEAD
    @ResponseParser(ParseUserMetadataFromHeaders.class)
    @Fallback(NullOnNotFoundOr404.class)
@@ -177,6 +195,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#deletePath
     */
+   @Named("DeleteObject")
    @DELETE
    @Fallback(VoidOnNotFoundOr404.class)
    @Path("/{path}")
@@ -186,6 +205,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#pathExists
     */
+   @Named("GetObjectMetadata")
    @HEAD
    @Fallback(FalseOnNotFoundOr404.class)
    @Path("/{path}")
@@ -195,6 +215,7 @@ public interface AtmosAsyncClient {
    /**
     * @see AtmosClient#isPublic
     */
+   @Named("GetObjectMetadata")
    @HEAD
    @ResponseParser(ReturnTrueIfGroupACLIsOtherRead.class)
    @Path("/{path}")

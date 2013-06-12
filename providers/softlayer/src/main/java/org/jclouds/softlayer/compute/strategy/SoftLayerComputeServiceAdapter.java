@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.softlayer.compute.strategy;
 
@@ -22,9 +20,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Predicates.and;
+import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.find;
 import static com.google.common.collect.Iterables.get;
+import static org.jclouds.util.Predicates2.retry;
 import static org.jclouds.softlayer.predicates.ProductItemPredicates.capacity;
 import static org.jclouds.softlayer.predicates.ProductItemPredicates.categoryCode;
 import static org.jclouds.softlayer.predicates.ProductItemPredicates.matches;
@@ -42,12 +42,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.jclouds.collect.Memoized;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.domain.LoginCredentials;
 import org.jclouds.logging.Logger;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.softlayer.SoftLayerClient;
 import org.jclouds.softlayer.compute.functions.ProductItemToImage;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
@@ -64,8 +64,8 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterables;
 
 /**
  * defines the connection between the {@link SoftLayerClient} implementation and
@@ -82,7 +82,7 @@ public class SoftLayerComputeServiceAdapter implements
 
    private final SoftLayerClient client;
    private final Supplier<ProductPackage> productPackageSupplier;
-   private final RetryablePredicate<VirtualGuest> loginDetailsTester;
+   private final Predicate<VirtualGuest> loginDetailsTester;
    private final long guestLoginDelay;
    private final Pattern cpuPattern;
    private final Pattern disk0Type;
@@ -101,8 +101,7 @@ public class SoftLayerComputeServiceAdapter implements
       this.guestLoginDelay = guestLoginDelay;
       this.productPackageSupplier = checkNotNull(productPackageSupplier, "productPackageSupplier");
       checkArgument(guestLoginDelay > 500, "guestOrderDelay must be in milliseconds and greater than 500");
-      this.loginDetailsTester = new RetryablePredicate<VirtualGuest>(virtualGuestHasLoginDetailsPresent,
-            guestLoginDelay);
+      this.loginDetailsTester = retry(virtualGuestHasLoginDetailsPresent, guestLoginDelay);
       this.cpuPattern = Pattern.compile(checkNotNull(cpuRegex, "cpuRegex"));
       this.prices = checkNotNull(prices, "prices");
       this.portSpeed = portSpeed;
@@ -186,7 +185,7 @@ public class SoftLayerComputeServiceAdapter implements
    // cheat until we have a getProductItem command
    @Override
    public ProductItem getImage(final String id) {
-      return Iterables.find(listImages(), new Predicate<ProductItem>(){
+      return find(listImages(), new Predicate<ProductItem>(){
 
          @Override
          public boolean apply(ProductItem input) {
@@ -198,7 +197,7 @@ public class SoftLayerComputeServiceAdapter implements
    
    @Override
    public Iterable<VirtualGuest> listNodes() {
-      return Iterables.filter(client.getVirtualGuestClient().listVirtualGuests(), new Predicate<VirtualGuest>() {
+      return filter(client.getVirtualGuestClient().listVirtualGuests(), new Predicate<VirtualGuest>() {
 
          @Override
          public boolean apply(VirtualGuest arg0) {
@@ -210,6 +209,17 @@ public class SoftLayerComputeServiceAdapter implements
          }
 
       });
+   }
+
+   @Override
+   public Iterable<VirtualGuest> listNodesByIds(final Iterable<String> ids) {
+      return filter(listNodes(), new Predicate<VirtualGuest>() {
+
+            @Override
+            public boolean apply(VirtualGuest server) {
+               return contains(ids, server.getId());
+            }
+         });
    }
 
    @Override

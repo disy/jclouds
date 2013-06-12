@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.s3;
 
@@ -66,6 +64,9 @@ import com.google.common.util.concurrent.ListenableFuture;
  * Provides access to amazon-specific S3 features
  * 
  * @author Adrian Cole, Jeremy Whitlock
+ * @deprecated please use
+ *             {@code org.jclouds.ContextBuilder#buildApi(AWSS3Client.class)}
+ *             as {@link AWSS3AsyncClient} interface will be removed in jclouds 1.7.
  */
 @RequestFilters(RequestAuthorizeSignature.class)
 @BlobScope(CONTAINER)
@@ -74,7 +75,7 @@ public interface AWSS3AsyncClient extends S3AsyncClient {
    /**
     * @see AWSS3Client#initiateMultipartUpload
     */
-   @Named("s3:PutObject")
+   @Named("PutObject")
    @POST
    @QueryParams(keys = "uploads")
    @Path("/{key}")
@@ -87,7 +88,7 @@ public interface AWSS3AsyncClient extends S3AsyncClient {
    /**
     * @see AWSS3Client#abortMultipartUpload
     */
-   @Named("s3:AbortMultipartUpload")
+   @Named("AbortMultipartUpload")
    @DELETE
    @Path("/{key}")
    @Fallback(VoidOnNotFoundOr404.class)
@@ -98,7 +99,7 @@ public interface AWSS3AsyncClient extends S3AsyncClient {
    /**
     * @see AWSS3Client#uploadPart
     */
-   @Named("s3:PutObject")
+   @Named("PutObject")
    @PUT
    @Path("/{key}")
    @ResponseParser(ParseETagHeader.class)
@@ -110,7 +111,7 @@ public interface AWSS3AsyncClient extends S3AsyncClient {
    /**
     * @see AWSS3Client#completeMultipartUpload
     */
-   @Named("s3:PutObject")
+   @Named("PutObject")
    @POST
    @Path("/{key}")
    @ResponseParser(ETagFromHttpResponseViaRegex.class)
@@ -122,7 +123,7 @@ public interface AWSS3AsyncClient extends S3AsyncClient {
    /**
     * @see AWSS3Client#deleteObjects
     */
-   @Named("s3:DeleteObject")
+   @Named("DeleteObject")
    @POST                              
    @Path("/")
    @QueryParams(keys = "delete")

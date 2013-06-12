@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.services;
 
@@ -72,7 +70,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#createVolumeFromSnapshotInAvailabilityZone
     */
-   @Named("ec2:CreateVolume")   
+   @Named("CreateVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateVolume")
@@ -84,7 +82,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#createVolumeFromSnapshotInAvailabilityZone
     */
-   @Named("ec2:CreateVolume")   
+   @Named("CreateVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateVolume")
@@ -96,7 +94,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#createVolumeInAvailabilityZone
     */
-   @Named("ec2:CreateVolume")   
+   @Named("CreateVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateVolume")
@@ -109,7 +107,7 @@ public interface ElasticBlockStoreAsyncClient {
     * @see ElasticBlockStoreClient#describeVolumesInRegion
     */
    @POST
-   @Named("ec2:DescribeVolumes")   
+   @Named("DescribeVolumes")   
    @Path("/")
    @FormParams(keys = ACTION, values = "DescribeVolumes")
    @XMLResponseParser(DescribeVolumesResponseHandler.class)
@@ -120,7 +118,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#deleteVolumeInRegion
     */
-   @Named("ec2:DeleteVolume")   
+   @Named("DeleteVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteVolume")
@@ -130,7 +128,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#detachVolumeInRegion
     */
-   @Named("ec2:DetachVolume")   
+   @Named("DetachVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DetachVolume")
@@ -141,7 +139,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#attachVolumeInRegion
     */
-   @Named("ec2:AttachVolume")   
+   @Named("AttachVolume")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "AttachVolume")
@@ -154,7 +152,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#createSnapshotInRegion
     */
-   @Named("ec2:CreateSnapshot")   
+   @Named("CreateSnapshot")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateSnapshot")
@@ -166,7 +164,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#describeSnapshotsInRegion
     */
-   @Named("ec2:DescribeSnapshots")   
+   @Named("DescribeSnapshots")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DescribeSnapshots")
@@ -179,7 +177,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#deleteSnapshotInRegion
     */
-   @Named("ec2:DeleteSnapshot")   
+   @Named("DeleteSnapshot")   
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeleteSnapshot")
@@ -190,7 +188,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#addCreateVolumePermissionsToSnapshotInRegion
     */
-   @Named("ec2:ModifySnapshotAttribute")   
+   @Named("ModifySnapshotAttribute")   
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "OperationType", "Attribute" }, values = { "ModifySnapshotAttribute", "add",
@@ -204,7 +202,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#removeCreateVolumePermissionsFromSnapshotInRegion
     */
-   @Named("ec2:ModifySnapshotAttribute")   
+   @Named("ModifySnapshotAttribute")   
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "OperationType", "Attribute" }, values = { "ModifySnapshotAttribute", "remove",
@@ -218,7 +216,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#getCreateVolumePermissionForSnapshotInRegion
     */
-   @Named("ec2:DescribeSnapshotAttribute")   
+   @Named("DescribeSnapshotAttribute")   
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeSnapshotAttribute", "createVolumePermission" })
@@ -230,7 +228,7 @@ public interface ElasticBlockStoreAsyncClient {
    /**
     * @see ElasticBlockStoreClient#resetCreateVolumePermissionsOnSnapshotInRegion
     */
-   @Named("ec2:ResetSnapshotAttribute")   
+   @Named("ResetSnapshotAttribute")   
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ResetSnapshotAttribute", "createVolumePermission" })

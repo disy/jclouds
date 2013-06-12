@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.trmk.vcloud_0_8.compute.suppliers;
 
@@ -26,8 +24,6 @@ import static org.jclouds.concurrent.FutureIterables.transformParallel;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -42,6 +38,8 @@ import org.jclouds.trmk.vcloud_0_8.domain.Org;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * @author Adrian Cole
@@ -55,27 +53,27 @@ public class VCloudImageSupplier implements Supplier<Set<? extends Image>> {
 
    private final Supplier<Map<String, ? extends Org>> orgMap;
    private final Function<Org, Iterable<? extends Image>> imagesInOrg;
-   private final ExecutorService executor;
+   private final ListeningExecutorService userExecutor;
 
    @Inject
    VCloudImageSupplier(Supplier<Map<String, ? extends Org>> orgMap,
             Function<Org, Iterable<? extends Image>> imagesInOrg,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService executor) {
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor) {
       this.orgMap = checkNotNull(orgMap, "orgMap");
       this.imagesInOrg = checkNotNull(imagesInOrg, "imagesInOrg");
-      this.executor = checkNotNull(executor, "executor");
+      this.userExecutor = checkNotNull(userExecutor, "userExecutor");
    }
 
    @Override
    public Set<? extends Image> get() {
       Iterable<? extends Org> orgs = checkNotNull(orgMap.get().values(), "orgs");
       Iterable<? extends Iterable<? extends Image>> images = transformParallel(orgs,
-               new Function<Org, Future<? extends Iterable<? extends Image>>>() {
+               new Function<Org, ListenableFuture<? extends Iterable<? extends Image>>>() {
 
                   @Override
-                  public Future<Iterable<? extends Image>> apply(final Org from) {
+                  public ListenableFuture<Iterable<? extends Image>> apply(final Org from) {
                      checkNotNull(from, "org");
-                     return executor.submit(new Callable<Iterable<? extends Image>>() {
+                     return userExecutor.submit(new Callable<Iterable<? extends Image>>() {
 
                         @Override
                         public Iterable<? extends Image> call() throws Exception {
@@ -89,7 +87,7 @@ public class VCloudImageSupplier implements Supplier<Set<? extends Image>> {
                      });
                   }
 
-               }, executor, null, logger, "images in " + orgs);
+               }, userExecutor, null, logger, "images in " + orgs);
       return newLinkedHashSet(concat(images));
    }
 }

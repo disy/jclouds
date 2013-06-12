@@ -1,26 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.compute.options;
 
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.authorizePublicKey;
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.blockOnPort;
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.enableMonitoring;
+import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.iamInstanceProfileArn;
+import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.iamInstanceProfileName;
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.inboundPorts;
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.installPrivateKey;
 import static org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions.Builder.keyPair;
@@ -50,7 +50,7 @@ public class AWSEC2TemplateOptionsTest {
       assertEquals(options.as(AWSEC2TemplateOptions.class), options);
    }
 
-   @Test(expectedExceptions = IllegalArgumentException.class)
+   @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "all security groups must be non-empty")
    public void testsecurityGroupIdsIterableBadFormat() {
       AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
       options.securityGroupIds(ImmutableSet.of("groupId1", ""));
@@ -76,7 +76,7 @@ public class AWSEC2TemplateOptionsTest {
       assertEquals(options.getGroupIds(), ImmutableSet.of("groupId1", "groupId2"));
    }
 
-   @Test(expectedExceptions = IllegalArgumentException.class)
+   @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "all security groups must be non-empty")
    public void testsecurityGroupIdsVarArgsBadFormat() {
       AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
       options.securityGroupIds("mygroupId", "");
@@ -107,7 +107,7 @@ public class AWSEC2TemplateOptionsTest {
       assertEquals(options.getGroupIds(), ImmutableSet.of("groupId1", "groupId2"));
    }
 
-   @Test(expectedExceptions = IllegalArgumentException.class)
+   @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "all security groups must be non-empty")
    public void testsecurityGroupsIterableBadFormat() {
       AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
       options.securityGroups(ImmutableSet.of("group1", ""));
@@ -133,7 +133,7 @@ public class AWSEC2TemplateOptionsTest {
       assertEquals(options.getGroups(), ImmutableSet.of("group1", "group2"));
    }
 
-   @Test(expectedExceptions = IllegalArgumentException.class)
+   @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "all security groups must be non-empty")
    public void testsecurityGroupsVarArgsBadFormat() {
       AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
       options.securityGroups("mygroup", "");
@@ -164,7 +164,7 @@ public class AWSEC2TemplateOptionsTest {
       assertEquals(options.getGroups(), ImmutableSet.of("group1", "group2"));
    }
 
-   @Test(expectedExceptions = IllegalArgumentException.class)
+   @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "use noKeyPair option to request boot without a keypair")
    public void testkeyPairBadFormat() {
       AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
       options.keyPair("");
@@ -366,5 +366,53 @@ public class AWSEC2TemplateOptionsTest {
       AWSEC2TemplateOptions options = inboundPorts(22, 30);
       assertEquals(options.getInboundPorts()[0], 22);
       assertEquals(options.getInboundPorts()[1], 30);
+   }
+
+   @Test
+   public void testIAMInstanceProfileArn() {
+      AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+      options.iamInstanceProfileArn("arn:aws:iam::123456789012:instance-profile/application_abc/component_xyz/Webserver");
+      assertEquals(options.getIAMInstanceProfileArn(), "arn:aws:iam::123456789012:instance-profile/application_abc/component_xyz/Webserver");
+   }
+
+   @Test
+   public void testNullIAMInstanceProfileArn() {
+      AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+      assertEquals(options.getIAMInstanceProfileArn(), null);
+   }
+
+   @Test
+   public void testIAMInstanceProfileArnStatic() {
+      AWSEC2TemplateOptions options = iamInstanceProfileArn("arn:aws:iam::123456789012:instance-profile/application_abc/component_xyz/Webserver");
+      assertEquals(options.getIAMInstanceProfileArn(), "arn:aws:iam::123456789012:instance-profile/application_abc/component_xyz/Webserver");
+   }
+
+   @Test(expectedExceptions = NullPointerException.class)
+   public void testIAMInstanceProfileArnNPE() {
+      iamInstanceProfileArn(null);
+   }
+
+   @Test
+   public void testIAMInstanceProfileName() {
+      AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+      options.iamInstanceProfileName("Webserver");
+      assertEquals(options.getIAMInstanceProfileName(), "Webserver");
+   }
+
+   @Test
+   public void testNullIAMInstanceProfileName() {
+      AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
+      assertEquals(options.getIAMInstanceProfileName(), null);
+   }
+
+   @Test
+   public void testIAMInstanceProfileNameStatic() {
+      AWSEC2TemplateOptions options = iamInstanceProfileName("Webserver");
+      assertEquals(options.getIAMInstanceProfileName(), "Webserver");
+   }
+
+   @Test(expectedExceptions = NullPointerException.class)
+   public void testIAMInstanceProfileNameNPE() {
+      iamInstanceProfileName(null);
    }
 }

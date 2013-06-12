@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.services;
 
@@ -68,7 +66,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#describeImagesInRegion
     */
-   @Named("ec2:DescribeImages")
+   @Named("DescribeImages")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DescribeImages")
@@ -81,7 +79,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#createImageInRegion
     */
-   @Named("ec2:CreateImage")
+   @Named("CreateImage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "CreateImage")
@@ -93,7 +91,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#deregisterImageInRegion
     */
-   @Named("ec2:DeregisterImage")
+   @Named("DeregisterImage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DeregisterImage")
@@ -104,7 +102,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#registerImageFromManifestInRegion
     */
-   @Named("ec2:RegisterImage")
+   @Named("RegisterImage")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "RegisterImage")
@@ -117,7 +115,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#registerUnixImageBackedByEbsInRegion
     */
-   @Named("ec2:RegisterImage")
+   @Named("RegisterImage")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "RootDeviceName", "BlockDeviceMapping.0.DeviceName" }, values = { "RegisterImage",
@@ -132,7 +130,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#resetLaunchPermissionsOnImageInRegion
     */
-   @Named("ec2:ResetImageAttribute")
+   @Named("ResetImageAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ResetImageAttribute", "launchPermission" })
@@ -143,7 +141,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#addLaunchPermissionsToImageInRegion
     */
-   @Named("ec2:ModifyImageAttribute")
+   @Named("ModifyImageAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "OperationType", "Attribute" }, values = { "ModifyImageAttribute", "add",
@@ -157,7 +155,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#removeLaunchPermissionsToImageInRegion
     */
-   @Named("ec2:ModifyImageAttribute")
+   @Named("ModifyImageAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "OperationType", "Attribute" }, values = { "ModifyImageAttribute", "remove",
@@ -171,7 +169,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#getLaunchPermissionForImageInRegion
     */
-   @Named("ec2:DescribeImageAttribute")
+   @Named("DescribeImageAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeImageAttribute", "launchPermission" })
@@ -183,7 +181,7 @@ public interface AMIAsyncClient {
    /**
     * @see AMIClient#getBlockDeviceMappingsForImageInRegion
     */
-   @Named("ec2:DescribeImageAttribute")
+   @Named("DescribeImageAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeImageAttribute", "blockDeviceMapping" })

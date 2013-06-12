@@ -1,29 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudsigma.compute;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Iterables.contains;
+import static com.google.common.collect.Iterables.filter;
 import static org.jclouds.concurrent.FutureIterables.transformParallel;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -65,7 +62,10 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
@@ -89,7 +89,7 @@ public class CloudSigmaComputeServiceAdapter implements
    private final Predicate<DriveInfo> driveNotClaimed;
    private final String defaultVncPassword;
    private final LoadingCache<String, DriveInfo> cache;
-   private final ExecutorService executor;
+   private final ListeningExecutorService userExecutor;
 
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
@@ -98,13 +98,13 @@ public class CloudSigmaComputeServiceAdapter implements
    @Inject
    public CloudSigmaComputeServiceAdapter(CloudSigmaClient client, Predicate<DriveInfo> driveNotClaimed,
          @Named(CloudSigmaConstants.PROPERTY_VNC_PASSWORD) String defaultVncPassword,
-         LoadingCache<String, DriveInfo> cache, @Named(Constants.PROPERTY_USER_THREADS) ExecutorService executor) {
+         LoadingCache<String, DriveInfo> cache, @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor) {
       this.client = checkNotNull(client, "client");
       this.driveNotClaimed = checkNotNull(driveNotClaimed, "driveNotClaimed");
       this.defaultVncPassword = checkNotNull(defaultVncPassword, "defaultVncPassword");
       checkArgument(defaultVncPassword.length() <= 8, "vnc passwords should be less that 8 characters!"); 
       this.cache = checkNotNull(cache, "cache");
-      this.executor = checkNotNull(executor, "executor");
+      this.userExecutor = checkNotNull(userExecutor, "userExecutor");
    }
 
    @Override
@@ -171,10 +171,10 @@ public class CloudSigmaComputeServiceAdapter implements
    @Override
    public Iterable<DriveInfo> listImages() {
       return FluentIterable.from(transformParallel(client.listStandardDrives(),
-            new Function<String, Future<? extends DriveInfo>>() {
+            new Function<String, ListenableFuture<? extends DriveInfo>>() {
 
                @Override
-               public Future<DriveInfo> apply(String input) {
+               public ListenableFuture<DriveInfo> apply(String input) {
                   try {
                      return Futures.immediateFuture(cache.getUnchecked(input));
                   } catch (CacheLoader.InvalidCacheLoadException e) {
@@ -189,7 +189,7 @@ public class CloudSigmaComputeServiceAdapter implements
                public String toString() {
                   return "seedDriveCache()";
                }
-            }, executor, null, logger, "drives")).filter(PREINSTALLED_DISK);
+            }, userExecutor, null, logger, "drives")).filter(PREINSTALLED_DISK);
    }
 
    @SuppressWarnings("unchecked")
@@ -198,6 +198,17 @@ public class CloudSigmaComputeServiceAdapter implements
       return (Iterable<ServerInfo>) client.listServerInfo();
    }
    
+   @Override
+   public Iterable<ServerInfo> listNodesByIds(final Iterable<String> ids) {
+      return filter(listNodes(), new Predicate<ServerInfo>() {
+
+            @Override
+            public boolean apply(ServerInfo server) {
+               return contains(ids, server.getUuid());
+            }
+         });
+   }
+
    @Override
    public Iterable<Location> listLocations() {
       // Not using the adapter to determine locations

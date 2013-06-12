@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.vcloud.compute.functions;
 
@@ -47,9 +45,7 @@ import org.jclouds.vcloud.domain.VApp;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 
-/**
- * @author Adrian Cole
- */
+/** @author Adrian Cole */
 @Singleton
 public class VAppToNodeMetadata implements Function<VApp, NodeMetadata> {
    @Resource
@@ -63,8 +59,8 @@ public class VAppToNodeMetadata implements Function<VApp, NodeMetadata> {
 
    @Inject
    protected VAppToNodeMetadata(Map<Status, NodeMetadata.Status> vAppStatusToNodeStatus, Map<String, Credentials> credentialStore,
-         FindLocationForResource findLocationForResourceInVDC, Function<VApp, Hardware> hardwareForVApp,
-         GroupNamingConvention.Factory namingConvention) {
+                                FindLocationForResource findLocationForResourceInVDC, Function<VApp, Hardware> hardwareForVApp,
+                                GroupNamingConvention.Factory namingConvention) {
       this.nodeNamingConvention = checkNotNull(namingConvention, "namingConvention").createWithoutPrefix();
       this.hardwareForVApp = checkNotNull(hardwareForVApp, "hardwareForVApp");
       this.findLocationForResourceInVDC = checkNotNull(findLocationForResourceInVDC, "findLocationForResourceInVDC");
@@ -77,9 +73,16 @@ public class VAppToNodeMetadata implements Function<VApp, NodeMetadata> {
       builder.ids(from.getHref().toASCIIString());
       builder.uri(from.getHref());
       builder.name(from.getName());
-      if (!isNullOrEmpty(from.getDescription()) && from.getDescription().indexOf('=') != -1)
-         addMetadataAndParseTagsFromCommaDelimitedValue(builder,
-                  Splitter.on('\n').withKeyValueSeparator("=").split(from.getDescription()));
+      if (!isNullOrEmpty(from.getDescription())
+         && from.getDescription().indexOf('=') != -1
+         && from.getDescription().indexOf('\n') != -1) {
+         try {
+            addMetadataAndParseTagsFromCommaDelimitedValue(builder,
+               Splitter.on('\n').withKeyValueSeparator("=").split(from.getDescription()));
+         } catch (IllegalArgumentException iae) {
+            // no op
+         }
+      }
       builder.hostname(from.getName());
       builder.location(findLocationForResourceInVDC.apply(from.getVDC()));
       builder.group(nodeNamingConvention.groupInUniqueNameOrNull(from.getName()));

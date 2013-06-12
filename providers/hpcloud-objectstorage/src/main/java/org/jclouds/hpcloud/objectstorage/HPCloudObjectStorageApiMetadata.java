@@ -1,24 +1,22 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.hpcloud.objectstorage;
 
-import static org.jclouds.rest.config.BinderUtils.bindClientAndAsyncClient;
+import static org.jclouds.rest.config.BinderUtils.bindSyncToAsyncHttpApi;
 
 import java.net.URI;
 import java.util.Properties;
@@ -27,13 +25,13 @@ import org.jclouds.blobstore.BlobRequestSigner;
 import org.jclouds.hpcloud.objectstorage.blobstore.HPCloudObjectStorageBlobRequestSigner;
 import org.jclouds.hpcloud.objectstorage.blobstore.config.HPCloudObjectStorageBlobStoreContextModule;
 import org.jclouds.hpcloud.objectstorage.config.HPCloudObjectStorageRestClientModule;
+import org.jclouds.openstack.keystone.v2_0.config.MappedAuthenticationApiModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneAuthenticationModule.RegionModule;
 import org.jclouds.openstack.swift.SwiftKeystoneApiMetadata;
 import org.jclouds.openstack.swift.blobstore.config.TemporaryUrlExtensionModule;
 import org.jclouds.openstack.swift.config.SwiftRestClientModule.KeystoneStorageEndpointModule;
 import org.jclouds.openstack.swift.extensions.KeystoneTemporaryUrlKeyAsyncApi;
 import org.jclouds.openstack.swift.extensions.TemporaryUrlKeyApi;
-import org.jclouds.rest.RestContext;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
@@ -45,7 +43,12 @@ import com.google.inject.Module;
  */
 public class HPCloudObjectStorageApiMetadata extends SwiftKeystoneApiMetadata {
 
-   public static final TypeToken<RestContext<HPCloudObjectStorageApi, HPCloudObjectStorageAsyncApi>> CONTEXT_TOKEN = new TypeToken<RestContext<HPCloudObjectStorageApi, HPCloudObjectStorageAsyncApi>>() {
+   /**
+    * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(HPCloudObjectStorageApi.class)} as
+    *             {@link HPCloudObjectStorageAsyncApi} interface will be removed in jclouds 1.7.
+    */
+   @Deprecated
+   public static final TypeToken<org.jclouds.rest.RestContext<HPCloudObjectStorageApi, HPCloudObjectStorageAsyncApi>> CONTEXT_TOKEN = new TypeToken<org.jclouds.rest.RestContext<HPCloudObjectStorageApi, HPCloudObjectStorageAsyncApi>>() {
       private static final long serialVersionUID = 1L;
    };
 
@@ -68,6 +71,7 @@ public class HPCloudObjectStorageApiMetadata extends SwiftKeystoneApiMetadata {
    }
 
    public static class Builder extends SwiftKeystoneApiMetadata.Builder<Builder> {
+      @SuppressWarnings("deprecation")
       protected Builder(){
          super(HPCloudObjectStorageApi.class, HPCloudObjectStorageAsyncApi.class);
          id("hpcloud-objectstorage")
@@ -78,6 +82,7 @@ public class HPCloudObjectStorageApiMetadata extends SwiftKeystoneApiMetadata {
          .defaultProperties(HPCloudObjectStorageApiMetadata.defaultProperties())
          .context(CONTEXT_TOKEN)
          .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
+                                     .add(MappedAuthenticationApiModule.class)
                                      .add(KeystoneStorageEndpointModule.class)
                                      .add(RegionModule.class)
                                      .add(HPCloudObjectStorageRestClientModule.class)
@@ -107,7 +112,7 @@ public class HPCloudObjectStorageApiMetadata extends SwiftKeystoneApiMetadata {
       }
       @Override
       protected void bindTemporaryUrlKeyApi() {
-         bindClientAndAsyncClient(binder(), TemporaryUrlKeyApi.class, KeystoneTemporaryUrlKeyAsyncApi.class);
+         bindSyncToAsyncHttpApi(binder(), TemporaryUrlKeyApi.class, KeystoneTemporaryUrlKeyAsyncApi.class);
       }
    }
 }

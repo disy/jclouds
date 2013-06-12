@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudfiles;
 
@@ -22,6 +20,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -41,8 +40,8 @@ import org.jclouds.cloudfiles.functions.ParseContainerCDNMetadataFromHeaders;
 import org.jclouds.cloudfiles.options.ListCdnContainerOptions;
 import org.jclouds.cloudfiles.reference.CloudFilesHeaders;
 import org.jclouds.openstack.filters.AuthenticateRequest;
-import org.jclouds.openstack.swift.CommonSwiftAsyncClient;
 import org.jclouds.openstack.swift.Storage;
+import org.jclouds.openstack.swift.SwiftAsyncClient;
 import org.jclouds.rest.annotations.BinderParam;
 import org.jclouds.rest.annotations.Endpoint;
 import org.jclouds.rest.annotations.Fallback;
@@ -63,14 +62,18 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see CloudFilesClient
  * @see <a href="http://www.rackspacecloud.com/cf-devguide-20090812.pdf" />
  * @author Adrian Cole
+ * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(CloudFilesClient.class)} as
+ *             {@link CloudFilesAsyncClient} interface will be removed in jclouds 1.7.
  */
+@Deprecated
 @RequestFilters(AuthenticateRequest.class)
 @Endpoint(Storage.class)
-public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
+public interface CloudFilesAsyncClient extends SwiftAsyncClient {
 
    /**
     * @see CloudFilesClient#listCDNContainers
     */
+   @Named("ListCDNEnabledContainers")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @QueryParams(keys = "format", values = "json")
@@ -81,6 +84,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#getCDNMetadata
     */
+   @Named("ListCDNEnabledContainerMetadata")
    @HEAD
    @ResponseParser(ParseContainerCDNMetadataFromHeaders.class)
    @Fallback(NullOnContainerNotFound.class)
@@ -91,6 +95,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#enableCDN(String, long, boolean);
     */
+   @Named("CDNEnableContainer")
    @PUT
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_ENABLED, values = "True")
@@ -103,6 +108,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#enableCDN(String, long);
     */
+   @Named("CDNEnableContainer")
    @PUT
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_ENABLED, values = "True")
@@ -114,6 +120,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#enableCDN(String)
     */
+   @Named("CDNEnableContainer")
    @PUT
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_ENABLED, values = "True")
@@ -124,6 +131,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#updateCDN(long, boolean)
     */
+   @Named("UpdateCDNEnabledContainerMetadata")
    @POST
    @Path("/{container}")
    @ResponseParser(ParseCdnUriFromHeaders.class)
@@ -135,6 +143,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#updateCDN(boolean)
     */
+   @Named("UpdateCDNEnabledContainerMetadata")
    @POST
    @Path("/{container}")
    @ResponseParser(ParseCdnUriFromHeaders.class)
@@ -145,6 +154,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#updateCDN(long)
     */
+   @Named("UpdateCDNEnabledContainerMetadata")
    @POST
    @Path("/{container}")
    @ResponseParser(ParseCdnUriFromHeaders.class)
@@ -155,6 +165,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#disableCDN
     */
+   @Named("DisableCDNEnabledContainer")
    @POST
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_ENABLED, values = "False")
@@ -164,6 +175,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#purgeCDNObject(String, String, Iterable)
     */
+   @Named("PurgeCDNEnabledObject")
    @DELETE
    @Path("/{container}/{object}")
    @Headers(keys = CloudFilesHeaders.CDN_CONTAINER_PURGE_OBJECT_EMAIL, values = "{email}")
@@ -175,6 +187,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#purgeCDNObject(String, String)
     */
+   @Named("PurgeCDNEnabledObject")
    @DELETE
    @Path("/{container}/{object}")
    @Endpoint(CDNManagement.class)
@@ -184,6 +197,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#setCDNStaticWebsiteIndex
     */
+   @Named("UpdateCDNEnabledContainerMetadata")
    @POST
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_WEBSITE_INDEX, values = "{index}")
@@ -193,6 +207,7 @@ public interface CloudFilesAsyncClient extends CommonSwiftAsyncClient {
    /**
     * @see CloudFilesClient#setCDNStaticWebsiteError
     */
+   @Named("UpdateCDNEnabledContainerMetadata")
    @POST
    @Path("/{container}")
    @Headers(keys = CloudFilesHeaders.CDN_WEBSITE_ERROR, values = "{error}")

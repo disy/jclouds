@@ -1,24 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.rest.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
+import static com.google.inject.name.Names.named;
+import static org.jclouds.Constants.PROPERTY_IO_WORKER_THREADS;
+import static org.jclouds.Constants.PROPERTY_MAX_RETRIES;
+import static org.jclouds.Constants.PROPERTY_USER_THREADS;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
@@ -29,7 +32,6 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -43,10 +45,8 @@ import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.jclouds.Constants;
 import org.jclouds.ContextBuilder;
 import org.jclouds.apis.ApiMetadata;
-import org.jclouds.concurrent.MoreExecutors;
 import org.jclouds.concurrent.SingleThreaded;
 import org.jclouds.concurrent.config.ConfiguresExecutorService;
 import org.jclouds.date.internal.DateServiceDateCodecFactory;
@@ -68,7 +68,7 @@ import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.jclouds.logging.config.NullLoggingModule;
 import org.jclouds.providers.ProviderMetadata;
-import org.jclouds.rest.RestApiMetadata;
+import org.jclouds.rest.HttpApiMetadata;
 import org.jclouds.rest.config.CredentialStoreModule;
 import org.jclouds.util.Strings2;
 import org.w3c.dom.Node;
@@ -81,14 +81,17 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.InputSupplier;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.TimeLimiter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
-import com.google.inject.name.Names;
 
 /**
  * 
@@ -193,7 +196,7 @@ public abstract class BaseRestApiExpectTest<S> {
       @Inject
       public ExpectHttpCommandExecutorService(Function<HttpRequest, HttpResponse> fn, HttpUtils utils,
                ContentMetadataCodec contentMetadataCodec,
-               @Named(Constants.PROPERTY_IO_WORKER_THREADS) ExecutorService ioExecutor,
+               @Named(PROPERTY_IO_WORKER_THREADS) ListeningExecutorService ioExecutor,
                IOExceptionRetryHandler ioRetryHandler, DelegatingRetryHandler retryHandler,
                DelegatingErrorHandler errorHandler, HttpWire wire) {
          super(utils, contentMetadataCodec, ioExecutor, retryHandler, ioRetryHandler, errorHandler, wire);
@@ -228,13 +231,17 @@ public abstract class BaseRestApiExpectTest<S> {
 
       @Override
       public void configure() {
-         bind(ExecutorService.class).annotatedWith(Names.named(Constants.PROPERTY_USER_THREADS)).toInstance(
-                  MoreExecutors.sameThreadExecutor());
-         bind(ExecutorService.class).annotatedWith(Names.named(Constants.PROPERTY_IO_WORKER_THREADS)).toInstance(
-                  MoreExecutors.sameThreadExecutor());
+         bind(ListeningExecutorService.class).annotatedWith(named(PROPERTY_USER_THREADS)).toInstance(sameThreadExecutor());
+         bind(ListeningExecutorService.class).annotatedWith(named(PROPERTY_IO_WORKER_THREADS)).toInstance(sameThreadExecutor());
          bind(new TypeLiteral<Function<HttpRequest, HttpResponse>>() {
          }).toInstance(fn);
          bind(HttpCommandExecutorService.class).to(ExpectHttpCommandExecutorService.class);
+      }
+
+      @Provides
+      @Singleton
+      TimeLimiter timeLimiter(@Named(PROPERTY_USER_THREADS) ListeningExecutorService userExecutor){
+         return new SimpleTimeLimiter(userExecutor);
       }
    }
 
@@ -440,10 +447,11 @@ public abstract class BaseRestApiExpectTest<S> {
          public HttpResponse apply(HttpRequest input) {
             HttpRequest matchedRequest = null;
             HttpResponse response = null;
-            for (HttpRequest request : requestToResponse.keySet()) {
+            for (Map.Entry<HttpRequest, HttpResponse> entry : requestToResponse.entrySet()) {
+               HttpRequest request = entry.getKey();
                if (httpRequestsAreEqual(input, request)) {
                   matchedRequest = request;
-                  response = requestToResponse.get(request);
+                  response = entry.getValue();
                }
             }
 
@@ -547,11 +555,16 @@ public abstract class BaseRestApiExpectTest<S> {
          ApiMetadata am = (pm != null) ? pm.getApiMetadata() : checkNotNull(createApiMetadata(),
                   "either createApiMetadata or createProviderMetadata must be overridden");
 
-         builder = pm != null ? ContextBuilder.newBuilder(pm) : ContextBuilder.newBuilder(RestApiMetadata.class.cast(am));
+         builder = pm != null ? ContextBuilder.newBuilder(pm) : ContextBuilder.newBuilder(am);
       }
-
-      this.api = RestApiMetadata.class.cast(builder.getApiMetadata()).getApi();
-
+      ApiMetadata am = builder.getApiMetadata();
+      if (am instanceof HttpApiMetadata) {
+         this.api = HttpApiMetadata.class.cast(am).getApi();
+      } else if (am instanceof org.jclouds.rest.RestApiMetadata) {
+         this.api = org.jclouds.rest.RestApiMetadata.class.cast(am).getApi();
+      } else {
+         throw new UnsupportedOperationException("unsupported base type: " + am);
+      }
       // isolate tests from eachother, as default credentialStore is static
       return builder.credentials(identity, credential).modules(
                ImmutableSet.of(new ExpectModule(fn), new NullLoggingModule(), new CredentialStoreModule(new CopyInputStreamInputSupplierMap(
@@ -564,7 +577,7 @@ public abstract class BaseRestApiExpectTest<S> {
     */
    protected Properties setupProperties() {
       Properties props = new Properties();
-      props.put(Constants.PROPERTY_MAX_RETRIES, 1);
+      props.put(PROPERTY_MAX_RETRIES, 1);
       return props;
    }
 }

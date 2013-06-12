@@ -1,32 +1,29 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.cinder.v1.predicates;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 
 import org.jclouds.openstack.cinder.v1.domain.Snapshot;
 import org.jclouds.openstack.cinder.v1.domain.Volume;
 import org.jclouds.openstack.cinder.v1.domain.Volume.Status;
 import org.jclouds.openstack.cinder.v1.features.SnapshotApi;
-import org.jclouds.predicates.RetryablePredicate;
 
 import com.google.common.base.Predicate;
 
@@ -38,7 +35,7 @@ import com.google.common.base.Predicate;
  * <pre>
  * {@code
  * Snapshot snapshot = snapshotApi.create(volumeId);
- * RetryablePredicate<String> awaitAvailable = new RetryablePredicate<String>(
+ * RetryablePredicate<String> awaitAvailable = RetryablePredicate.create(
  *    SnapshotPredicates.available(snapshotApi), 600, 10, 10, TimeUnit.SECONDS);
  * 
  * if (!awaitAvailable.apply(snapshot.getId())) {
@@ -68,10 +65,9 @@ public class SnapshotPredicates {
     * @param snapshotApi The SnapshotApi in the zone where your Snapshot resides.
     * @return RetryablePredicate That will check the status every 5 seconds for a maxiumum of 20 minutes.
     */
-   public static RetryablePredicate<Snapshot> awaitAvailable(SnapshotApi snapshotApi) {
+   public static Predicate<Snapshot> awaitAvailable(SnapshotApi snapshotApi) {
       StatusUpdatedPredicate statusPredicate = new StatusUpdatedPredicate(snapshotApi, Volume.Status.AVAILABLE);
-      
-      return new RetryablePredicate<Snapshot>(statusPredicate, 1200, 5, 5, TimeUnit.SECONDS);
+      return retry(statusPredicate, 1200, 5, 5, SECONDS);
    }
    
    /**
@@ -81,17 +77,15 @@ public class SnapshotPredicates {
     * @return RetryablePredicate That will check the whether the Snapshot exists 
     * every 5 seconds for a maxiumum of 20 minutes.
     */
-   public static RetryablePredicate<Snapshot> awaitDeleted(SnapshotApi snapshotApi) {
+   public static Predicate<Snapshot> awaitDeleted(SnapshotApi snapshotApi) {
       DeletedPredicate deletedPredicate = new DeletedPredicate(snapshotApi);
-      
-      return new RetryablePredicate<Snapshot>(deletedPredicate, 1200, 5, 5, TimeUnit.SECONDS);
+      return retry(deletedPredicate, 1200, 5, 5, SECONDS);
    }
 
-   public static RetryablePredicate<Snapshot> awaitStatus(
-         SnapshotApi snapshotApi, Volume.Status status, long maxWaitInSec, long periodInSec) {
-      StatusUpdatedPredicate statusPredicate = new StatusUpdatedPredicate(snapshotApi, status);
-      
-      return new RetryablePredicate<Snapshot>(statusPredicate, maxWaitInSec, periodInSec, periodInSec, TimeUnit.SECONDS);
+   public static Predicate<Snapshot> awaitStatus(SnapshotApi snapshotApi, Volume.Status status, long maxWaitInSec,
+         long periodInSec) {
+   StatusUpdatedPredicate statusPredicate = new StatusUpdatedPredicate(snapshotApi, status);
+      return retry(statusPredicate, maxWaitInSec, periodInSec, periodInSec, SECONDS);
    }
    
    private static class StatusUpdatedPredicate implements Predicate<Snapshot> {

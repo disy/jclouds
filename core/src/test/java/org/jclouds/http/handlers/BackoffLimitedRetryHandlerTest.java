@@ -1,55 +1,41 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.http.handlers;
-
+import static org.jclouds.reflect.Reflection2.method;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-
-import org.jclouds.date.internal.DateServiceDateCodecFactory;
-import org.jclouds.date.internal.SimpleDateFormatDateService;
 import org.jclouds.http.BaseJettyTest;
 import org.jclouds.http.HttpCommand;
-import org.jclouds.http.HttpCommandExecutorService;
+import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
-import org.jclouds.http.HttpUtils;
 import org.jclouds.http.IntegrationTestAsyncClient;
-import org.jclouds.http.internal.HttpWire;
-import org.jclouds.http.internal.JavaUrlHttpCommandExecutorService;
-import org.jclouds.io.ContentMetadataCodec;
-import org.jclouds.io.ContentMetadataCodec.DefaultContentMetadataCodec;
 import org.jclouds.io.Payloads;
+import org.jclouds.reflect.Invocation;
 import org.jclouds.rest.internal.RestAnnotationProcessor;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Supplier;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.Invokable;
 
 @Test(groups = "unit", testName = "BackoffLimitedRetryHandlerTest")
 public class BackoffLimitedRetryHandlerTest {
@@ -91,35 +77,6 @@ public class BackoffLimitedRetryHandlerTest {
       assert (elapsedTime >= period * 10 - 1) : elapsedTime;
       assertTrue(elapsedTime < period * 11);
 
-   }
-
-   HttpCommandExecutorService http;
-
-   @BeforeTest
-   void setupExecutorService() throws Exception {
-      ExecutorService execService = Executors.newCachedThreadPool();
-      BackoffLimitedRetryHandler backoff = new BackoffLimitedRetryHandler();
-      HttpUtils utils = new HttpUtils(0, 500, 1, 1);
-      ContentMetadataCodec contentMetadataCodec = new DefaultContentMetadataCodec(new DateServiceDateCodecFactory(
-            new SimpleDateFormatDateService()));
-      RedirectionRetryHandler retry = new RedirectionRetryHandler(backoff);
-      http = new JavaUrlHttpCommandExecutorService(utils, 
-               contentMetadataCodec, execService,
-               new DelegatingRetryHandler(backoff, retry), new BackoffLimitedRetryHandler(),
-               new DelegatingErrorHandler(), new HttpWire(), new HostnameVerifier() {
-
-                  @Override
-                  public boolean verify(String hostname, SSLSession session) {
-                     return false;
-                  }
-               }, new Supplier<SSLContext>() {
-
-                  @Override
-                  public SSLContext get() {
-                     return null;
-                  }
-
-               });
    }
 
    @Test
@@ -165,13 +122,13 @@ public class BackoffLimitedRetryHandlerTest {
       assertEquals(response.getPayload().getInput().read(), -1);
    }
 
-   private final RestAnnotationProcessor processor = BaseJettyTest.newBuilder(8100, new Properties()).buildInjector()
-         .getInstance(RestAnnotationProcessor.Factory.class).declaring(IntegrationTestAsyncClient.class);
+   private final Function<Invocation, HttpRequest> processor = BaseJettyTest.newBuilder(8100, new Properties()).buildInjector()
+         .getInstance(RestAnnotationProcessor.class);
 
    private HttpCommand createCommand() throws SecurityException, NoSuchMethodException {
-      Method method = IntegrationTestAsyncClient.class.getMethod("download", String.class);
+      Invokable<IntegrationTestAsyncClient, String> method = method(IntegrationTestAsyncClient.class, "download", String.class);
 
-      return new HttpCommand(processor.createRequest(method, "1"));
+      return new HttpCommand(processor.apply(Invocation.create(method, ImmutableList.<Object> of("1"))));
    }
 
    @Test

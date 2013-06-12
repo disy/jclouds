@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.http.handlers;
 
@@ -59,6 +57,7 @@ public class RedirectionRetryHandlerTest {
                                           .statusCode(302)
                                           .message("HTTP/1.1 302 Found").build();
 
+      expect(command.isReplayable()).andReturn(true);
       expect(command.incrementRedirectCount()).andReturn(0);
 
       replay(command);
@@ -80,7 +79,8 @@ public class RedirectionRetryHandlerTest {
                                           .message("HTTP/1.1 302 Found")
                                           .addHeader(LOCATION, "/api/v0.8b-ext2.5/Error.aspx?aspxerrorpath=/api/v0.8b-ext2.5/org.svc/1906645").build(); 
 
-      expect(command.incrementRedirectCount()).andReturn(5);
+      expect(command.isReplayable()).andReturn(true);
+      expect(command.incrementRedirectCount()).andReturn(6);
 
       replay(command);
 
@@ -174,6 +174,7 @@ public class RedirectionRetryHandlerTest {
    protected void verifyRedirectRoutes(HttpRequest request, HttpResponse response, HttpRequest expected) {
       HttpCommand command = createMock(HttpCommand.class);
 
+      expect(command.isReplayable()).andReturn(true);
       expect(command.incrementRedirectCount()).andReturn(0);
       expect(command.getCurrentRequest()).andReturn(request);
       command.setCurrentRequest(expected);

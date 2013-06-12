@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.hpcloud.objectstorage.blobstore;
 
@@ -30,6 +28,7 @@ import org.jclouds.hpcloud.objectstorage.blobstore.config.HPCloudObjectStorageBl
 import org.jclouds.hpcloud.objectstorage.config.HPCloudObjectStorageRestClientModule;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
+import org.jclouds.openstack.keystone.v2_0.config.MappedAuthenticationApiModule;
 import org.jclouds.openstack.keystone.v2_0.config.KeystoneAuthenticationModule.RegionModule;
 import org.jclouds.openstack.swift.config.SwiftRestClientModule.KeystoneStorageEndpointModule;
 import org.testng.annotations.Test;
@@ -75,6 +74,7 @@ public class HPCloudObjectStorageBlobSignerExpectTest extends BaseBlobSignerExpe
    protected HttpRequest putBlob() {
       return HttpRequest.builder().method("PUT")
             .endpoint("https://objects.jclouds.org/v1.0/40806637803162/container/name")
+            .addHeader("Expect", "100-continue")
             .addHeader("X-Auth-Token", "Auth_4f173437e4b013bee56d1007").build();
    }
 
@@ -82,6 +82,7 @@ public class HPCloudObjectStorageBlobSignerExpectTest extends BaseBlobSignerExpe
    protected HttpRequest putBlobWithTime() {
       return HttpRequest.builder().method("PUT")
             .endpoint("https://objects.jclouds.org/v1.0/40806637803162/container/name?temp_url_sig=40806637803162%3Aidentity%3Ac90269245ab0a316d5ea5e654d4c2a975fb4bf77&temp_url_expires=123456792")
+            .addHeader("Expect", "100-continue")
             .build();
    }
 
@@ -130,6 +131,7 @@ public class HPCloudObjectStorageBlobSignerExpectTest extends BaseBlobSignerExpe
    protected ApiMetadata createApiMetadata() {
       return new HPCloudObjectStorageApiMetadata().toBuilder()
                                    .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
+                                         .add(MappedAuthenticationApiModule.class)
                                          .add(KeystoneStorageEndpointModule.class)
                                          .add(RegionModule.class)
                                          .add(HPCloudObjectStorageRestClientModule.class)

@@ -1,23 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds;
 
+import java.net.Proxy;
+
+import org.jclouds.domain.Location;
 import org.jclouds.location.reference.LocationConstants;
 
 /**
@@ -103,30 +104,52 @@ public interface Constants {
     * Whether or not to use the proxy setup from the underlying operating system.
     */
    public static final String PROPERTY_PROXY_SYSTEM = "jclouds.use-system-proxy";
+   
    /**
     * String property.
     * <p/>
-    *Explicitly sets the host name of a HTTP proxy server.
+    *Explicitly sets the host name of a proxy server.
     */
    public static final String PROPERTY_PROXY_HOST = "jclouds.proxy-host";
+
    /**
-    * Integer property.
+    * Integer property. default is 80 when {@link #PROPERTY_PROXY_TYPE} is
+    * {@code HTTP}, and 1080 when {@link #PROPERTY_PROXY_TYPE} is {@code SOCKS}.
     * <p/>
-    * Explicitly sets the port number of a HTTP proxy server.
+    * Explicitly sets the port number of a proxy server.
     */
    public static final String PROPERTY_PROXY_PORT = "jclouds.proxy-port";
+
+   /**
+    * String property. default {@code HTTP}, valid options: {@code HTTP}, {@code SOCKS}.
+    * <p/>
+    * Explicitly sets the type of a proxy server.
+    * 
+    * @see Proxy.Type
+    */
+   public static final String PROPERTY_PROXY_TYPE = "jclouds.proxy-type";
+   
    /**
     * String property.
     * <p/>
     * Explicitly sets the user name credential for proxy authentication.
     */
    public static final String PROPERTY_PROXY_USER = "jclouds.proxy-user";
+   
    /**
     * String property.
     * <p/>
     * Explicitly sets the password credential for proxy authentication.
     */
    public static final String PROPERTY_PROXY_PASSWORD = "jclouds.proxy-password";
+
+   /**
+    * Boolean property. Default true.
+    * <p/>
+    * If a proxy server is configured, it will be used for all types of schemes.
+    * Set to false to not use a proxy server for sockets (such as ssh access).
+    */
+   public static final String PROPERTY_PROXY_FOR_SOCKETS = "jclouds.proxy-for-sockets";
 
    /**
     * Integer property.

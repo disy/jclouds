@@ -1,29 +1,30 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.options;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import org.jclouds.domain.Credentials;
 import org.jclouds.ec2.options.internal.BaseEC2RequestOptions;
-import org.jclouds.rest.annotations.Identity;
+import org.jclouds.location.Provider;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
@@ -49,15 +50,16 @@ import com.google.inject.Inject;
  */
 public class BundleInstanceS3StorageOptions extends BaseEC2RequestOptions {
 
-   @Inject(optional = true)
-   @Identity
-   String currentAwsAccessKeyId;
+   @Inject
+   @VisibleForTesting
+   @Provider
+   Supplier<Credentials> creds;
 
    @Override
    public Multimap<String, String> buildFormParameters() {
       if (getAwsAccessKeyId() == null) {
-         checkState(currentAwsAccessKeyId != null, "currentAwsAccessKeyId should have been injected");
-         bucketOwnedBy(currentAwsAccessKeyId);
+         checkState(creds != null, "creds should have been injected");
+         bucketOwnedBy(creds.get().identity);
       }
       return super.buildFormParameters();
    }
@@ -82,11 +84,11 @@ public class BundleInstanceS3StorageOptions extends BaseEC2RequestOptions {
 
    public static class Builder {
       /**
-       * @see BundleInstanceS3StorageOptions#bucketOwnedBy(ccessKeyId)
+       * @see BundleInstanceS3StorageOptions#bucketOwnedBy(accessKeyId)
        */
-      public static BundleInstanceS3StorageOptions bucketOwnedBy(String ccessKeyId) {
+      public static BundleInstanceS3StorageOptions bucketOwnedBy(String accessKeyId) {
          BundleInstanceS3StorageOptions options = new BundleInstanceS3StorageOptions();
-         return options.bucketOwnedBy(ccessKeyId);
+         return options.bucketOwnedBy(accessKeyId);
       }
 
    }

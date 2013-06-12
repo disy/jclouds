@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3.filters;
 
@@ -43,8 +41,10 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.jclouds.Constants;
+import org.jclouds.aws.domain.SessionCredentials;
 import org.jclouds.crypto.Crypto;
 import org.jclouds.date.TimeStamp;
+import org.jclouds.domain.Credentials;
 import org.jclouds.http.HttpException;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpRequestFilter;
@@ -52,12 +52,11 @@ import org.jclouds.http.HttpUtils;
 import org.jclouds.http.internal.SignatureWire;
 import org.jclouds.logging.Logger;
 import org.jclouds.rest.RequestSigner;
-import org.jclouds.rest.annotations.Credential;
-import org.jclouds.rest.annotations.Identity;
 import org.jclouds.s3.util.S3Utils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
@@ -86,8 +85,7 @@ public class RequestAuthorizeSignature implements HttpRequestFilter, RequestSign
             "response-cache-control", "response-content-disposition", "response-content-encoding", "delete");
 
    private final SignatureWire signatureWire;
-   private final String accessKey;
-   private final String secretKey;
+   private final Supplier<Credentials> creds;
    private final Provider<String> timeStampProvider;
    private final Crypto crypto;
    private final HttpUtils utils;
@@ -105,15 +103,14 @@ public class RequestAuthorizeSignature implements HttpRequestFilter, RequestSign
    public RequestAuthorizeSignature(SignatureWire signatureWire, @Named(PROPERTY_AUTH_TAG) String authTag,
             @Named(PROPERTY_S3_VIRTUAL_HOST_BUCKETS) boolean isVhostStyle,
             @Named(PROPERTY_S3_SERVICE_PATH) String servicePath, @Named(PROPERTY_HEADER_TAG) String headerTag,
-            @Identity String accessKey, @Credential String secretKey,
+            @org.jclouds.location.Provider Supplier<Credentials> creds,
             @TimeStamp Provider<String> timeStampProvider, Crypto crypto, HttpUtils utils) {
       this.isVhostStyle = isVhostStyle;
       this.servicePath = servicePath;
       this.headerTag = headerTag;
       this.authTag = authTag;
       this.signatureWire = signatureWire;
-      this.accessKey = accessKey;
-      this.secretKey = secretKey;
+      this.creds = creds;
       this.timeStampProvider = timeStampProvider;
       this.crypto = crypto;
       this.utils = utils;
@@ -121,14 +118,23 @@ public class RequestAuthorizeSignature implements HttpRequestFilter, RequestSign
 
    public HttpRequest filter(HttpRequest request) throws HttpException {
       request = replaceDateHeader(request);
+      Credentials current = creds.get();
+      if (current instanceof SessionCredentials) {
+         request = replaceSecurityTokenHeader(request, SessionCredentials.class.cast(current));
+      }
       String signature = calculateSignature(createStringToSign(request));
       request = replaceAuthorizationHeader(request, signature);
       utils.logRequest(signatureLog, request, "<<");
       return request;
    }
 
+   HttpRequest replaceSecurityTokenHeader(HttpRequest request, SessionCredentials current) {
+      return request.toBuilder().replaceHeader("x-amz-security-token", current.getSessionToken()).build();
+   }
+
    HttpRequest replaceAuthorizationHeader(HttpRequest request, String signature) {
-      request = request.toBuilder().replaceHeader(HttpHeaders.AUTHORIZATION, authTag + " " + accessKey + ":" + signature).build();
+      request = request.toBuilder()
+            .replaceHeader(HttpHeaders.AUTHORIZATION, authTag + " " + creds.get().identity + ":" + signature).build();
       return request;
    }
 
@@ -168,7 +174,7 @@ public class RequestAuthorizeSignature implements HttpRequestFilter, RequestSign
 
    public String sign(String toSign) {
       try {
-         ByteProcessor<byte[]> hmacSHA1 = asByteProcessor(crypto.hmacSHA1(secretKey.getBytes(UTF_8)));
+         ByteProcessor<byte[]> hmacSHA1 = asByteProcessor(crypto.hmacSHA1(creds.get().credential.getBytes(UTF_8)));
          return base64().encode(readBytes(toInputStream(toSign), hmacSHA1));
       } catch (Exception e) {
          throw new HttpException("error signing request", e);

@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.QueryParam;
@@ -58,6 +57,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#listIPForwardingRules
     */
+   @Named("listIpForwardingRules")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listIpForwardingRules", "true" })
    @SelectJson("ipforwardingrule")
@@ -68,6 +68,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#getIPForwardingRule
     */
+   @Named("listIpForwardingRules")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listIpForwardingRules", "true" })
    @SelectJson("ipforwardingrule")
@@ -79,6 +80,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#getIPForwardingRulesForIPAddress
     */
+   @Named("listIpForwardingRules")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listIpForwardingRules", "true" })
    @SelectJson("ipforwardingrule")
@@ -88,6 +90,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#getIPForwardingRulesForVirtualMachine
     */
+   @Named("listIpForwardingRules")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listIpForwardingRules", "true" })
    @SelectJson("ipforwardingrule")
@@ -97,6 +100,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#createIPForwardingRule
     */
+   @Named("createIpForwardingRule")
    @GET
    @QueryParams(keys = "command", values = "createIpForwardingRule")
    @Unwrap
@@ -108,6 +112,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#enableStaticNATForVirtualMachine
     */
+   @Named("enableStaticNat")
    @GET
    @QueryParams(keys = "command", values = "enableStaticNat")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -117,6 +122,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#deleteIPForwardingRule
     */
+   @Named("deleteIpForwardingRule")
    @GET
    @QueryParams(keys = "command", values = "deleteIpForwardingRule")
    @SelectJson("jobid")
@@ -127,6 +133,7 @@ public interface NATAsyncClient {
    /**
     * @see NATClient#disableStaticNATOnPublicIP
     */
+   @Named("disableStaticNat")
    @GET
    @QueryParams(keys = "command", values = "disableStaticNat")
    @SelectJson("jobid")

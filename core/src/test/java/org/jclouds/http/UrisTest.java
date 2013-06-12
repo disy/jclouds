@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.http;
 
@@ -23,7 +21,6 @@ import static org.jclouds.util.Strings2.urlEncode;
 import static org.testng.Assert.assertEquals;
 
 import java.net.URI;
-import java.util.Map;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -74,18 +71,17 @@ public class UrisTest {
 
    @Test(dataProvider = "strings")
    public void testQuery(String val) {
-      Map<String, String> query = ImmutableMap.of("moo", val);
-      assertEquals(uriBuilder("https://foo.com:8080").query(query).toString(), "https://foo.com:8080?moo=" + val);
-      assertEquals(uriBuilder("https://foo.com:8080").query(query).build().toString(), "https://foo.com:8080?moo="
+      assertEquals(uriBuilder("https://foo.com:8080").addQuery("moo", val).toString(), "https://foo.com:8080?moo=" + val);
+      assertEquals(uriBuilder("https://foo.com:8080").addQuery("moo", val).build().toString(), "https://foo.com:8080?moo="
             + urlEncode(val, '/', ','));
-      assertEquals(uriBuilder("https://api.github.com/repos/user?foo=bar&kung=fu").query(query).toString(),
-            "https://api.github.com/repos/user?moo=" + val);
-      assertEquals(uriBuilder("https://api.github.com/repos/user?foo=bar&kung=fu").query(query).build().toString(),
-            "https://api.github.com/repos/user?moo=" + urlEncode(val, '/', ','));
-      assertEquals(uriBuilder("https://api.github.com/repos/{user}").query(query).toString(),
+      assertEquals(uriBuilder("https://api.github.com/repos/user?foo=bar&kung=fu").addQuery("moo", val).toString(),
+            "https://api.github.com/repos/user?foo=bar&kung=fu&moo=" + val);
+      assertEquals(uriBuilder("https://api.github.com/repos/user?foo=bar&kung=fu").addQuery("moo", val).build().toString(),
+            "https://api.github.com/repos/user?foo=bar&kung=fu&moo=" + urlEncode(val, '/', ','));
+      assertEquals(uriBuilder("https://api.github.com/repos/{user}").addQuery("moo", val).toString(),
             "https://api.github.com/repos/{user}?moo=" + val);
       assertEquals(
-            uriBuilder("https://api.github.com/repos/{user}").query(query).build(templateParams).toASCIIString(),
+            uriBuilder("https://api.github.com/repos/{user}").addQuery("moo", val).build(templateParams).toASCIIString(),
             "https://api.github.com/repos/bob?moo=" + urlEncode(val, '/', ','));
    }
 

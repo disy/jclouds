@@ -1,27 +1,25 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.elasticstack;
 
+import static org.jclouds.reflect.Reflection2.method;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import javax.ws.rs.core.MediaType;
 
@@ -47,11 +45,12 @@ import org.jclouds.http.functions.ReleasePayloadAndReturn;
 import org.jclouds.io.Payload;
 import org.jclouds.io.Payloads;
 import org.jclouds.rest.internal.BaseAsyncClientTest;
+import org.jclouds.rest.internal.GeneratedHttpRequest;
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-
+import com.google.common.reflect.Invokable;
 /**
  * Tests behavior of {@code ElasticStackAsyncClient}
  * 
@@ -61,16 +60,16 @@ import com.google.common.collect.Iterables;
 @Test(groups = "unit", testName = "ElasticStackAsyncClientTest")
 public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStackAsyncClient> {
    public void testListServers() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("listServers");
-      HttpRequest httpRequest = processor.createRequest(method);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "listServers");
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/servers/list HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
       assertPayloadEquals(httpRequest, null, null, false);
 
       // now make sure request filters apply by replaying
-      httpRequest = Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
-      httpRequest = Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
+      httpRequest = (GeneratedHttpRequest) Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
+      httpRequest = (GeneratedHttpRequest) Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/servers/list HTTP/1.1");
       // for example, using basic authentication, we should get "only one"
@@ -88,8 +87,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testListServerInfo() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("listServerInfo");
-      HttpRequest httpRequest = processor.createRequest(method);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "listServerInfo");
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/servers/info HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -103,8 +102,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testGetServerInfo() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("getServerInfo", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "getServerInfo", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/servers/uuid/info HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -119,9 +118,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testCreateAndStartServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("createAndStartServer", Server.class);
-      HttpRequest httpRequest = processor.createRequest(method,
-            BindServerToPlainTextStringTest.SERVER);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "createAndStartServer", Server.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(
+            BindServerToPlainTextStringTest.SERVER));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/create HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -136,9 +135,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testCreateServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("createServer", Server.class);
-      HttpRequest httpRequest = processor.createRequest(method,
-            BindServerToPlainTextStringTest.SERVER);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "createServer", Server.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(
+            BindServerToPlainTextStringTest.SERVER));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/create/stopped HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -153,9 +152,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testSetServerConfiguration() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("setServerConfiguration", String.class, Server.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100",
-            BindServerToPlainTextStringTest.SERVER);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "setServerConfiguration", String.class, Server.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100",
+            BindServerToPlainTextStringTest.SERVER));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/100/set HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -170,8 +169,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testDestroyServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("destroyServer", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "destroyServer", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/uuid/destroy HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -186,8 +185,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testStartServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("startServer", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "startServer", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/uuid/start HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -202,8 +201,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testStopServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("stopServer", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "stopServer", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/uuid/stop HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -218,8 +217,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testShutdownServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("shutdownServer", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "shutdownServer", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/uuid/shutdown HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -234,8 +233,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testResetServer() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("resetServer", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "resetServer", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/servers/uuid/reset HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -250,16 +249,16 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testListDrives() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("listDrives");
-      HttpRequest httpRequest = processor.createRequest(method);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "listDrives");
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/drives/list HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
       assertPayloadEquals(httpRequest, null, null, false);
 
       // now make sure request filters apply by replaying
-      httpRequest = Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
-      httpRequest = Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
+      httpRequest = (GeneratedHttpRequest) Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
+      httpRequest = (GeneratedHttpRequest) Iterables.getOnlyElement(httpRequest.getFilters()).filter(httpRequest);
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/drives/list HTTP/1.1");
       // for example, using basic authentication, we should get "only one"
@@ -277,8 +276,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testListDriveInfo() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("listDriveInfo");
-      HttpRequest httpRequest = processor.createRequest(method);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "listDriveInfo");
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.of());
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/drives/info HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -292,8 +291,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testGetDriveInfo() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("getDriveInfo", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "getDriveInfo", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "GET https://api-lon-p.elastichosts.com/drives/uuid/info HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -308,9 +307,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testCreateDrive() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("createDrive", Drive.class);
-      HttpRequest httpRequest = processor.createRequest(method,
-            new CreateDriveRequest.Builder().name("foo").size(10000l).build());
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "createDrive", Drive.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of(
+            new CreateDriveRequest.Builder().name("foo").size(10000l).build()));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/create HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -325,9 +324,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testSetDriveData() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("setDriveData", String.class, DriveData.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100",
-            new DriveData.Builder().name("foo").size(10000l).tags(ImmutableList.of("production", "candy")).build());
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "setDriveData", String.class, DriveData.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100",
+            new DriveData.Builder().name("foo").size(10000l).tags(ImmutableList.of("production", "candy")).build()));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/100/set HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -342,8 +341,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testDestroyDrive() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("destroyDrive", String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "uuid");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "destroyDrive", String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("uuid"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/uuid/destroy HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -358,8 +357,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testImageDrive() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("imageDrive", String.class, String.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100", "200");
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "imageDrive", String.class, String.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100", "200"));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/200/image/100 HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -374,10 +373,10 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testImageDriveWithConversion() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("imageDrive", String.class, String.class,
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "imageDrive", String.class, String.class,
             ImageConversionType.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100", "200",
-            ImageConversionType.GUNZIP);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100", "200",
+            ImageConversionType.GUNZIP));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/200/image/100/gunzip HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -392,8 +391,8 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testReadDrive() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("readDrive", String.class, long.class, long.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100", 1024, 2048);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "readDrive", String.class, long.class, long.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100", 1024, 2048));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/100/read/1024/2048 HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: application/octet-stream\n");
@@ -407,9 +406,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testWriteDrive() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("writeDrive", String.class, Payload.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100",
-            Payloads.newStringPayload("foo"));
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "writeDrive", String.class, Payload.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100",
+            Payloads.newStringPayload("foo")));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/100/write HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");
@@ -423,9 +422,9 @@ public class ElasticStackAsyncClientTest extends BaseAsyncClientTest<ElasticStac
    }
 
    public void testWriteDriveOffset() throws SecurityException, NoSuchMethodException, IOException {
-      Method method = ElasticStackAsyncClient.class.getMethod("writeDrive", String.class, Payload.class, long.class);
-      HttpRequest httpRequest = processor.createRequest(method, "100",
-            Payloads.newStringPayload("foo"), 2048);
+      Invokable<?, ?> method = method(ElasticStackAsyncClient.class, "writeDrive", String.class, Payload.class, long.class);
+      GeneratedHttpRequest httpRequest = processor.createRequest(method, ImmutableList.<Object> of("100",
+            Payloads.newStringPayload("foo"), 2048));
 
       assertRequestLineEquals(httpRequest, "POST https://api-lon-p.elastichosts.com/drives/100/write/2048 HTTP/1.1");
       assertNonPayloadHeadersEqual(httpRequest, "Accept: text/plain\n");

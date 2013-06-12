@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.rackspace.cloudservers.uk;
 
@@ -34,6 +32,7 @@ import org.jclouds.providers.ProviderMetadata;
 import org.jclouds.providers.internal.BaseProviderMetadata;
 import org.jclouds.rackspace.cloudidentity.v2_0.config.CloudIdentityAuthenticationModule;
 import org.jclouds.rackspace.cloudidentity.v2_0.config.CloudIdentityCredentialTypes;
+import org.jclouds.rackspace.cloudidentity.v2_0.config.SyncToAsyncCloudIdentityAuthenticationApiModule;
 import org.jclouds.rackspace.cloudservers.uk.config.CloudServersUKComputeServiceContextModule;
 
 import com.google.common.collect.ImmutableSet;
@@ -84,6 +83,7 @@ public class CloudServersUKProviderMetadata extends BaseProviderMetadata {
                   .endpointName("identity service url ending in /v2.0/")
                   .documentation(URI.create("http://docs.rackspace.com/servers/api/v2/cs-devguide/content/ch_preface.html#webhelp-currentid"))
                   .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
+                                              .add(SyncToAsyncCloudIdentityAuthenticationApiModule.class)
                                               .add(CloudIdentityAuthenticationModule.class)
                                               .add(ZoneModule.class)
                                               .add(NovaParserModule.class)

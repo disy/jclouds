@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.blobstore;
 
@@ -24,7 +22,6 @@ import org.jclouds.View;
 import org.jclouds.blobstore.attr.ConsistencyModel;
 import org.jclouds.blobstore.internal.BlobStoreContextImpl;
 import org.jclouds.blobstore.options.ListContainerOptions;
-import org.jclouds.rest.RestContext;
 import org.jclouds.rest.Utils;
 
 import com.google.inject.ImplementedBy;
@@ -54,7 +51,9 @@ public interface BlobStoreContext extends Closeable, View {
     * @param options
     *           allow you to specify a directory within the container, or whether to list
     *           recursively.
+    * @deprecated will be removed in jclouds 1.7. Please use {@link BlobStore}
     */
+   @Deprecated
    InputStreamMap createInputStreamMap(String container, ListContainerOptions options);
 
    /**
@@ -65,7 +64,9 @@ public interface BlobStoreContext extends Closeable, View {
     * 
     * @param container
     *           existing container you wish to read or modify
+    * @deprecated will be removed in jclouds 1.7. Please use {@link BlobStore}
     */
+   @Deprecated
    InputStreamMap createInputStreamMap(String container);
 
    /**
@@ -77,24 +78,33 @@ public interface BlobStoreContext extends Closeable, View {
     * @param options
     *           allow you to specify a directory within the container, or whether to list
     *           recursively.
+    * @deprecated will be removed in jclouds 1.7. Please use {@link BlobStore}
     */
+   @Deprecated
    BlobMap createBlobMap(String container, ListContainerOptions options);
 
    /**
-    * Creates a <code>Map<String,Blob></code> view of the specified container. Use this when you wan
-    * to control the content type, or manually specify length or size of blobs.
+    * Creates a <code>Map<String,Blob></code> view of the specified container.
+    * Use this when you wan to control the content type, or manually specify
+    * length or size of blobs.
     * 
     * Only root-level blobs will be visible.
     * 
     * @param container
     *           existing container you wish to read or modify
+    * @deprecated will be removed in jclouds 1.7. Please use {@link BlobStore}
     */
+   @Deprecated
    BlobMap createBlobMap(String container);
 
    /**
-    * @return a portable asynchronous interface for the BlobStore, which returns {@code Future}s for
-    *         each call.
+    * @return a portable asynchronous interface for the BlobStore, which returns
+    *         {@code Future}s for each call.
+    * @deprecated will be removed in jclouds 1.7, as async interfaces are no
+    *             longer supported. Please use
+    *             {@link #getBlobStore()}
     */
+   @Deprecated
    AsyncBlobStore getAsyncBlobStore();
 
    /**
@@ -105,25 +115,12 @@ public interface BlobStoreContext extends Closeable, View {
    /**
     * 
     * @return best guess at the consistency model used in this BlobStore.
-    */
-   ConsistencyModel getConsistencyModel();
-
-
-   Utils getUtils();
-
-   /**
-    * @see #getUtils
-    */
-   Utils utils();
-
-   /**
-    * will be removed in jclouds 1.6
-    * 
-    * @see View#getInputType
-    * @see View#unwrap
+    * @deprecated will be removed in jclouds 1.7, as almost never correct.
     */
    @Deprecated
-   <S, A> RestContext<S, A> getProviderSpecificContext();
+   ConsistencyModel getConsistencyModel();
+
+   Utils utils();
 
    /**
     * closes threads and resources related to this connection.

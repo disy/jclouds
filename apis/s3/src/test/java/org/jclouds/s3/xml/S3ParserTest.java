@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3.xml;
 
@@ -139,7 +137,7 @@ public class S3ParserTest extends PerformanceTest {
    }
 
    private ListBucketResponse runParseListContainerResult() throws HttpException {
-      return (ListBucketResponse) factory.create(injector.getInstance(ListBucketHandler.class)).setContext(
+      return factory.create(injector.getInstance(ListBucketHandler.class)).setContext(
                HttpRequest.builder().method("GET").endpoint("http://bucket.com").build()).parse(
                Strings2.toInputStream(listContainerResult));
    }
@@ -147,7 +145,7 @@ public class S3ParserTest extends PerformanceTest {
    public static final String successfulCopyObject200 = "<CopyObjectResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><LastModified>2009-03-19T13:23:27.000Z</LastModified><ETag>\"92836a3ea45a6984d1b4d23a747d46bb\"</ETag></CopyObjectResult>";
 
    private ObjectMetadata runParseCopyObjectResult() throws HttpException {
-      return (ObjectMetadata) factory.create(injector.getInstance(CopyObjectHandler.class)).parse(
+      return factory.create(injector.getInstance(CopyObjectHandler.class)).parse(
                Strings2.toInputStream(successfulCopyObject200));
    }
 

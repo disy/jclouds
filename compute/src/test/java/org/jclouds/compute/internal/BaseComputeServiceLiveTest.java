@@ -1,35 +1,35 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.compute.internal;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Predicates.and;
 import static com.google.common.base.Predicates.not;
+import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.get;
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 import static com.google.common.collect.Maps.uniqueIndex;
 import static com.google.common.collect.Sets.filter;
 import static com.google.common.collect.Sets.newTreeSet;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.logging.Logger.getAnonymousLogger;
 import static org.jclouds.compute.options.RunScriptOptions.Builder.nameTask;
 import static org.jclouds.compute.options.RunScriptOptions.Builder.wrapInInitScript;
@@ -41,6 +41,7 @@ import static org.jclouds.compute.predicates.NodePredicates.all;
 import static org.jclouds.compute.predicates.NodePredicates.inGroup;
 import static org.jclouds.compute.predicates.NodePredicates.runningInGroup;
 import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.fail;
@@ -82,7 +83,6 @@ import org.jclouds.domain.Credentials;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationScope;
 import org.jclouds.domain.LoginCredentials;
-import org.jclouds.predicates.RetryablePredicate;
 import org.jclouds.predicates.SocketOpen;
 import org.jclouds.rest.AuthorizationException;
 import org.jclouds.scriptbuilder.domain.Statement;
@@ -154,7 +154,7 @@ public abstract class BaseComputeServiceLiveTest extends BaseComputeServiceConte
 
    protected void buildSocketTester() {
       SocketOpen socketOpen = view.utils().injector().getInstance(SocketOpen.class);
-      socketTester = new RetryablePredicate<HostAndPort>(socketOpen, 60, 1, TimeUnit.SECONDS);
+      socketTester = retry(socketOpen, 60, 1, SECONDS);
       // wait a maximum of 60 seconds for port 8080 to open.
       openSocketFinder = context.utils().injector().getInstance(OpenSocketFinder.class);
    }
@@ -423,7 +423,7 @@ public abstract class BaseComputeServiceLiveTest extends BaseComputeServiceConte
       final long timeoutMs = 20 * 60 * 1000;
       List<String> groups = Lists.newArrayList();
       List<ListenableFuture<NodeMetadata>> futures = Lists.newArrayList();
-      ListeningExecutorService executor = MoreExecutors.listeningDecorator(context.utils().userExecutor());
+      ListeningExecutorService userExecutor = MoreExecutors.listeningDecorator(context.utils().userExecutor());
 
       try {
          for (int i = 0; i < 2; i++) {
@@ -431,7 +431,7 @@ public abstract class BaseComputeServiceLiveTest extends BaseComputeServiceConte
             final String group = "twin" + groupNum;
             groups.add(group);
 
-            ListenableFuture<NodeMetadata> future = executor.submit(new Callable<NodeMetadata>() {
+            ListenableFuture<NodeMetadata> future = userExecutor.submit(new Callable<NodeMetadata>() {
                public NodeMetadata call() throws Exception {
                   NodeMetadata node = getOnlyElement(client.createNodesInGroup(group, 1, inboundPorts(22, 8080)
                            .blockOnPort(22, 300 + groupNum)));
@@ -561,13 +561,29 @@ public abstract class BaseComputeServiceLiveTest extends BaseComputeServiceConte
    }
 
    @Test(enabled = true, dependsOnMethods = "testSuspendResume")
+   public void testListNodesByIds() throws Exception {
+      Set<String> nodeIds = copyOf(transform(nodes,
+         new Function<NodeMetadata, String>() {
+                                                
+            @Override
+            public String apply(NodeMetadata from) {
+               return from.getId();
+            }
+            
+         }));
+      
+      // newTreeSet is here because elementsEqual cares about ordering.
+      assert Iterables.elementsEqual(nodes, newTreeSet(client.listNodesByIds(nodeIds))); 
+   }
+
+   @Test(enabled = true, dependsOnMethods = "testSuspendResume")
    public void testGetNodesWithDetails() throws Exception {
       for (NodeMetadata node : client.listNodesDetailsMatching(all())) {
          assert node.getProviderId() != null : node;
          assert node.getLocation() != null : node;
          assertEquals(node.getType(), ComputeType.NODE);
          assert node instanceof NodeMetadata;
-         NodeMetadata nodeMetadata = (NodeMetadata) node;
+         NodeMetadata nodeMetadata = node;
          assert nodeMetadata.getProviderId() != null : nodeMetadata;
          // nullable
          // assert nodeMetadata.getImage() != null : node;
@@ -581,7 +597,7 @@ public abstract class BaseComputeServiceLiveTest extends BaseComputeServiceConte
       }
    }
 
-   @Test(enabled = true, dependsOnMethods = { "testListNodes", "testGetNodesWithDetails" })
+   @Test(enabled = true, dependsOnMethods = { "testListNodes", "testGetNodesWithDetails", "testListNodesByIds" })
    public void testDestroyNodes() {
       int toDestroy = refreshNodes().size();
       Set<? extends NodeMetadata> destroyed = client.destroyNodesMatching(inGroup(group));

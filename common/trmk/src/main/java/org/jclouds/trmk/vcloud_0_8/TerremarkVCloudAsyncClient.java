@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.trmk.vcloud_0_8;
 
@@ -34,6 +32,7 @@ import static org.jclouds.trmk.vcloud_0_8.TerremarkVCloudMediaType.VAPPTEMPLATE_
 import static org.jclouds.trmk.vcloud_0_8.TerremarkVCloudMediaType.VAPP_XML;
 import static org.jclouds.trmk.vcloud_0_8.TerremarkVCloudMediaType.VDC_XML;
 
+import java.io.Closeable;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +63,12 @@ import org.jclouds.trmk.vcloud_0_8.binders.BindCloneVAppParamsToXmlPayload;
 import org.jclouds.trmk.vcloud_0_8.binders.BindInstantiateVAppTemplateParamsToXmlPayload;
 import org.jclouds.trmk.vcloud_0_8.binders.BindNodeConfigurationToXmlPayload;
 import org.jclouds.trmk.vcloud_0_8.binders.BindVAppConfigurationToXmlPayload;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameAndCatalogNameToEndpoint;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameAndTasksListNameToEndpoint;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameAndVDCNameToEndpoint;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameCatalogNameItemNameToEndpoint;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameCatalogNameVAppTemplateNameToEndpoint;
+import org.jclouds.trmk.vcloud_0_8.binders.OrgNameVDCNameResourceEntityNameToEndpoint;
 import org.jclouds.trmk.vcloud_0_8.domain.Catalog;
 import org.jclouds.trmk.vcloud_0_8.domain.CatalogItem;
 import org.jclouds.trmk.vcloud_0_8.domain.CustomizationParameters;
@@ -81,14 +86,7 @@ import org.jclouds.trmk.vcloud_0_8.domain.VAppTemplate;
 import org.jclouds.trmk.vcloud_0_8.domain.VDC;
 import org.jclouds.trmk.vcloud_0_8.endpoints.Org;
 import org.jclouds.trmk.vcloud_0_8.filters.SetVCloudTokenCookie;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameAndCatalogNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameAndTasksListNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameAndVDCNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameCatalogNameItemNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameCatalogNameVAppTemplateNameToEndpoint;
 import org.jclouds.trmk.vcloud_0_8.functions.OrgNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameVDCNameNetworkNameToEndpoint;
-import org.jclouds.trmk.vcloud_0_8.functions.OrgNameVDCNameResourceEntityNameToEndpoint;
 import org.jclouds.trmk.vcloud_0_8.functions.ParseTaskFromLocationHeader;
 import org.jclouds.trmk.vcloud_0_8.functions.VDCURIToInternetServicesEndpoint;
 import org.jclouds.trmk.vcloud_0_8.functions.VDCURIToPublicIPsEndpoint;
@@ -125,7 +123,7 @@ import com.google.inject.Provides;
  * @author Adrian Cole
  */
 @RequestFilters(SetVCloudTokenCookie.class)
-public interface TerremarkVCloudAsyncClient {
+public interface TerremarkVCloudAsyncClient extends Closeable {
 
    /**
     * @see TerremarkVCloudClient#getCatalogItemInOrg
@@ -134,10 +132,9 @@ public interface TerremarkVCloudAsyncClient {
    @Consumes(CATALOGITEM_XML)
    @XMLResponseParser(CatalogItemHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<? extends CatalogItem> findCatalogItemInOrgCatalogNamed(
-         @Nullable @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String catalogName,
-         @Nullable @EndpointParam(parser = OrgNameCatalogNameItemNameToEndpoint.class) String itemName);
+   @MapBinder(OrgNameCatalogNameItemNameToEndpoint.class)
+   ListenableFuture<? extends CatalogItem> findCatalogItemInOrgCatalogNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("catalogName") String catalogName, @PayloadParam("itemName") String itemName);
 
    /**
     * @see TerremarkVCloudClient#getCatalogItem
@@ -164,9 +161,9 @@ public interface TerremarkVCloudAsyncClient {
    @XMLResponseParser(TasksListHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
    @Consumes(TASKSLIST_XML)
-   ListenableFuture<? extends TasksList> findTasksListInOrgNamed(
-         @Nullable @EndpointParam(parser = OrgNameAndTasksListNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameAndTasksListNameToEndpoint.class) String tasksListName);
+   @MapBinder(OrgNameAndTasksListNameToEndpoint.class)
+   ListenableFuture<? extends TasksList> findTasksListInOrgNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("tasksListName") String tasksListName);
 
    /**
     * @see TerremarkVCloudClient#getTask
@@ -199,9 +196,9 @@ public interface TerremarkVCloudAsyncClient {
    @XMLResponseParser(CatalogHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
    @Consumes(CATALOG_XML)
-   ListenableFuture<? extends Catalog> findCatalogInOrgNamed(
-         @Nullable @EndpointParam(parser = OrgNameAndCatalogNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameAndCatalogNameToEndpoint.class) String catalogName);
+   @MapBinder(OrgNameAndCatalogNameToEndpoint.class)
+   ListenableFuture<? extends Catalog> findCatalogInOrgNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("catalogName") String catalogName);
 
    /**
     * @see VCloudClient#getVAppTemplate
@@ -219,10 +216,9 @@ public interface TerremarkVCloudAsyncClient {
    @Consumes(VAPPTEMPLATE_XML)
    @XMLResponseParser(VAppTemplateHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<? extends VAppTemplate> findVAppTemplateInOrgCatalogNamed(
-         @Nullable @EndpointParam(parser = OrgNameCatalogNameVAppTemplateNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameCatalogNameVAppTemplateNameToEndpoint.class) String catalogName,
-         @EndpointParam(parser = OrgNameCatalogNameVAppTemplateNameToEndpoint.class) String itemName);
+   @MapBinder(OrgNameCatalogNameVAppTemplateNameToEndpoint.class)
+   ListenableFuture<? extends VAppTemplate> findVAppTemplateInOrgCatalogNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("catalogName") String catalogName, @PayloadParam("itemName") String itemName);
 
    /**
     * @see VCloudClient#findNetworkInOrgVDCNamed
@@ -231,10 +227,9 @@ public interface TerremarkVCloudAsyncClient {
    @Consumes(NETWORK_XML)
    @XMLResponseParser(NetworkHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<? extends Network> findNetworkInOrgVDCNamed(
-         @Nullable @EndpointParam(parser = OrgNameVDCNameNetworkNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameVDCNameNetworkNameToEndpoint.class) String catalogName,
-         @EndpointParam(parser = OrgNameVDCNameNetworkNameToEndpoint.class) String networkName);
+   @MapBinder(OrgNameVDCNameResourceEntityNameToEndpoint.class)
+   ListenableFuture<? extends Network> findNetworkInOrgVDCNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("vdcName") String vdcName, @PayloadParam("resourceName") String networkName);
 
    /**
     * @see VCloudClient#getNetwork
@@ -264,10 +259,9 @@ public interface TerremarkVCloudAsyncClient {
    @Consumes(VAPP_XML)
    @XMLResponseParser(VAppHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<? extends VApp> findVAppInOrgVDCNamed(
-         @Nullable @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String catalogName,
-         @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String vAppName);
+   @MapBinder(OrgNameVDCNameResourceEntityNameToEndpoint.class)
+   ListenableFuture<? extends VApp> findVAppInOrgVDCNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("vdcName") String vdcName, @PayloadParam("resourceName") String vAppName);
 
    /**
     * @see VCloudClient#getVApp
@@ -388,9 +382,9 @@ public interface TerremarkVCloudAsyncClient {
    @XMLResponseParser(VDCHandler.class)
    @Consumes(VDC_XML)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<? extends VDC> findVDCInOrgNamed(
-         @Nullable @EndpointParam(parser = OrgNameAndVDCNameToEndpoint.class) String orgName,
-         @Nullable @EndpointParam(parser = OrgNameAndVDCNameToEndpoint.class) String vdcName);
+   @MapBinder(OrgNameAndVDCNameToEndpoint.class)
+   ListenableFuture<? extends VDC> findVDCInOrgNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("vdcName") String vdcName);
 
    /**
     * @see TerremarkVCloudClient#instantiateVAppTemplateInVDC

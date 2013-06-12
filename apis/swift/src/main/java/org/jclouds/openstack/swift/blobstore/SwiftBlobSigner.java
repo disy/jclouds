@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.swift.blobstore;
 
@@ -25,10 +23,10 @@ import static com.google.common.io.BaseEncoding.base16;
 import static com.google.common.io.ByteStreams.readBytes;
 import static org.jclouds.blobstore.util.BlobStoreUtils.cleanRequest;
 import static org.jclouds.crypto.Macs.asByteProcessor;
+import static org.jclouds.reflect.Reflection2.method;
 import static org.jclouds.util.Strings2.toInputStream;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.security.InvalidKeyException;
 
 import javax.inject.Inject;
@@ -46,12 +44,15 @@ import org.jclouds.openstack.swift.CommonSwiftAsyncClient;
 import org.jclouds.openstack.swift.TemporaryUrlKey;
 import org.jclouds.openstack.swift.blobstore.functions.BlobToObject;
 import org.jclouds.openstack.swift.domain.SwiftObject;
-import org.jclouds.rest.internal.RestAnnotationProcessor;
+import org.jclouds.reflect.Invocation;
 
+import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.ByteProcessor;
+import com.google.common.reflect.Invokable;
 import com.google.inject.Provider;
 
 /**
@@ -60,7 +61,7 @@ import com.google.inject.Provider;
 @Singleton
 public class SwiftBlobSigner<T extends CommonSwiftAsyncClient> implements BlobRequestSigner {
 
-   private final RestAnnotationProcessor processor;
+   private final Function<Invocation, HttpRequest> processor;
    private final Crypto crypto;
 
    private final Provider<Long> unixEpochTimestampProvider;
@@ -69,13 +70,13 @@ public class SwiftBlobSigner<T extends CommonSwiftAsyncClient> implements BlobRe
    private final BlobToObject blobToObject;
    private final BlobToHttpGetOptions blob2HttpGetOptions;
 
-   private final Method getMethod;
-   private final Method deleteMethod;
-   private final Method createMethod;
+   private final Invokable<?, ?> getMethod;
+   private final Invokable<?, ?> deleteMethod;
+   private final Invokable<?, ?> createMethod;
 
    /**
     * create a signer for this subtype of swift
-    *
+    * 
     * @param processor
     *           bound to the current subclass of {@link CommonSwiftAsyncClient}
     */
@@ -83,9 +84,9 @@ public class SwiftBlobSigner<T extends CommonSwiftAsyncClient> implements BlobRe
    protected SwiftBlobSigner(BlobToObject blobToObject, BlobToHttpGetOptions blob2HttpGetOptions, Crypto crypto,
          @TimeStamp Provider<Long> unixEpochTimestampProvider,
          @TemporaryUrlKey Supplier<String> temporaryUrlKeySupplier,
-         RestAnnotationProcessor.Factory processor, Class<T> clazz)
-         throws SecurityException, NoSuchMethodException {
-      this.processor = checkNotNull(processor, "processor").declaring(clazz);
+         Function<Invocation, HttpRequest> processor, Class<T> ownerType) throws SecurityException,
+         NoSuchMethodException {
+      this.processor = checkNotNull(processor, "processor");
       this.crypto = checkNotNull(crypto, "crypto");
 
       this.unixEpochTimestampProvider = checkNotNull(unixEpochTimestampProvider, "unixEpochTimestampProvider");
@@ -93,46 +94,60 @@ public class SwiftBlobSigner<T extends CommonSwiftAsyncClient> implements BlobRe
 
       this.blobToObject = checkNotNull(blobToObject, "blobToObject");
       this.blob2HttpGetOptions = checkNotNull(blob2HttpGetOptions, "blob2HttpGetOptions");
-
-      this.getMethod = clazz.getMethod("getObject", String.class, String.class, GetOptions[].class);
-      this.deleteMethod = clazz.getMethod("removeObject", String.class, String.class);
-      this.createMethod = clazz.getMethod("putObject", String.class, SwiftObject.class);
+      this.getMethod = method(ownerType, "getObject", String.class, String.class, GetOptions[].class);
+      this.deleteMethod = method(ownerType, "removeObject", String.class, String.class);
+      this.createMethod = method(ownerType, "putObject", String.class, SwiftObject.class);
    }
 
    @Override
    public HttpRequest signGetBlob(String container, String name) {
-      return cleanRequest(processor.createRequest(getMethod, container, name));
+      checkNotNull(container, "container");
+      checkNotNull(name, "name");
+      return cleanRequest(processor.apply(Invocation.create(getMethod, ImmutableList.<Object> of(container, name))));
    }
 
    @Override
    public HttpRequest signGetBlob(String container, String name, long timeInSeconds) {
-      HttpRequest request = processor.createRequest(getMethod, container, name);
+      checkNotNull(container, "container");
+      checkNotNull(name, "name");
+      HttpRequest request = processor.apply(Invocation.create(getMethod, ImmutableList.<Object> of(container, name)));
       return cleanRequest(signForTemporaryAccess(request, timeInSeconds));
    }
 
    @Override
    public HttpRequest signGetBlob(String container, String name, org.jclouds.blobstore.options.GetOptions options) {
-      return cleanRequest(processor.createRequest(getMethod, container, name, blob2HttpGetOptions.apply(options)));
+      checkNotNull(container, "container");
+      checkNotNull(name, "name");
+      return cleanRequest(processor.apply(Invocation.create(getMethod,
+            ImmutableList.of(container, name, blob2HttpGetOptions.apply(checkNotNull(options, "options"))))));
    }
 
    @Override
    public HttpRequest signPutBlob(String container, Blob blob) {
-      return cleanRequest(processor.createRequest(createMethod, container, blobToObject.apply(blob)));
+      checkNotNull(container, "container");
+      checkNotNull(blob, "blob");
+      return cleanRequest(processor.apply(Invocation.create(createMethod,
+            ImmutableList.<Object> of(container, blobToObject.apply(blob)))));
    }
 
    @Override
    public HttpRequest signPutBlob(String container, Blob blob, long timeInSeconds) {
-      HttpRequest request = processor.createRequest(createMethod, container, blobToObject.apply(blob));
+      checkNotNull(container, "container");
+      checkNotNull(blob, "blob");
+      HttpRequest request = processor.apply(Invocation.create(createMethod,
+            ImmutableList.<Object> of(container, blobToObject.apply(blob))));
       return cleanRequest(signForTemporaryAccess(request, timeInSeconds));
    }
 
    @Override
    public HttpRequest signRemoveBlob(String container, String name) {
-      return cleanRequest(processor.createRequest(deleteMethod, container, name));
+      checkNotNull(container, "container");
+      checkNotNull(name, "name");
+      return cleanRequest(processor.apply(Invocation.create(deleteMethod, ImmutableList.<Object> of(container, name))));
    }
 
    private HttpRequest signForTemporaryAccess(HttpRequest request, long timeInSeconds) {
-      HttpRequest.Builder<?> builder = request.toBuilder().filters(ImmutableSet.<HttpRequestFilter>of());
+      HttpRequest.Builder<?> builder = request.toBuilder().filters(ImmutableSet.<HttpRequestFilter> of());
 
       String key = temporaryUrlKeySupplier.get();
       if (key == null) {

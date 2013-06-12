@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.compute.strategy;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -53,6 +51,7 @@ import org.jclouds.logging.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
@@ -81,7 +80,7 @@ public class AWSEC2CreateNodesInGroupThenAddToSet extends EC2CreateNodesInGroupT
          CreateKeyPairPlacementAndSecurityGroupsAsNeededAndReturnRunOptions createKeyPairAndSecurityGroupsAsNeededAndReturncustomize,
          PresentSpotRequestsAndInstances instancePresent,
          Function<RunningInstance, NodeMetadata> runningInstanceToNodeMetadata,
-         LoadingCache<RunningInstance, LoginCredentials> instanceToCredentials,
+         LoadingCache<RunningInstance, Optional<LoginCredentials>> instanceToCredentials,
          Map<String, Credentials> credentialStore, ComputeUtils utils,
          SpotInstanceRequestToAWSRunningInstance spotConverter) {
       super(client, elasticIpCache, nodeRunning, createKeyPairAndSecurityGroupsAsNeededAndReturncustomize,
@@ -95,9 +94,12 @@ public class AWSEC2CreateNodesInGroupThenAddToSet extends EC2CreateNodesInGroupT
             int count, Template template, RunInstancesOptions instanceOptions) {
       Float spotPrice = getSpotPriceOrNull(template.getOptions());
       if (spotPrice != null) {
+         AWSEC2TemplateOptions awsOptions = AWSEC2TemplateOptions.class.cast(template.getOptions());
          LaunchSpecification spec = AWSRunInstancesOptions.class.cast(instanceOptions).getLaunchSpecificationBuilder()
-                  .imageId(template.getImage().getProviderId()).availabilityZone(zone).build();
-         RequestSpotInstancesOptions options = AWSEC2TemplateOptions.class.cast(template.getOptions()).getSpotOptions();
+               .imageId(template.getImage().getProviderId()).availabilityZone(zone).subnetId(awsOptions.getSubnetId())
+               .iamInstanceProfileArn(awsOptions.getIAMInstanceProfileArn())
+               .iamInstanceProfileName(awsOptions.getIAMInstanceProfileName()).build();
+         RequestSpotInstancesOptions options = awsOptions.getSpotOptions();
          if (logger.isDebugEnabled())
             logger.debug(">> requesting %d spot instances region(%s) price(%f) spec(%s) options(%s)", count, region,
                      spotPrice, spec, options);

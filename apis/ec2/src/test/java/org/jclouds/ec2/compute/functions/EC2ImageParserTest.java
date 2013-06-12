@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute.functions;
 
@@ -67,7 +65,7 @@ public class EC2ImageParserTest {
       assertImageEquals(Iterables.get(result, 0), new ImageBuilder().operatingSystem(
                new OperatingSystem.Builder().family(OsFamily.UNRECOGNIZED).arch("paravirtual").version("").description(
                         "137112412989/amzn-ami-0.9.7-beta.i386-ebs").is64Bit(false).build()).description("Amazon")
-               .defaultCredentials(new LoginCredentials("ec2-user", false)).id("us-east-1/ami-82e4b5c7").name(
+               .defaultCredentials(LoginCredentials.builder().user("ec2-user").build()).id("us-east-1/ami-82e4b5c7").name(
                         "amzn-ami-0.9.7-beta.i386-ebs").providerId("ami-82e4b5c7").location(defaultLocation)
                .userMetadata(ImmutableMap.of("owner", "137112412989", "rootDeviceType", "ebs")).status(
                         Status.AVAILABLE).backendStatus("available").build());
@@ -75,7 +73,7 @@ public class EC2ImageParserTest {
       assertImageEquals(Iterables.get(result, 3), new ImageBuilder().operatingSystem(
                new OperatingSystem.Builder().family(OsFamily.UNRECOGNIZED).arch("paravirtual").version("").description(
                         "amzn-ami-us-west-1/amzn-ami-0.9.7-beta.x86_64.manifest.xml").is64Bit(true).build())
-               .description("Amazon Linux AMI x86_64 S3").defaultCredentials(new LoginCredentials("ec2-user", false))
+               .description("Amazon Linux AMI x86_64 S3").defaultCredentials(LoginCredentials.builder().user("ec2-user").build())
                .id("us-east-1/ami-f2e4b5b7").providerId("ami-f2e4b5b7").name("amzn-ami-0.9.7-beta.x86_64-S3").location(
                         defaultLocation)
                .userMetadata(ImmutableMap.of("owner", "137112412989", "rootDeviceType", "ebs")).status(
@@ -86,7 +84,7 @@ public class EC2ImageParserTest {
                         "amazon/NameGivesNoClue_Server-2008-R2_SP1-Language_Packs-64Bit-Base-2012.05.10")
                         .is64Bit(true).build())
                .description("Microsoft Windows Server 2008 R2 SP1 Datacenter 64-bit Multi-language AMI provided by Amazon")
-               .defaultCredentials(new LoginCredentials("root", false))
+               .defaultCredentials(LoginCredentials.builder().user("root").build())
                .id("us-east-1/ami-85457ff1").providerId("ami-85457ff1").name("NameGivesNoClue_Server-2008-R2_SP1-Language_Packs-64Bit-Base-2012.05.10")
                         .location(defaultLocation)
                .userMetadata(ImmutableMap.of("owner", "801119661308", "rootDeviceType", "ebs"))

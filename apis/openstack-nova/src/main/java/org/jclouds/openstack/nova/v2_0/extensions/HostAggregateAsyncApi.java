@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
 import java.util.Map;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -61,6 +60,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#list()
     */
+   @Named("hostaggregate:list")
    @GET
    @SelectJson("aggregates")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -70,6 +70,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#get(String)
     */
+   @Named("hostaggregate:get")
    @GET
    @Path("/{id}")
    @SelectJson("aggregate")
@@ -80,6 +81,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#createInAvailabilityZone(String, String)
     */
+   @Named("hostaggregate:create")
    @POST
    @SelectJson("aggregate")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -91,6 +93,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#updateName
     */
+   @Named("hostaggregate:update")
    @POST
    @Path("/{id}")
    @SelectJson("aggregate")
@@ -101,6 +104,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#updateAvailabilityZone
     */
+   @Named("hostaggregate:update")
    @POST
    @Path("/{id}")
    @SelectJson("aggregate")
@@ -111,6 +115,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#delete(String)
     */
+   @Named("hostaggregate:delete")
    @DELETE
    @Path("/{id}")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -120,6 +125,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#addHost(String,String)
     */
+   @Named("hostaggregate:addhost")
    @POST
    @Path("/{id}/action")
    @SelectJson("aggregate")
@@ -132,6 +138,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#removeHost(String,String)
     */
+   @Named("hostaggregate:removehost")
    @POST
    @Path("/{id}/action")
    @SelectJson("aggregate")
@@ -143,6 +150,7 @@ public interface HostAggregateAsyncApi {
    /**
     * @see HostAggregateApi#setMetadata
     */
+   @Named("hostaggregate:setmetadata")
    @POST
    @Path("/{id}/action")
    @SelectJson("aggregate")

@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.extensions;
 
@@ -51,20 +49,20 @@ public class HostAggregateApiLiveTest extends BaseNovaApiLiveTest {
 
    @BeforeClass(groups = {"integration", "live"})
    @Override
-   public void setupContext() {
-      super.setupContext();
-      String zone = Iterables.getLast(novaContext.getApi().getConfiguredZones(), "nova");
-      apiOption = novaContext.getApi().getHostAggregateExtensionForZone(zone);
-      hostAdminOption = novaContext.getApi().getHostAdministrationExtensionForZone(zone);
+   public void setup() {
+      super.setup();
+      String zone = Iterables.getLast(api.getConfiguredZones(), "nova");
+      apiOption = api.getHostAggregateExtensionForZone(zone);
+      hostAdminOption = api.getHostAdministrationExtensionForZone(zone);
    }
 
    @AfterClass(groups = { "integration", "live" })
    @Override
-   protected void tearDownContext() {
+   protected void tearDown() {
       if (testAggregate != null) {
          assertTrue(apiOption.get().delete(testAggregate.getId()));
       }
-      super.tearDownContext();
+      super.tearDown();
    }
 
    public void testCreateAggregate() {
@@ -105,14 +103,14 @@ public class HostAggregateApiLiveTest extends BaseNovaApiLiveTest {
             HostAggregate details = api.setMetadata(testAggregate.getId(), theMetaData);
             
             //  bug in openstack - metadata values are never removed, so we just checking what we've set
-            for (String key : theMetaData.keySet()) {
-               assertEquals(details.getMetadata().get(key), theMetaData.get(key));
+            for (Map.Entry<String, String> entry : theMetaData.entrySet()) {
+               assertEquals(details.getMetadata().get(entry.getKey()), entry.getValue());
             }
 
             // Re-fetch to double-check
             details = api.get(testAggregate.getId());
-            for (String key : theMetaData.keySet()) {
-               assertEquals(details.getMetadata().get(key), theMetaData.get(key));
+            for (Map.Entry<String, String> entry : theMetaData.entrySet()) {
+               assertEquals(details.getMetadata().get(entry.getKey()), entry.getValue());
             }
          }
       }

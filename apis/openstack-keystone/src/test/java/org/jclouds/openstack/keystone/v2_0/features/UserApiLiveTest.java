@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 1.1 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-1.1
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.keystone.v2_0.features;
 
@@ -40,12 +38,12 @@ public class UserApiLiveTest extends BaseKeystoneApiLiveTest {
 
    public void testUsers() {
 
-      UserApi api = keystoneContext.getApi().getUserApi().get();
-      Set<? extends User> users = api.list().concat().toSet();
+      UserApi userApi = api.getUserApi().get();
+      Set<? extends User> users = userApi.list().concat().toSet();
       assertNotNull(users);
       assertFalse(users.isEmpty());
       for (User user : users) {
-         User aUser = api.get(user.getId());
+         User aUser = userApi.get(user.getId());
          assertEquals(aUser, user);
       }
 
@@ -53,12 +51,12 @@ public class UserApiLiveTest extends BaseKeystoneApiLiveTest {
 
    public void testUserRolesOnTenant() {
 
-      UserApi api = keystoneContext.getApi().getUserApi().get();
-      Set<? extends Tenant> tenants = keystoneContext.getApi().getTenantApi().get().list().concat().toSet();
+      UserApi userApi = api.getUserApi().get();
+      Set<? extends Tenant> tenants = api.getTenantApi().get().list().concat().toSet();
 
-      for (User user : api.list().concat()) {
+      for (User user : userApi.list().concat()) {
          for (Tenant tenant : tenants) {
-            Set<? extends Role> roles = api.listRolesOfUserOnTenant(user.getId(), tenant.getId());
+            Set<? extends Role> roles = userApi.listRolesOfUserOnTenant(user.getId(), tenant.getId());
             for (Role role : roles) {
                assertNotNull(role.getId());
             }
@@ -69,9 +67,9 @@ public class UserApiLiveTest extends BaseKeystoneApiLiveTest {
 
    public void testListRolesOfUser() {
 
-      UserApi api = keystoneContext.getApi().getUserApi().get();
-      for (User user : api.list().concat()) {
-         Set<? extends Role> roles = api.listRolesOfUser(user.getId());
+      UserApi userApi = api.getUserApi().get();
+      for (User user : userApi.list().concat()) {
+         Set<? extends Role> roles = userApi.listRolesOfUser(user.getId());
          for (Role role : roles) {
             assertNotNull(role.getId());
          }
@@ -81,9 +79,9 @@ public class UserApiLiveTest extends BaseKeystoneApiLiveTest {
 
    public void testUsersByName() {
 
-      UserApi api = keystoneContext.getApi().getUserApi().get();
-      for (User user : api.list().concat()) {
-         User aUser = api.getByName(user.getName());
+      UserApi userApi = api.getUserApi().get();
+      for (User user : userApi.list().concat()) {
+         User aUser = userApi.getByName(user.getName());
          assertEquals(aUser, user);
       }
 

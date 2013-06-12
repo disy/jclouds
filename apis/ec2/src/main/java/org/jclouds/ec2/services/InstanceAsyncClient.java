@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.services;
 
@@ -76,7 +74,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#describeInstancesInRegion
     */
-   @Named("ec2:DescribeInstances")
+   @Named("DescribeInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "DescribeInstances")
@@ -89,7 +87,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#runInstancesInRegion
     */
-   @Named("ec2:RunInstances")
+   @Named("RunInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "RunInstances")
@@ -103,7 +101,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#rebootInstancesInRegion
     */
-   @Named("ec2:RebootInstances")
+   @Named("RebootInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "RebootInstances")
@@ -114,7 +112,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#terminateInstancesInRegion
     */
-   @Named("ec2:TerminateInstances")
+   @Named("TerminateInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "TerminateInstances")
@@ -127,7 +125,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#stopInstancesInRegion
     */
-   @Named("ec2:StopInstances")
+   @Named("StopInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "StopInstances")
@@ -140,7 +138,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#startInstancesInRegion
     */
-   @Named("ec2:StartInstances")
+   @Named("StartInstances")
    @POST
    @Path("/")
    @FormParams(keys = ACTION, values = "StartInstances")
@@ -152,7 +150,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getUserDataForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "userData" })
@@ -164,7 +162,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getRootDeviceNameForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "rootDeviceName" })
@@ -176,7 +174,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getRamdiskForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "ramdisk" })
@@ -188,7 +186,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getKernelForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "kernel" })
@@ -200,7 +198,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#isApiTerminationDisabledForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "disableApiTermination" })
@@ -212,7 +210,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getInstanceTypeForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "instanceType" })
@@ -224,7 +222,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#getInstanceInitiatedShutdownBehaviorForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute",
@@ -237,7 +235,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#getBlockDeviceMappingForInstanceInRegion
     */
-   @Named("ec2:DescribeInstanceAttribute")
+   @Named("DescribeInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "DescribeInstanceAttribute", "blockDeviceMapping" })
@@ -249,7 +247,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#resetRamdiskForInstanceInRegion
     */
-   @Named("ec2:ResetInstanceAttribute")
+   @Named("ResetInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ResetInstanceAttribute", "ramdisk" })
@@ -260,7 +258,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#resetKernelForInstanceInRegion
     */
-   @Named("ec2:ResetInstanceAttribute")
+   @Named("ResetInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ResetInstanceAttribute", "kernel" })
@@ -271,7 +269,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setUserDataForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute", "userData" })
@@ -283,7 +281,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setRamdiskForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute", "ramdisk" })
@@ -294,7 +292,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setKernelForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute", "kernel" })
@@ -305,7 +303,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setApiTerminationDisabledForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute", "disableApiTermination" })
@@ -316,7 +314,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setInstanceTypeForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute", "instanceType" })
@@ -327,7 +325,7 @@ public interface InstanceAsyncClient {
    /**
     * @see AMIClient#setInstanceInitiatedShutdownBehaviorForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION, "Attribute" }, values = { "ModifyInstanceAttribute",
@@ -340,7 +338,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#setBlockDeviceMappingForInstanceInRegion
     */
-   @Named("ec2:ModifyInstanceAttribute")
+   @Named("ModifyInstanceAttribute")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION }, values = { "ModifyInstanceAttribute" })
@@ -352,7 +350,7 @@ public interface InstanceAsyncClient {
    /**
     * @see InstanceClient#getConsoleOutputForInstanceInRegion(String, String)
     */
-   @Named("ec2:GetConsoleOutput")
+   @Named("GetConsoleOutput")
    @POST
    @Path("/")
    @FormParams(keys = { ACTION }, values = { "GetConsoleOutput" })

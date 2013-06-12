@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.QueryParam;
@@ -57,6 +56,7 @@ public interface GlobalPodAsyncClient {
    /**
     * @see PodClient#listPods
     */
+   @Named("listPods")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listPods", "true" })
    @SelectJson("pod")
@@ -67,6 +67,7 @@ public interface GlobalPodAsyncClient {
    /**
     * @see PodClient#getPod
     */
+   @Named("listPods")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listPods", "true" })
    @SelectJson("pod")
@@ -87,6 +88,7 @@ public interface GlobalPodAsyncClient {
     * @param createPodOptions optional arguments
     * @return the new Pod
     */
+   @Named("createPod")
    @GET
    @QueryParams(keys = "command", values = "createPod")
    @SelectJson("pod")
@@ -105,6 +107,7 @@ public interface GlobalPodAsyncClient {
     * @param createPodOptions optional arguments
     * @return the new Pod
     */
+   @Named("createPod")
    @GET
    @QueryParams(keys = "command", values = "createPod")
    @SelectJson("pod")
@@ -116,6 +119,7 @@ public interface GlobalPodAsyncClient {
     * Deletes a Pod.
     * @param id the ID of the Pod
     */
+   @Named("deletePod")
    @GET
    @QueryParams(keys = "command", values = "deletePod")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -128,6 +132,7 @@ public interface GlobalPodAsyncClient {
     * @param updatePodOptions optional arguments
     * @return the updated pod
     */
+   @Named("updatePod")
    @GET
    @QueryParams(keys = "command", values = "updatePod")
    @SelectJson("pod")

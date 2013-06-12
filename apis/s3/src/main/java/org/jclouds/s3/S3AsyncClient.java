@@ -1,25 +1,25 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.s3;
 
+import static com.google.common.net.HttpHeaders.EXPECT;
 import static org.jclouds.blobstore.attr.BlobScopes.CONTAINER;
 
+import java.io.Closeable;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -102,12 +102,16 @@ import com.google.inject.Provides;
  *
  * @author Adrian Cole
  * @author James Murty
- * @see S3Client
+ * @see AWSS3Client
  * @see <a href="http://docs.amazonwebservices.com/AmazonS3/2006-03-01/RESTAPI.html" />
+ * @deprecated please use
+ *             {@code org.jclouds.ContextBuilder#buildApi(S3Client.class)}
+ *             as {@link S3AsyncClient} interface will be removed in jclouds 1.7.
  */
+@Deprecated
 @RequestFilters(RequestAuthorizeSignature.class)
 @BlobScope(CONTAINER)
-public interface S3AsyncClient {
+public interface S3AsyncClient extends Closeable {
    public static final String VERSION = "2006-03-01";
 
    /**
@@ -119,7 +123,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getObject
     */
-   @Named("s3:GetObject")
+   @Named("GetObject")
    @GET
    @Path("/{key}")
    @Fallback(NullOnKeyNotFound.class)
@@ -131,7 +135,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#headObject
     */
-   @Named("s3:GetObject")
+   @Named("GetObject")
    @HEAD
    @Path("/{key}")
    @Fallback(NullOnKeyNotFound.class)
@@ -143,7 +147,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#objectExists
     */
-   @Named("s3:GetObject")
+   @Named("GetObject")
    @HEAD
    @Path("/{key}")
    @Fallback(FalseOnKeyNotFound.class)
@@ -154,7 +158,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#deleteObject
     */
-   @Named("s3:DeleteObject")
+   @Named("DeleteObject")
    @DELETE
    @Path("/{key}")
    @Fallback(VoidOnNotFoundOr404.class)
@@ -165,9 +169,10 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#putObject
     */
-   @Named("s3:PutObject")
+   @Named("PutObject")
    @PUT
    @Path("/{key}")
+   @Headers(keys = EXPECT, values = "100-continue")
    @ResponseParser(ParseETagHeader.class)
    ListenableFuture<String> putObject(
             @Bucket @EndpointParam(parser = AssignCorrectHostnameForBucket.class) @BinderParam(BindAsHostPrefixIfConfigured.class) @ParamValidators(BucketNameValidator.class) String bucketName,
@@ -177,7 +182,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#putBucketInRegion
     */
-   @Named("s3:CreateBucket")
+   @Named("CreateBucket")
    @PUT
    @Path("/")
    @Endpoint(Bucket.class)
@@ -190,7 +195,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#deleteBucketIfEmpty
     */
-   @Named("s3:DeleteBucket")
+   @Named("DeleteBucket")
    @DELETE
    @Path("/")
    @Fallback(TrueOn404OrNotFoundFalseOnIllegalState.class)
@@ -200,7 +205,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#bucketExists
     */
-   @Named("s3:ListBucket")
+   @Named("ListBucket")
    @GET
    @Path("/")
    @QueryParams(keys = "max-keys", values = "0")
@@ -212,7 +217,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getBucketLocation
     */
-   @Named("s3:GetBucketLocation")
+   @Named("GetBucketLocation")
    @GET
    @QueryParams(keys = "location")
    @Path("/")
@@ -224,7 +229,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getBucketPayer
     */
-   @Named("s3:GetBucketRequestPayment")
+   @Named("GetBucketRequestPayment")
    @GET
    @QueryParams(keys = "requestPayment")
    @Path("/")
@@ -235,7 +240,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#setBucketPayer
     */
-   @Named("s3:PutBucketRequestPayment")
+   @Named("PutBucketRequestPayment")
    @PUT
    @QueryParams(keys = "requestPayment")
    @Path("/")
@@ -246,7 +251,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#listBucket
     */
-   @Named("s3:ListBucket")
+   @Named("ListBucket")
    @GET
    @Path("/")
    @XMLResponseParser(ListBucketHandler.class)
@@ -257,7 +262,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#listOwnedBuckets
     */
-   @Named("s3:ListAllMyBuckets")
+   @Named("ListAllMyBuckets")
    @GET
    @XMLResponseParser(ListAllMyBucketsHandler.class)
    @Path("/")
@@ -267,7 +272,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#copyObject
     */
-   @Named("s3:PutObject")
+   @Named("PutObject")
    @PUT
    @Path("/{destinationObject}")
    @Headers(keys = "x-amz-copy-source", values = "/{sourceBucket}/{sourceObject}")
@@ -281,7 +286,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getBucketACL
     */
-   @Named("s3:GetBucketAcl")
+   @Named("GetBucketAcl")
    @GET
    @QueryParams(keys = "acl")
    @XMLResponseParser(AccessControlListHandler.class)
@@ -293,7 +298,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#putBucketACL
     */
-   @Named("s3:PutBucketAcl")
+   @Named("PutBucketAcl")
    @PUT
    @Path("/")
    @QueryParams(keys = "acl")
@@ -304,7 +309,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getObjectACL
     */
-   @Named("s3:GetObjectAcl")
+   @Named("GetObjectAcl")
    @GET
    @QueryParams(keys = "acl")
    @Path("/{key}")
@@ -317,7 +322,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#putObjectACL
     */
-   @Named("s3:PutObjectAcl")
+   @Named("PutObjectAcl")
    @PUT
    @QueryParams(keys = "acl")
    @Path("/{key}")
@@ -328,7 +333,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#getBucketLogging
     */
-   @Named("s3:GetBucketLogging")
+   @Named("GetBucketLogging")
    @GET
    @QueryParams(keys = "logging")
    @XMLResponseParser(BucketLoggingHandler.class)
@@ -340,7 +345,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#enableBucketLogging
     */
-   @Named("s3:PutBucketLogging")
+   @Named("PutBucketLogging")
    @PUT
    @Path("/")
    @QueryParams(keys = "logging")
@@ -351,7 +356,7 @@ public interface S3AsyncClient {
    /**
     * @see S3Client#putBucketLogging
     */
-   @Named("s3:PutBucketLogging")
+   @Named("PutBucketLogging")
    @PUT
    @Path("/")
    @QueryParams(keys = "logging")

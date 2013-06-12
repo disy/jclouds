@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudsigma.functions;
 
@@ -67,7 +65,7 @@ public class MapToServerInfoTest {
                            "tcp/23", "tcp/25", "tcp/110", "tcp/143", "tcp/43595")).build()))
          .devices(
                ImmutableMap.of("ide:0:0",
-                     new IDEDevice.Builder((int) 0, (int) 0).uuid("4af85ed3-0caa-4736-8a26-a33d7de0a122").build()
+                     new IDEDevice.Builder(0, 0).uuid("4af85ed3-0caa-4736-8a26-a33d7de0a122").build()
 
                ))
          .metrics(
@@ -95,7 +93,7 @@ public class MapToServerInfoTest {
          .devices(
                ImmutableMap.of(
                      "ide:0:0",
-                     new IDEDevice.Builder((int) 0, (int) 0).uuid("853bb98a-4fff-4c2f-a265-97c363f19ea5")
+                     new IDEDevice.Builder(0, 0).uuid("853bb98a-4fff-4c2f-a265-97c363f19ea5")
                            .mediaType(MediaType.CDROM).build()))
          .metrics(
                new ServerMetrics.Builder().driveMetrics(ImmutableMap.of("ide:0:0", new DriveMetrics.Builder().build()))
@@ -143,7 +141,7 @@ public class MapToServerInfoTest {
                            "tcp/23", "tcp/25", "tcp/110", "tcp/143", "tcp/43595")).build()))
          .devices(
                ImmutableMap.of("ide:0:0",
-                     new IDEDevice.Builder((int) 0, (int) 0).uuid("403c9a86-0aab-4e47-aa95-e9768021c4c1").build()
+                     new IDEDevice.Builder(0, 0).uuid("403c9a86-0aab-4e47-aa95-e9768021c4c1").build()
 
                ))
          .metrics(

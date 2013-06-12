@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.vcloud.features;
 
@@ -47,10 +45,10 @@ import org.jclouds.rest.annotations.XMLResponseParser;
 import org.jclouds.vcloud.binders.BindCloneVAppParamsToXmlPayload;
 import org.jclouds.vcloud.binders.BindDeployVAppParamsToXmlPayload;
 import org.jclouds.vcloud.binders.BindUndeployVAppParamsToXmlPayload;
+import org.jclouds.vcloud.binders.OrgNameVDCNameResourceEntityNameToEndpoint;
 import org.jclouds.vcloud.domain.Task;
 import org.jclouds.vcloud.domain.VApp;
 import org.jclouds.vcloud.filters.AddVCloudAuthorizationAndCookieToRequest;
-import org.jclouds.vcloud.functions.OrgNameVDCNameResourceEntityNameToEndpoint;
 import org.jclouds.vcloud.options.CloneVAppOptions;
 import org.jclouds.vcloud.xml.TaskHandler;
 import org.jclouds.vcloud.xml.VAppHandler;
@@ -100,10 +98,9 @@ public interface VAppAsyncClient {
    @Consumes(VAPP_XML)
    @XMLResponseParser(VAppHandler.class)
    @Fallback(NullOnNotFoundOr404.class)
-   ListenableFuture<VApp> findVAppInOrgVDCNamed(
-            @Nullable @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String orgName,
-            @Nullable @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String catalogName,
-            @EndpointParam(parser = OrgNameVDCNameResourceEntityNameToEndpoint.class) String vAppName);
+   @MapBinder(OrgNameVDCNameResourceEntityNameToEndpoint.class)
+   ListenableFuture<VApp> findVAppInOrgVDCNamed(@Nullable @PayloadParam("orgName") String orgName,
+         @Nullable @PayloadParam("vdcName") String vdcName, @PayloadParam("resourceName") String vAppName);
 
    /**
     * @see VAppClient#getVApp

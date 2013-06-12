@@ -1,32 +1,31 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.swift.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.util.concurrent.Futures.immediateFuture;
+import static com.google.common.util.concurrent.Futures.transform;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,8 +38,8 @@ import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.functions.HttpGetOptionsListToGetOptions;
 import org.jclouds.blobstore.options.ListContainerOptions;
-import org.jclouds.concurrent.Futures;
 import org.jclouds.http.options.GetOptions;
+import org.jclouds.lifecycle.Closer;
 import org.jclouds.openstack.swift.CommonSwiftAsyncClient;
 import org.jclouds.openstack.swift.SwiftAsyncClient;
 import org.jclouds.openstack.swift.blobstore.functions.BlobToObject;
@@ -60,6 +59,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * Implementation of {@link SwiftAsyncClient} which keeps all data in a local Map object.
@@ -76,16 +76,17 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
    private final ResourceToObjectInfo blob2ObjectInfo;
    private final ListContainerOptionsToBlobStoreListContainerOptions container2ContainerListOptions;
    private final ResourceToObjectList resource2ObjectList;
-   private final ExecutorService service;
+   private final ListeningExecutorService userExecutor;
+   private final Closer closer;
 
    @Inject
-   private StubSwiftAsyncClient(@Named(Constants.PROPERTY_USER_THREADS) ExecutorService service,
+   private StubSwiftAsyncClient(@Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor,
             LocalAsyncBlobStore blobStore,
             SwiftObject.Factory objectProvider, HttpGetOptionsListToGetOptions httpGetOptionsConverter,
             ObjectToBlob object2Blob, BlobToObject blob2Object, ResourceToObjectInfo blob2ObjectInfo,
             ListContainerOptionsToBlobStoreListContainerOptions container2ContainerListOptions,
-            ResourceToObjectList resource2ContainerList) {
-      this.service = service;
+            ResourceToObjectList resource2ContainerList, Closer closer) {
+      this.userExecutor = userExecutor;
       this.blobStore = blobStore;
       this.objectProvider = objectProvider;
       this.httpGetOptionsConverter = httpGetOptionsConverter;
@@ -95,6 +96,7 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
       this.container2ContainerListOptions = checkNotNull(container2ContainerListOptions,
                "container2ContainerListOptions");
       this.resource2ObjectList = checkNotNull(resource2ContainerList, "resource2ContainerList");
+      this.closer = checkNotNull(closer, "closer");
    }
 
    public ListenableFuture<Boolean> containerExists(final String container) {
@@ -127,11 +129,11 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
 
    public ListenableFuture<SwiftObject> getObject(String container, String key, GetOptions... options) {
       org.jclouds.blobstore.options.GetOptions getOptions = httpGetOptionsConverter.apply(options);
-      return Futures.compose(blobStore.getBlob(container, key, getOptions), blob2Object, service);
+      return transform(blobStore.getBlob(container, key, getOptions), blob2Object, userExecutor);
    }
 
    public ListenableFuture<MutableObjectInfoWithMetadata> getObjectInfo(String container, String key) {
-      return Futures.compose(blobStore.blobMetadata(container, key),
+      return transform(blobStore.blobMetadata(container, key),
                new Function<BlobMetadata, MutableObjectInfoWithMetadata>() {
 
                   @Override
@@ -140,7 +142,7 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
                      return blob2ObjectInfo.apply(from);
                   }
 
-               }, service);
+               }, userExecutor);
    }
 
    public ListenableFuture<? extends Set<ContainerMetadata>> listContainers(
@@ -181,7 +183,7 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
    public ListenableFuture<PageSet<ObjectInfo>> listObjects(String container,
             org.jclouds.openstack.swift.options.ListContainerOptions... optionsList) {
       ListContainerOptions options = container2ContainerListOptions.apply(optionsList);
-      return Futures.compose(blobStore.list(container, options), resource2ObjectList, service);
+      return transform(blobStore.list(container, options), resource2ObjectList, userExecutor);
    }
 
    public ListenableFuture<Boolean> copyObject(String sourceContainer, String sourceObject, String destinationContainer, String destinationObject) {
@@ -216,5 +218,10 @@ public class StubSwiftAsyncClient implements CommonSwiftAsyncClient {
    @Override
    public ListenableFuture<Boolean> objectExists(String bucketName, String key) {
       return blobStore.blobExists(bucketName, key);
+   }
+
+   @Override
+   public void close() throws IOException {
+      closer.close();
    }
 }

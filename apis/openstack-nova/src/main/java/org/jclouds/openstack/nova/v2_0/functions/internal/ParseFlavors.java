@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.functions.internal;
 
@@ -48,11 +46,11 @@ import com.google.inject.TypeLiteral;
  */
 @Beta
 @Singleton
-public class ParseFlavors extends ParseJson<Flavors<? extends Resource>> {
-   static class Flavors<T extends Resource> extends PaginatedCollection<T> {
+public class ParseFlavors extends ParseJson<Flavors> {
+   static class Flavors extends PaginatedCollection<Resource> {
 
       @ConstructorProperties({ "flavors", "flavors_links" })
-      protected Flavors(Iterable<T> flavors, Iterable<Link> flavors_links) {
+      protected Flavors(Iterable<Resource> flavors, Iterable<Link> flavors_links) {
          super(flavors, flavors_links);
       }
 
@@ -60,8 +58,7 @@ public class ParseFlavors extends ParseJson<Flavors<? extends Resource>> {
 
    @Inject
    public ParseFlavors(Json json) {
-      super(json, new TypeLiteral<Flavors<? extends Resource>>() {
-      });
+      super(json, TypeLiteral.get(Flavors.class));
    }
 
    public static class ToPagedIterable extends CallerArg0ToPagedIterable<Resource, ToPagedIterable> {

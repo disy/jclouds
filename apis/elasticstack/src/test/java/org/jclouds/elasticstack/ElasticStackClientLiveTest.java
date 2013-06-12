@@ -1,29 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.elasticstack;
-
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.jclouds.compute.domain.ExecResponse;
@@ -43,9 +41,7 @@ import org.jclouds.elasticstack.domain.ServerStatus;
 import org.jclouds.elasticstack.predicates.DriveClaimed;
 import org.jclouds.elasticstack.util.Servers;
 import org.jclouds.io.Payloads;
-import org.jclouds.predicates.InetSocketAddressConnect;
-import org.jclouds.predicates.RetryablePredicate;
-import org.jclouds.rest.RestContext;
+import org.jclouds.predicates.SocketOpen;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.jclouds.util.Strings2;
@@ -77,7 +73,6 @@ public class ElasticStackClientLiveTest extends BaseComputeServiceContextLiveTes
    protected int maxDriveImageTime = 360;
    protected String vncPassword = "Il0veVNC";
    protected ElasticStackClient client;
-   protected RestContext<ElasticStackClient, ElasticStackAsyncClient> cloudStackContext;
    protected Predicate<HostAndPort> socketTester;
    protected Predicate<DriveInfo> driveNotClaimed;
    protected String imageId;
@@ -88,11 +83,10 @@ public class ElasticStackClientLiveTest extends BaseComputeServiceContextLiveTes
       super.setupContext();
       imageId = view.getComputeService().templateBuilder().build().getImage().getId();
          
-      client = view.unwrap(ElasticStackApiMetadata.CONTEXT_TOKEN).getApi();
-      driveNotClaimed = new RetryablePredicate<DriveInfo>(Predicates.not(new DriveClaimed(client)), maxDriveImageTime,
-               1, TimeUnit.SECONDS);
-      socketTester = new RetryablePredicate<HostAndPort>(new InetSocketAddressConnect(), maxDriveImageTime, 1,
-               TimeUnit.SECONDS);
+      client = view.utils().injector().getInstance(ElasticStackClient.class);
+      driveNotClaimed = retry(Predicates.not(new DriveClaimed(client)), maxDriveImageTime, 1, SECONDS);
+      SocketOpen socketOpen = context.utils().injector().getInstance(SocketOpen.class);
+      socketTester = retry(socketOpen, maxDriveImageTime, 1, SECONDS);
    }
    
    @Test

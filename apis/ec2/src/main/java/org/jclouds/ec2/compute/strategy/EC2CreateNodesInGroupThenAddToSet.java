@@ -1,20 +1,18 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.ec2.compute.strategy;
 
@@ -30,7 +28,6 @@ import static org.jclouds.ec2.compute.util.EC2ComputeUtils.getZoneFromLocationOr
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Resource;
@@ -58,12 +55,14 @@ import org.jclouds.logging.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * creates futures that correlate to
@@ -95,7 +94,7 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
    @VisibleForTesting
    final ComputeUtils utils;
    final PresentInstances presentInstances;
-   final LoadingCache<RunningInstance, LoginCredentials> instanceToCredentials;
+   final LoadingCache<RunningInstance, Optional<LoginCredentials>> instanceToCredentials;
    final Map<String, Credentials> credentialStore;
 
    @Inject
@@ -105,7 +104,7 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
          @Named(TIMEOUT_NODE_RUNNING) Predicate<AtomicReference<NodeMetadata>> nodeRunning,
          CreateKeyPairAndSecurityGroupsAsNeededAndReturnRunOptions createKeyPairAndSecurityGroupsAsNeededAndReturncustomize,
          PresentInstances presentInstances, Function<RunningInstance, NodeMetadata> runningInstanceToNodeMetadata,
-         LoadingCache<RunningInstance, LoginCredentials> instanceToCredentials,
+         LoadingCache<RunningInstance, Optional<LoginCredentials>> instanceToCredentials,
          Map<String, Credentials> credentialStore, ComputeUtils utils) {
       this.client = checkNotNull(client, "client");
       this.elasticIpCache = checkNotNull(elasticIpCache, "elasticIpCache");
@@ -120,7 +119,7 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
       this.utils = checkNotNull(utils, "utils");
    }
 
-   public static Function<RunningInstance, RegionAndName> instanceToRegionAndName = new Function<RunningInstance, RegionAndName>() {
+   public static final Function<RunningInstance, RegionAndName> instanceToRegionAndName = new Function<RunningInstance, RegionAndName>() {
       @Override
       public RegionAndName apply(RunningInstance from) {
          return new RegionAndName(from.getRegion(), from.getId());
@@ -128,7 +127,7 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
    };
 
    @Override
-   public Map<?, Future<Void>> execute(String group, int count, Template template, Set<NodeMetadata> goodNodes,
+   public Map<?, ListenableFuture<Void>> execute(String group, int count, Template template, Set<NodeMetadata> goodNodes,
          Map<NodeMetadata, Exception> badNodes, Multimap<NodeMetadata, CustomizationResponse> customizationResponses) {
 
       Template mutableTemplate = template.clone();
@@ -174,7 +173,7 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
    private void populateCredentials(Set<RunningInstance> input, TemplateOptions options) {
       LoginCredentials credentials = null;
       for (RunningInstance instance : input) {
-         credentials = instanceToCredentials.apply(instance);
+         credentials = instanceToCredentials.apply(instance).orNull();
          if (credentials != null)
             break;
       }
@@ -187,14 +186,16 @@ public class EC2CreateNodesInGroupThenAddToSet implements CreateNodesInGroupThen
    private void blockUntilRunningAndAssignElasticIpsToInstancesOrPutIntoBadMap(Set<RunningInstance> input,
          Map<NodeMetadata, Exception> badNodes) {
       Map<RegionAndName, RunningInstance> instancesById = Maps.uniqueIndex(input, instanceToRegionAndName);
-      for (RegionAndName id : instancesById.keySet()) {
+      for (Map.Entry<RegionAndName, RunningInstance> entry : instancesById.entrySet()) {
+         RegionAndName id = entry.getKey();
+         RunningInstance instance = entry.getValue();
          try {
             logger.debug("<< allocating elastic IP instance(%s)", id);
             String ip = client.getElasticIPAddressServices().allocateAddressInRegion(id.getRegion());
             // block until instance is running
             logger.debug(">> awaiting status running instance(%s)", id);
             AtomicReference<NodeMetadata> node = newReference(runningInstanceToNodeMetadata
-                  .apply(instancesById.get(id)));
+                  .apply(instance));
             nodeRunning.apply(node);
             logger.trace("<< running instance(%s)", id);
             logger.debug(">> associating elastic IP %s to instance %s", ip, id);

@@ -1,26 +1,28 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.swift;
 
+import static com.google.common.net.HttpHeaders.EXPECT;
+
+import java.io.Closeable;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -40,7 +42,6 @@ import org.jclouds.blobstore.binders.BindMapToHeadersWithPrefix;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.http.functions.ParseETagHeader;
 import org.jclouds.http.options.GetOptions;
-import org.jclouds.openstack.filters.AuthenticateRequest;
 import org.jclouds.openstack.swift.SwiftFallbacks.TrueOn404FalseOn409;
 import org.jclouds.openstack.swift.binders.BindIterableToHeadersWithContainerDeleteMetadataPrefix;
 import org.jclouds.openstack.swift.binders.BindMapToHeadersWithContainerMetadataPrefix;
@@ -60,12 +61,10 @@ import org.jclouds.openstack.swift.options.CreateContainerOptions;
 import org.jclouds.openstack.swift.options.ListContainerOptions;
 import org.jclouds.openstack.swift.reference.SwiftHeaders;
 import org.jclouds.rest.annotations.BinderParam;
-import org.jclouds.rest.annotations.Endpoint;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.Headers;
 import org.jclouds.rest.annotations.ParamParser;
 import org.jclouds.rest.annotations.QueryParams;
-import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.rest.annotations.ResponseParser;
 
 import com.google.common.annotations.Beta;
@@ -78,16 +77,18 @@ import com.google.inject.Provides;
  * @see CommonSwiftClient
  * @see <a href="http://www.rackspacecloud.com/cf-devguide-20090812.pdf" />
  * @author Adrian Cole
+ * @deprecated please use {@code org.jclouds.ContextBuilder#buildApi(CommonSwiftClient.class)} as
+ *             {@link CommonSwiftAsyncClient} interface will be removed in jclouds 1.7.
  */
-@RequestFilters(AuthenticateRequest.class)
-@Endpoint(Storage.class)
-public interface CommonSwiftAsyncClient {
+@Deprecated
+public interface CommonSwiftAsyncClient extends Closeable {
    @Provides
    SwiftObject newSwiftObject();
 
    /**
     * @see CommonSwiftClient#getAccountStatistics
     */
+   @Named("GetAccountMetadata")
    @HEAD
    @Path("/")
    @Consumes(MediaType.WILDCARD)
@@ -97,6 +98,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#listContainers
     */
+   @Named("ListContainers")
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @QueryParams(keys = "format", values = "json")
@@ -106,6 +108,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#getContainerMetadata
     */
+   @Named("GetContainerMetadata")
    @Beta
    @HEAD
    @Path("/{container}")
@@ -117,6 +120,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#setContainerMetadata
     */
+   @Named("UpdateContainerMetadata")
    @POST
    @Path("/{container}")
    @Fallback(FalseOnContainerNotFound.class)
@@ -126,6 +130,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#deleteContainerMetadata
     */
+   @Named("UpdateContainerMetadata")
    @POST
    @Path("/{container}")
    @Fallback(FalseOnContainerNotFound.class)
@@ -135,6 +140,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#createContainer
     */
+   @Named("CreateContainer")
    @PUT
    @Path("/{container}")
    ListenableFuture<Boolean> createContainer(@PathParam("container") String container,
@@ -143,6 +149,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#setObjectInfo
     */
+   @Named("UpdateObjectMetadata")
    @POST
    @Path("/{container}/{name}")
    ListenableFuture<Boolean> setObjectInfo(@PathParam("container") String container, 
@@ -152,6 +159,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#createContainer
     */
+   @Named("CreateContainer")
    @PUT
    @Path("/{container}")
    ListenableFuture<Boolean> createContainer(@PathParam("container") String container);
@@ -159,6 +167,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#deleteContainerIfEmpty
     */
+   @Named("DeleteContainer")
    @DELETE
    @Fallback(TrueOn404FalseOn409.class)
    @Path("/{container}")
@@ -167,6 +176,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#listObjects
     */
+   @Named("ListObjects")
    @GET
    @QueryParams(keys = "format", values = "json")
    @ResponseParser(ParseObjectInfoListFromJsonResponse.class)
@@ -177,6 +187,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#containerExists
     */
+   @Named("GetContainerMetadata")
    @HEAD
    @Path("/{container}")
    @Consumes(MediaType.WILDCARD)
@@ -186,8 +197,10 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#putObject
     */
+   @Named("PutObject")
    @PUT
    @Path("/{container}/{name}")
+   @Headers(keys = EXPECT, values = "100-continue")
    @ResponseParser(ParseETagHeader.class)
    ListenableFuture<String> putObject(@PathParam("container") String container,
                                       @PathParam("name") @ParamParser(ObjectName.class) @BinderParam(BindSwiftObjectMetadataToRequest.class) SwiftObject object);
@@ -195,6 +208,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#copyObject
     */
+   @Named("CopyObject")
    @PUT
    @Path("/{destinationContainer}/{destinationObject}")
    @Headers(keys = SwiftHeaders.OBJECT_COPY_FROM, values = "/{sourceContainer}/{sourceObject}")
@@ -207,6 +221,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#getObject
     */
+   @Named("GetObject")
    @GET
    @ResponseParser(ParseObjectFromHeadersAndHttpContent.class)
    @Fallback(NullOnKeyNotFound.class)
@@ -218,6 +233,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#getObjectInfo
     */
+   @Named("GetObjectMetadata")
    @HEAD
    @ResponseParser(ParseObjectInfoFromHeaders.class)
    @Fallback(NullOnKeyNotFound.class)
@@ -229,6 +245,7 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#objectExists
     */
+   @Named("GetObjectMetadata")
    @HEAD
    @Fallback(FalseOnKeyNotFound.class)
    @Path("/{container}/{name}")
@@ -239,12 +256,14 @@ public interface CommonSwiftAsyncClient {
    /**
     * @see CommonSwiftClient#removeObject
     */
+   @Named("RemoveObject")
    @DELETE
    @Fallback(VoidOnNotFoundOr404.class)
    @Path("/{container}/{name}")
    ListenableFuture<Void> removeObject(@PathParam("container") String container, 
                                        @PathParam("name") String name);
 
+   @Named("PutObjectManifest")
    @PUT
    @Path("/{container}/{name}")
    @ResponseParser(ParseETagHeader.class)

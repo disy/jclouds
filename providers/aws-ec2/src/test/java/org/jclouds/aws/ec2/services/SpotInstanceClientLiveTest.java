@@ -1,27 +1,27 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.ec2.services;
 
 import static com.google.common.base.Predicates.in;
 import static com.google.common.collect.Iterables.getOnlyElement;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.jclouds.aws.ec2.options.DescribeSpotPriceHistoryOptions.Builder.from;
 import static org.jclouds.aws.ec2.options.RequestSpotInstancesOptions.Builder.launchGroup;
+import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -40,11 +40,11 @@ import org.jclouds.aws.ec2.domain.SpotInstanceRequest;
 import org.jclouds.aws.ec2.predicates.SpotInstanceRequestActive;
 import org.jclouds.compute.internal.BaseComputeServiceContextLiveTest;
 import org.jclouds.ec2.domain.InstanceType;
-import org.jclouds.predicates.RetryablePredicate;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 
@@ -61,7 +61,7 @@ public class SpotInstanceClientLiveTest  extends BaseComputeServiceContextLiveTe
 
    private static final int SPOT_DELAY_SECONDS = 600;
    private AWSEC2Client client;
-   private RetryablePredicate<SpotInstanceRequest> activeTester;
+   private Predicate<SpotInstanceRequest> activeTester;
    private Set<SpotInstanceRequest> requests;
    private AWSRunningInstance instance;
    private long start;
@@ -71,8 +71,7 @@ public class SpotInstanceClientLiveTest  extends BaseComputeServiceContextLiveTe
    public void setupContext() {
       super.setupContext();
       client = view.unwrap(AWSEC2ApiMetadata.CONTEXT_TOKEN).getApi();
-      activeTester = new RetryablePredicate<SpotInstanceRequest>(new SpotInstanceRequestActive(client),
-               SPOT_DELAY_SECONDS, 1, 1, TimeUnit.SECONDS);
+      activeTester = retry(new SpotInstanceRequestActive(client), SPOT_DELAY_SECONDS, 1, 1, SECONDS);
    }
 
    @Test

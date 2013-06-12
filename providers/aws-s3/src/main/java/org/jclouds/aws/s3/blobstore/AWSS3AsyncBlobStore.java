@@ -1,27 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.aws.s3.blobstore;
 
 import static org.jclouds.s3.domain.ObjectMetadata.StorageClass.REDUCED_REDUNDANCY;
 
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -60,11 +57,15 @@ import com.google.common.base.Supplier;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  *
  * @author Tibor Kiss, Andrei Savu
+ * @deprecated will be removed in jclouds 1.7, as async interfaces are no longer
+ *             supported. Please use {@link AWSS3BlobStore}
  */
+@Deprecated
 public class AWSS3AsyncBlobStore extends S3AsyncBlobStore {
 
    private final Provider<AsyncMultipartUploadStrategy> multipartUploadStrategy;
@@ -73,7 +74,7 @@ public class AWSS3AsyncBlobStore extends S3AsyncBlobStore {
 
    @Inject
    public AWSS3AsyncBlobStore(BlobStoreContext context, BlobUtils blobUtils,
-            @Named(Constants.PROPERTY_USER_THREADS) ExecutorService service, Supplier<Location> defaultLocation,
+            @Named(Constants.PROPERTY_USER_THREADS) ListeningExecutorService userExecutor, Supplier<Location> defaultLocation,
             @Memoized Supplier<Set<? extends Location>> locations, AWSS3AsyncClient async, AWSS3Client sync,
             Function<Set<BucketMetadata>, PageSet<? extends StorageMetadata>> convertBucketsToStorageMetadata,
             ContainerToBucketListOptions container2BucketListOptions, BucketToResourceList bucket2ResourceList,
@@ -81,7 +82,7 @@ public class AWSS3AsyncBlobStore extends S3AsyncBlobStore {
             ObjectToBlobMetadata object2BlobMd, Provider<FetchBlobMetadata> fetchBlobMetadataProvider,
             LoadingCache<String, AccessControlList> bucketAcls,
             Provider<AsyncMultipartUploadStrategy> multipartUploadStrategy) {
-      super(context, blobUtils, service, defaultLocation, locations, async, sync, convertBucketsToStorageMetadata,
+      super(context, blobUtils, userExecutor, defaultLocation, locations, async, sync, convertBucketsToStorageMetadata,
                container2BucketListOptions, bucket2ResourceList, object2Blob, blob2ObjectGetOptions, blob2Object,
                object2BlobMd, fetchBlobMetadataProvider, bucketAcls);
       this.multipartUploadStrategy = multipartUploadStrategy;

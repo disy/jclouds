@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.openstack.nova.v2_0.compute;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 import java.util.Map;
 import java.util.Properties;
@@ -51,6 +50,15 @@ import com.google.inject.TypeLiteral;
  */
 @Test(groups = "unit", testName = "NovaComputeServiceAdapterExpectTest")
 public class NovaComputeServiceAdapterExpectTest extends BaseNovaComputeServiceContextExpectTest<Injector> {
+   HttpRequest serverDetail = HttpRequest
+         .builder()
+         .method("GET")
+         .endpoint("https://az-1.region-a.geo-1.compute.hpcloudsvc.com/v1.1/3456/servers/71752")
+         .addHeader("Accept", "application/json")
+         .addHeader("X-Auth-Token", authToken).build();
+
+   HttpResponse serverDetailResponse = HttpResponse.builder().statusCode(200)
+         .payload(payloadFromResource("/server_details.json")).build();
 
    public void testCreateNodeWithGroupEncodedIntoNameWhenSecurityGroupsArePresent() throws Exception {
 
@@ -66,16 +74,6 @@ public class NovaComputeServiceAdapterExpectTest extends BaseNovaComputeServiceC
 
       HttpResponse createServerResponse = HttpResponse.builder().statusCode(202).message("HTTP/1.1 202 Accepted")
          .payload(payloadFromResourceWithContentType("/new_server.json","application/json; charset=UTF-8")).build();
-
-      HttpRequest serverDetail = HttpRequest
-            .builder()
-            .method("GET")
-            .endpoint("https://az-1.region-a.geo-1.compute.hpcloudsvc.com/v1.1/3456/servers/71752")
-            .addHeader("Accept", "application/json")
-            .addHeader("X-Auth-Token", authToken).build();
-
-      HttpResponse serverDetailResponse = HttpResponse.builder().statusCode(200)
-            .payload(payloadFromResource("/server_details.json")).build();
 
       Map<HttpRequest, HttpResponse> requestResponseMap = ImmutableMap.<HttpRequest, HttpResponse> builder()
                .put(keystoneAuthWithUsernameAndPasswordAndTenantName, responseWithKeystoneAccess)
@@ -117,17 +115,7 @@ public class NovaComputeServiceAdapterExpectTest extends BaseNovaComputeServiceC
 
   
       HttpResponse createServerResponse = HttpResponse.builder().statusCode(202).message("HTTP/1.1 202 Accepted")
-         .payload(payloadFromResourceWithContentType("/new_server.json","application/json; charset=UTF-8")).build();
-
-      HttpRequest serverDetail = HttpRequest
-            .builder()
-            .method("GET")
-            .endpoint("https://az-1.region-a.geo-1.compute.hpcloudsvc.com/v1.1/3456/servers/71752")
-            .addHeader("Accept", "application/json")
-            .addHeader("X-Auth-Token", authToken).build();
-
-      HttpResponse serverDetailResponse = HttpResponse.builder().statusCode(200)
-            .payload(payloadFromResource("/server_details.json")).build();
+         .payload(payloadFromResourceWithContentType("/new_server_no_adminpass.json","application/json; charset=UTF-8")).build();
 
       Map<HttpRequest, HttpResponse> requestResponseMap = ImmutableMap.<HttpRequest, HttpResponse> builder()
                .put(keystoneAuthWithUsernameAndPasswordAndTenantName, responseWithKeystoneAccess)
@@ -155,6 +143,47 @@ public class NovaComputeServiceAdapterExpectTest extends BaseNovaComputeServiceC
                template);
       assertNotNull(server);
       assertEquals(server.getCredentials(), LoginCredentials.builder().privateKey("privateKey").build());
+   }
+
+
+   /**
+    * When enable_instance_password is false, then no admin pass is generated.
+    * However in this case if you don't specify the name of the SSH keypair to
+    * inject, then you simply cannot log in to the server.
+    */
+   public void testNoKeyPairOrAdminPass() throws Exception {
+      
+      HttpRequest createServer = HttpRequest
+         .builder()
+         .method("POST")
+         .endpoint("https://az-1.region-a.geo-1.compute.hpcloudsvc.com/v1.1/3456/servers")
+         .addHeader("Accept", "application/json")
+         .addHeader("X-Auth-Token", authToken)
+         .payload(payloadFromStringWithContentType(
+                  "{\"server\":{\"name\":\"test-e92\",\"imageRef\":\"1241\",\"flavorRef\":\"100\"}}","application/json"))
+         .build();
+  
+      HttpResponse createServerResponse = HttpResponse.builder().statusCode(202).message("HTTP/1.1 202 Accepted")
+         .payload(payloadFromResourceWithContentType("/new_server_no_adminpass.json","application/json; charset=UTF-8")).build();
+
+      Map<HttpRequest, HttpResponse> requestResponseMap = ImmutableMap.<HttpRequest, HttpResponse> builder()
+               .put(keystoneAuthWithUsernameAndPasswordAndTenantName, responseWithKeystoneAccess)
+               .put(extensionsOfNovaRequest, extensionsOfNovaResponse)
+               .put(listDetail, listDetailResponse)
+               .put(listFlavorsDetail, listFlavorsDetailResponse)
+               .put(createServer, createServerResponse)
+               .put(serverDetail, serverDetailResponse).build();
+
+      Injector forSecurityGroups = requestsSendResponses(requestResponseMap);
+
+      Template template = forSecurityGroups.getInstance(TemplateBuilder.class).build();
+      
+      NovaComputeServiceAdapter adapter = forSecurityGroups.getInstance(NovaComputeServiceAdapter.class);
+      
+      NodeAndInitialCredentials<ServerInZone> server = adapter.createNodeWithGroupEncodedIntoName("test", "test-e92",
+            template);
+      assertNotNull(server);
+      assertNull(server.getCredentials());
    }
    
    @Override

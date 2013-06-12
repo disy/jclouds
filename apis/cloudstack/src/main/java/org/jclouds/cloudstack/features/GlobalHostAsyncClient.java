@@ -1,25 +1,24 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.QueryParam;
@@ -59,6 +58,7 @@ public interface GlobalHostAsyncClient {
    /**
     * @see GlobalHostClient#listHosts
     */
+   @Named("listHosts")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listHosts", "true" })
    @SelectJson("host")
@@ -77,6 +77,7 @@ public interface GlobalHostAsyncClient {
     * @param options optional arguments
     * @return the new host.
     */
+   @Named("addHost")
    @GET
    @QueryParams(keys = "command", values = "addHost")
    @SelectJson("host")
@@ -90,6 +91,7 @@ public interface GlobalHostAsyncClient {
     * @param options optional arguments
     * @return the modified host.
     */
+   @Named("updateHost")
    @GET
    @QueryParams(keys = "command", values = "updateHost")
    @SelectJson("host")
@@ -103,6 +105,7 @@ public interface GlobalHostAsyncClient {
     * @param username the username for the host
     * @param password the password for the host
     */
+   @Named("updateHostPassword")
    @GET
    @QueryParams(keys = "command", values = "updateHostPassword")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -114,6 +117,7 @@ public interface GlobalHostAsyncClient {
     * @param hostId the host ID
     * @param options optional arguments
     */
+   @Named("deleteHost")
    @GET
    @QueryParams(keys = "command", values = "deleteHost")
    @Consumes(MediaType.APPLICATION_JSON)
@@ -125,6 +129,7 @@ public interface GlobalHostAsyncClient {
     * @param hostId the host ID
     * @return a job reference number for tracking this asynchronous job.
     */
+   @Named("prepareHostForMaintenance")
    @GET
    @QueryParams(keys = "command", values = "prepareHostForMaintenance")
    @SelectJson("jobid")
@@ -137,6 +142,7 @@ public interface GlobalHostAsyncClient {
     * @param hostId the host ID
     * @return a job reference number for tracking this asynchronous job.
     */
+   @Named("cancelHostMaintenance")
    @GET
    @QueryParams(keys = "command", values = "cancelHostMaintenance")
    @SelectJson("jobid")
@@ -149,6 +155,7 @@ public interface GlobalHostAsyncClient {
     * @param hostId
     * @return a job reference number for tracking this asynchronous job.
     */
+   @Named("reconnectHost")
    @GET
    @QueryParams(keys = "command", values = "reconnectHost")
    @SelectJson("jobid")
@@ -162,6 +169,7 @@ public interface GlobalHostAsyncClient {
     * @param options optional arguments
     * @return the host of the storage.
     */
+   @Named("addSecondaryStorage")
    @GET
    @QueryParams(keys = "command", values = "addSecondaryStorage")
    @SelectJson("host")
@@ -171,6 +179,7 @@ public interface GlobalHostAsyncClient {
    /**
     * @see GlobalHostClient#listClusters
     */
+   @Named("listClusters")
    @GET
    @QueryParams(keys = { "command", "listAll" }, values = { "listClusters", "true" })
    @SelectJson("cluster")
@@ -188,6 +197,7 @@ public interface GlobalHostAsyncClient {
     * @param options optional arguments
     * @return the new cluster.
     */
+   @Named("addCluster")
    @GET
    @QueryParams(keys = "command", values = "addCluster")
    @SelectJson("cluster")
@@ -201,6 +211,7 @@ public interface GlobalHostAsyncClient {
     * @param options optional arguments
     * @return the modified cluster
     */
+   @Named("updateCluster")
    @GET
    @QueryParams(keys = "command", values = "updateCluster")
    @SelectJson("cluster")
@@ -214,6 +225,7 @@ public interface GlobalHostAsyncClient {
     * @param username the username for the cluster
     * @param password the password for the cluster
     */
+   @Named("updateHostPassword")
    @GET
    @QueryParams(keys = "command", values = "updateHostPassword")
    @SelectJson("cluster")
@@ -225,6 +237,7 @@ public interface GlobalHostAsyncClient {
     *
     * @param clusterId the cluster ID
     */
+   @Named("deleteCluster")
    @GET
    @QueryParams(keys = "command", values = "deleteCluster")
    @Consumes(MediaType.APPLICATION_JSON)

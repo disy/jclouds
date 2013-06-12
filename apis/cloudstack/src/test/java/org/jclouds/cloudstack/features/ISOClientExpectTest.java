@@ -1,28 +1,26 @@
-/**
- * Licensed to jclouds, Inc. (jclouds) under one or more
- * contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  jclouds licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.jclouds.cloudstack.features;
 
 import static org.jclouds.cloudstack.options.ListISOsOptions.Builder.accountInDomain;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
+import org.jclouds.cloudstack.CloudStackApiMetadata;
 import org.jclouds.cloudstack.CloudStackContext;
 import org.jclouds.cloudstack.domain.ISO;
 import org.jclouds.cloudstack.internal.BaseCloudStackExpectTest;
@@ -166,24 +164,24 @@ public class ISOClientExpectTest extends BaseCloudStackExpectTest<ISOClient> {
    }
 
    HttpRequest registerIso = HttpRequest.builder().method("GET")
-           .endpoint("http://localhost:8080/client/api")
-           .addQueryParam("response", "json")
-           .addQueryParam("command", "registerIso")
-           .addQueryParam("name", "ubuntu10.10")
-           .addQueryParam("url", "http://ubuntu/ubuntu-10.10.iso")
-           .addQueryParam("displaytext", "ubuntu 10.10 (32 bit)")
-           .addQueryParam("zoneid", "1e0335d9-b6cc-4805-bddf-0828e66a0d01")
-           .addQueryParam("account", "root")
-           .addQueryParam("domainid", "99f4159b-c698-4bd9-b8c5-5ac462f101eb")
-           .addQueryParam("bootable", "true")
-           .addQueryParam("isextractable", "true")
-           .addQueryParam("isfeatured", "true")
-           .addQueryParam("ispublic", "true")
-           .addQueryParam("ostypeid", "1234-abcd")
-           .addQueryParam("apiKey", "identity")
-           .addQueryParam("signature", "YpFMYUUu0daLgwxNFubVfkV0Nw8%3D")
-           .addHeader("Accept", "application/json") 
-           .build();
+                                        .endpoint("http://localhost:8080/client/api")
+                                        .addQueryParam("response", "json")
+                                        .addQueryParam("command", "registerIso")
+                                        .addQueryParam("name", "ubuntu10.10")
+                                        .addQueryParam("displaytext", "ubuntu 10.10 (32 bit)")
+                                        .addQueryParam("url", "http://ubuntu/ubuntu-10.10.iso")
+                                        .addQueryParam("zoneid", "1e0335d9-b6cc-4805-bddf-0828e66a0d01")
+                                        .addQueryParam("account", "root")
+                                        .addQueryParam("domainid", "99f4159b-c698-4bd9-b8c5-5ac462f101eb")
+                                        .addQueryParam("bootable", "true")
+                                        .addQueryParam("isextractable", "true")
+                                        .addQueryParam("isfeatured", "true")
+                                        .addQueryParam("ispublic", "true")
+                                        .addQueryParam("ostypeid", "1234-abcd")
+                                        .addQueryParam("apiKey", "identity")
+                                        .addQueryParam("signature", "YpFMYUUu0daLgwxNFubVfkV0Nw8%3D")
+                                        .addHeader("Accept", "application/json") 
+                                        .build();
    
    RegisterISOOptions registerISOOptions = RegisterISOOptions.Builder
            .accountInDomain("root", "99f4159b-c698-4bd9-b8c5-5ac462f101eb")
@@ -221,6 +219,6 @@ public class ISOClientExpectTest extends BaseCloudStackExpectTest<ISOClient> {
    
    @Override
    protected ISOClient clientFrom(CloudStackContext context) {
-      return context.getProviderSpecificContext().getApi().getISOClient();
+      return context.unwrap(CloudStackApiMetadata.CONTEXT_TOKEN).getApi().getISOClient();
    }
 }
