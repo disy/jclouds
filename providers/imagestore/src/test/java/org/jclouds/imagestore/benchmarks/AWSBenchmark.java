@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.BlobStoreContext;
-import org.jclouds.blobstore.BlobStoreContextFactory;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.perfidix.AbstractConfig;
@@ -262,25 +261,25 @@ public class AWSBenchmark {
 
     public static void main(String[] args) {
 
-        String[] awsCredentials = getCredentials();
-        if (awsCredentials.length == 0) {
-            System.out.println("Please set credentials in .imagestore!");
-            System.exit(-1);
-        }
-
-        BlobStoreContext context =
-            new BlobStoreContextFactory().createContext("aws-s3", awsCredentials[0], awsCredentials[1]);
-        store = context.getBlobStore();
-        File paintercsv = new File(CSVOUTPUT, "aws");
-        paintercsv.mkdirs();
-        Benchmark bench = new Benchmark(new BenchmarkConf());
-        bench.add(AWSBenchmark.class);
-        BenchmarkResult res = bench.run();
-        TabularSummaryOutput output = new TabularSummaryOutput();
-        CSVOutput output2 = new CSVOutput(paintercsv);
-        output.visitBenchmark(res);
-        output2.visitBenchmark(res);
-        context.close();
+//        String[] awsCredentials = getCredentials();
+//        if (awsCredentials.length == 0) {
+//            System.out.println("Please set credentials in .imagestore!");
+//            System.exit(-1);
+//        }
+//
+//        BlobStoreContext context =
+//            new BlobStoreContextFactory().createContext("aws-s3", awsCredentials[0], awsCredentials[1]);
+//        store = context.getBlobStore();
+//        File paintercsv = new File(CSVOUTPUT, "aws");
+//        paintercsv.mkdirs();
+//        Benchmark bench = new Benchmark(new BenchmarkConf());
+//        bench.add(AWSBenchmark.class);
+//        BenchmarkResult res = bench.run();
+//        TabularSummaryOutput output = new TabularSummaryOutput();
+//        CSVOutput output2 = new CSVOutput(paintercsv);
+//        output.visitBenchmark(res);
+//        output2.visitBenchmark(res);
+//        context.close();
     }
 
     static class BenchmarkConf extends AbstractConfig {

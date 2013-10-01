@@ -80,14 +80,14 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getPaintersForFlickr() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
-            returnVal.add(type.getPainter());
-        }
+//        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
+//            returnVal.add(type.getPainter());
+//        }
 
-        returnVal.add(PainterType.BINARY.getPainter());
-        returnVal.add(PainterType.TERNARY.getPainter());
-        returnVal.add(PainterType.QUATENARY.getPainter());
-
+//        returnVal.add(PainterType.BINARY.getPainter());
+//        returnVal.add(PainterType.TERNARY.getPainter());
+//        returnVal.add(PainterType.QUATENARY.getPainter());
+        returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
         return returnVal;
     }
 }

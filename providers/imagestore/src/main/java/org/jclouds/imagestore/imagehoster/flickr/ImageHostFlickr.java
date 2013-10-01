@@ -116,7 +116,7 @@ public class ImageHostFlickr implements IImageHost {
         do {
             i--;
             try {
-                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1).getPhotoList();
                 for (final Photo ph : pl) {
                     if (ph.getTitle().equals(imageTitle)) {
                         return ph;
@@ -296,7 +296,7 @@ public class ImageHostFlickr implements IImageHost {
         do {
             i--;
             try {
-                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                final PhotoList pl = psi.getPhotos(imageSetId, -1, -1).getPhotoList();
                 for (final Photo ph : pl) {
                     poi.delete(ph.getId());
                 }
@@ -411,7 +411,7 @@ public class ImageHostFlickr implements IImageHost {
         do {
             i--;
             try {
-                PhotoList list = psi.getPhotos(ps.getId(), 1000, 0);
+                PhotoList list = psi.getPhotos(ps.getId(), 1000, 0).getPhotoList();
                 for (Photo photo : list) {
                     if (!photo.getTitle().equals(MARKERFORSET)) {
                         returnVal.add(photo.getTitle());
@@ -443,7 +443,7 @@ public class ImageHostFlickr implements IImageHost {
             i--;
             try {
                 if (!imageSetId.isEmpty()) {
-                    final PhotoList pl = psi.getPhotos(imageSetId, -1, -1);
+                    final PhotoList pl = psi.getPhotos(imageSetId, -1, -1).getPhotoList();
                     for (final Photo ph : pl) {
                         psi.removePhoto(imageSetId, ph.getId());
                     }
