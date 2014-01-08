@@ -10,7 +10,7 @@
     <groupId>org.jclouds.provider</groupId>
     <artifactId>imagestore</artifactId>
     <name>jclouds image store providers</name>
-    <description>stores data on image-clouds</description>
+    <description>stores data on image clouds</description>
     <packaging>bundle</packaging>
 
 
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.googlecode.flickrj-android</groupId>
             <artifactId>flickrj-android</artifactId>
-            <version>2.0.9-SNAPSHOT</version>
+            <version>2.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.restfb</groupId>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.perfidix</groupId>
             <artifactId>perfidix</artifactId>
-            <version>3.6.8-SNAPSHOT</version>
+            <version>3.6.8</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -123,43 +123,9 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>disyInternal</id>
-            <name>Internal Repository for the Distributed System Group</name>
-            <url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternal/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>disyInternalSnapshot</id>
-            <name>Internal Snapshot Repository for the Distributed System Group</name>
-            <url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternalSnapshot/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>SonatypeSnapshot</id>
             <name>Snapshot Repository for Sonatype</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-    <distributionManagement>
-        <repository>
-            <id>disyInternal</id>
-            <url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternal</url>
-            <uniqueVersion>false</uniqueVersion>
-        </repository>
-        <snapshotRepository>
-            <id>disyInternalSnapshot</id>
-            <url>http://mavenrepo.disy.inf.uni-konstanz.de/repository/disyInternalSnapshot</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
