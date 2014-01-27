@@ -63,9 +63,9 @@ public final class ImageStoreConstants {
      */
 
     /** The Facebook application-id. */
-    public static final String FACEBOOK_APP_ID = "262726663843525";
+    public static final String FACEBOOK_APP_ID = "492825007492543";
     /** The Facebook application-secret. */
-    public static final String FACEBOOK_APP_SECRET = "decc85c7e0785336f8c4c115d626294d";
+    public static final String FACEBOOK_APP_SECRET = "4aea5b34ff16b00b44928d9d980ec6e6";
 
     /** The Facebook URL-parameter client-id. */
     public static final String FACEBOOK_URL_PARAM_CLIENT_ID = "client_id";

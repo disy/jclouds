@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.jclouds.imagestore.benchmarks.TestAndBenchmarkHelper;
+import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
 import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;

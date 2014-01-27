@@ -23,12 +23,13 @@ import org.jclouds.blobstore.BlobStore;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.blobstore.domain.BlobBuilder;
 import org.jclouds.imagestore.SyncImageBlobStore;
+import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.bytepainter.BytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.bytepainter.LayeredBytesToImagePainter;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
+import org.jclouds.imagestore.imagehoster.facebook.ImageHostFacebook;
 import org.perfidix.AbstractConfig;
 import org.perfidix.Benchmark;
 import org.perfidix.annotation.Bench;
@@ -330,8 +331,8 @@ public class LayeredPainterBenchmark {
 
     public static void main(String[] args) {
 
-        Class<? extends IImageHost> host = ImageHostFlickr.class;
-        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFlickr();
+        Class<? extends IImageHost> host = ImageHostFacebook.class;
+        List<IBytesToImagePainter> painters = TestAndBenchmarkHelper.getPaintersForFacebook();
 
         System.out.println("=================================");
         System.out.println(host.getSimpleName());

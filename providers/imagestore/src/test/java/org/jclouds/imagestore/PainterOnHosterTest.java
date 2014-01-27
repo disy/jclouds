@@ -10,17 +10,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-import org.jclouds.imagestore.benchmarks.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageExtractor;
 import org.jclouds.imagestore.imagegenerator.ImageGenerator;
 import org.jclouds.imagestore.imagegenerator.reedsolomon.ReedSolomon;
 import org.jclouds.imagestore.imagehoster.IImageHost;
-import org.jclouds.imagestore.imagehoster.file.ImageHostFile;
 import org.jclouds.imagestore.imagehoster.flickr.ImageHostFlickr;
-
-import com.google.common.io.Files;
 
 public class PainterOnHosterTest {
 

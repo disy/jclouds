@@ -1,4 +1,4 @@
-package org.jclouds.imagestore.benchmarks;
+package org.jclouds.imagestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +72,8 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
-        returnVal.add(BytesToImagePainter.PainterType.TERNARY.getPainter());
+//        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
+//        returnVal.add(BytesToImagePainter.PainterType.TERNARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         return returnVal;
     }

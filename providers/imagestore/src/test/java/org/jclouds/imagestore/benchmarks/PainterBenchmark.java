@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.jclouds.imagestore.TestAndBenchmarkHelper;
 import org.jclouds.imagestore.imagegenerator.IBytesToImagePainter;
 import org.jclouds.imagestore.imagegenerator.IEncoder;
 import org.jclouds.imagestore.imagegenerator.ImageExtractor;
