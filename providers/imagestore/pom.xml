@@ -2,12 +2,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jclouds</groupId>
+        <groupId>org.apache.jclouds</groupId>
         <artifactId>jclouds-project</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.0</version>
         <relativePath>../../project/pom.xml</relativePath>
     </parent>
-    <groupId>org.jclouds.provider</groupId>
+    <groupId>org.apache.jclouds.provider</groupId>
     <artifactId>imagestore</artifactId>
     <name>jclouds image store providers</name>
     <description>stores data on image clouds</description>
@@ -15,8 +15,8 @@
 
 
     <properties>
-        <jclouds.osgi.export>org.jclouds.imagestore*;version="${project.version}"</jclouds.osgi.export>
-        <jclouds.osgi.import>org.jclouds*;version="${project.version}",*</jclouds.osgi.import>
+        <jclouds.osgi.export>org.apache.jclouds.imagestore*;version="${project.version}"</jclouds.osgi.export>
+        <jclouds.osgi.import>org.apache.jclouds*;version="${project.version}",*</jclouds.osgi.import>
     </properties>
     <build>
         <plugins>
@@ -29,7 +29,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>org.jclouds.imagestore.benchmarks.LayeredPainterBenchmark</mainClass>
+                            <mainClass>org.apache.jclouds.imagestore.benchmarks.LayeredPainterBenchmark</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -63,33 +63,33 @@
             <version>15.0</version>
         </dependency>
         <dependency>
-            <groupId>org.jclouds</groupId>
+            <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jclouds</groupId>
+            <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-blobstore</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jclouds.provider</groupId>
+            <groupId>org.apache.jclouds.provider</groupId>
             <artifactId>aws-s3</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jclouds.provider</groupId>
+            <groupId>org.apache.jclouds.provider</groupId>
             <artifactId>azureblob</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jclouds.api</groupId>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>filesystem</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jclouds.driver</groupId>
+            <groupId>org.apache.jclouds.driver</groupId>
             <artifactId>jclouds-log4j</artifactId>
             <version>${project.version}</version>
         </dependency>

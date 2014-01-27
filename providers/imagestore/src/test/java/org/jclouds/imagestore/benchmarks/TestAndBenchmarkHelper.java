@@ -63,9 +63,9 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getLayeredPainters() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-        for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values()) {
-            returnVal.add(type.getPainter());
-        }
+//        for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values()) {
+//            returnVal.add(type.getPainter());
+//        }
         returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
         return returnVal;
     }
