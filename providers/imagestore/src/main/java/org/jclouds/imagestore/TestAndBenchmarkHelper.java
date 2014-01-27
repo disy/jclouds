@@ -40,8 +40,8 @@ public class TestAndBenchmarkHelper {
         properties.setProperty(ImageStoreConstants.PROPERTY_IMAGEHOSTER, host.getName());
         properties.setProperty(ImageStoreConstants.PROPERTY_LAYERS, Integer.toString(layers));
 
-        return ContextBuilder.newBuilder("imagestore").credentials(identity, credential)
-            .overrides(properties).buildView(BlobStoreContext.class);
+        ContextBuilder builder = ContextBuilder.newBuilder("imagestore").credentials(identity, credential).overrides(properties);
+        return builder.buildView(BlobStoreContext.class);
     }
 
     public static List<IBytesToImagePainter> getAllPainters() {
@@ -63,30 +63,31 @@ public class TestAndBenchmarkHelper {
 
     public static List<IBytesToImagePainter> getLayeredPainters() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-//        for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values()) {
-//            returnVal.add(type.getPainter());
-//        }
+        // for (LayeredBytesToImagePainter.PainterType type : LayeredBytesToImagePainter.PainterType.values())
+        // {
+        // returnVal.add(type.getPainter());
+        // }
         returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
         return returnVal;
     }
 
     public static List<IBytesToImagePainter> getPaintersForFacebook() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-//        returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
-//        returnVal.add(BytesToImagePainter.PainterType.TERNARY.getPainter());
+        // returnVal.add(BytesToImagePainter.PainterType.BINARY.getPainter());
+        // returnVal.add(BytesToImagePainter.PainterType.TERNARY.getPainter());
         returnVal.add(BytesToImagePainter.PainterType.QUARTERNARY.getPainter());
         return returnVal;
     }
 
     public static List<IBytesToImagePainter> getPaintersForFlickr() {
         List<IBytesToImagePainter> returnVal = new ArrayList<IBytesToImagePainter>();
-//        for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
-//            returnVal.add(type.getPainter());
-//        }
+        // for (BytesToImagePainter.PainterType type : BytesToImagePainter.PainterType.values()) {
+        // returnVal.add(type.getPainter());
+        // }
 
-//        returnVal.add(PainterType.BINARY.getPainter());
-//        returnVal.add(PainterType.TERNARY.getPainter());
-//        returnVal.add(PainterType.QUATENARY.getPainter());
+        // returnVal.add(PainterType.BINARY.getPainter());
+        // returnVal.add(PainterType.TERNARY.getPainter());
+        // returnVal.add(PainterType.QUATENARY.getPainter());
         returnVal.add(new DihectpenthexagonLayeredBytesToImagePainter());
         return returnVal;
     }
