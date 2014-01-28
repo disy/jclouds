@@ -283,7 +283,7 @@ public class SyncImageBlobStore implements BlobStore {
                 i++;
             }
         } while (!finished);
-
+        bb.name(name);
         bb.payload(stream.toByteArray());
         return bb.build();
     }
